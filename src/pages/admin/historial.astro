@@ -38,6 +38,7 @@ const exito = Astro.url.searchParams.get("exito");
       <div style="display:flex;gap:0.85rem;flex-wrap:wrap;align-items:center;">
         <button
           type="button"
+          id="btn-nueva-jornada"
           class="btn"
           style="background:#B5A160;color:#041815;font-weight:800;padding:0.75rem 1.4rem;border:none;box-shadow:0 4px 14px rgba(181,161,96,0.35);cursor:pointer;"
           onclick="window.abrirModalNuevaJornada()"
@@ -571,31 +572,37 @@ const exito = Astro.url.searchParams.get("exito");
 
   <!-- SCRIPT CON is:inline PARA GARANTIZAR RESPUESTA RÁPIDA SIN PROBLEMAS DE SCOPE -->
   <script is:inline>
+    // Funciones globales inmediatas
+    window.abrirModalNuevaJornada = function() {
+      const modal = document.getElementById("modal-nueva-jornada");
+      if (modal) modal.style.display = "flex";
+    };
+    window.abrirModalModificarActual = function() {
+      const modal = document.getElementById("modal-modificar-actual");
+      if (modal) modal.style.display = "flex";
+    };
+    window.abrirModalCerrarJornada = function() {
+      const modal = document.getElementById("modal-cerrar-jornada");
+      if (modal) modal.style.display = "flex";
+    };
+
     document.addEventListener("DOMContentLoaded", () => {
       // Botón Modificar Actual
       const btnModificar = document.getElementById("btn-modificar-actual");
       if (btnModificar) {
-        btnModificar.addEventListener("click", () => {
-          document.getElementById("modal-modificar-actual").style.display =
-            "flex";
-        });
+        btnModificar.addEventListener("click", window.abrirModalModificarActual);
       }
 
       // Botón Cerrar y Archivar
       const btnCerrar = document.getElementById("btn-cerrar-archivar");
       if (btnCerrar) {
-        btnCerrar.addEventListener("click", () => {
-          document.getElementById("modal-cerrar-jornada").style.display =
-            "flex";
-        });
+        btnCerrar.addEventListener("click", window.abrirModalCerrarJornada);
       }
 
       // Botón Nueva Jornada
       const btnNueva = document.getElementById("btn-nueva-jornada");
       if (btnNueva) {
-        btnNueva.addEventListener("click", () => {
-          document.getElementById("modal-nueva-jornada").style.display = "flex";
-        });
+        btnNueva.addEventListener("click", window.abrirModalNuevaJornada);
       }
 
       // Botones Editar Historial
