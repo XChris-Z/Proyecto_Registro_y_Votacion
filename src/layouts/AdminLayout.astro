@@ -31,7 +31,7 @@ const navItems = [
     <title>{title} — Admin EventoVota</title>
     <link rel="icon" href="/logo.png" type="image/png" />
   </head>
-  <body class="admin-body">
+  <body class="admin-body" style="display:flex;flex-direction:column;min-height:100vh;">
     <!-- Orbes de fondo animados -->
     <div class="admin-bg-orbs" aria-hidden="true">
       <div class="orb orb--1"></div>
@@ -39,7 +39,7 @@ const navItems = [
       <div class="orb orb--3"></div>
     </div>
 
-    <div class="admin-layout">
+    <div class="admin-layout" style="flex:1;">
       <aside class="admin-sidebar">
         <div class="admin-sidebar__logo">
           <a href="/" class="site-logo" style="color:var(--clr-text);display:flex;align-items:center;gap:0.6rem;">
@@ -83,10 +83,12 @@ const navItems = [
         <div class="admin-page-enter" style="flex:1;padding:1.5rem 2rem 3rem;">
           <slot />
         </div>
-        <div style="width:100%;margin-top:auto;flex-shrink:0;">
-          <Footer />
-        </div>
       </main>
+    </div>
+
+    <!-- Pie de página institucional abarcando 100% del ancho debajo del sidebar y contenido -->
+    <div style="width:100%;flex-shrink:0;position:relative;z-index:10;">
+      <Footer />
     </div>
 
 

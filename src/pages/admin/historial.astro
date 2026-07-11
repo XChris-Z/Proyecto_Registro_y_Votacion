@@ -152,7 +152,15 @@ const exito = Astro.url.searchParams.get('exito');
                       📑 Excel (.xlsx)
                     </a>
                   </td>
-                  <td>
+                  <td style="display:flex;gap:0.5rem;align-items:center;">
+                    <button
+                      type="button"
+                      class="btn btn--outline btn--sm"
+                      title="Editar nombre/notas"
+                      onclick={`abrirModalEditar(${j.id}, ${JSON.stringify(j.nombre)}, ${JSON.stringify(j.notas || '')})`}
+                    >
+                      ✏️
+                    </button>
                     <form method="POST" action="/api/admin/jornadas" onsubmit="return confirm('¿Seguro que deseas eliminar este registro histórico?');" style="display:inline;">
                       <input type="hidden" name="accion" value="eliminar" />
                       <input type="hidden" name="id" value={j.id} />
@@ -169,6 +177,53 @@ const exito = Astro.url.searchParams.get('exito');
       )}
     </div>
   </div>
+
+  <!-- Modal para editar jornada histórica -->
+  <div id="modal-editar-jornada" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
+    <div class="card" style="width:100%;max-width:480px;background:var(--clr-surface);border:2px solid var(--clr-accent);">
+      <h3 style="font-size:1.25rem;margin-bottom:1rem;color:var(--clr-text);">Editar Jornada Histórica</h3>
+      <form method="POST" action="/api/admin/jornadas" style="display:flex;flex-direction:column;gap:1rem;">
+        <input type="hidden" name="accion" value="editar" />
+        <input type="hidden" name="id" id="edit-jornada-id" value="" />
+        <div class="form-group">
+          <label class="form-label" style="color:var(--clr-text);">Nombre / Título de la Jornada *</label>
+          <input type="text" name="nombre" id="edit-jornada-nombre" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="color:var(--clr-text);">Notas o Descripción</label>
+          <input type="text" name="notas" id="edit-jornada-notas" class="form-input" />
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:0.5rem;">
+          <button type="button" class="btn btn--outline" onclick="cerrarModalEditar()">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function abrirModalEditar(id: number, nombre: string, notas: string) {
+      const modal = document.getElementById('modal-editar-jornada');
+      const inputId = document.getElementById('edit-jornada-id') as HTMLInputElement;
+      const inputNombre = document.getElementById('edit-jornada-nombre') as HTMLInputElement;
+      const inputNotas = document.getElementById('edit-jornada-notas') as HTMLInputElement;
+
+      if (modal && inputId && inputNombre && inputNotas) {
+        inputId.value = String(id);
+        inputNombre.value = nombre;
+        inputNotas.value = notas;
+        modal.style.display = 'flex';
+      }
+    }
+
+    function cerrarModalEditar() {
+      const modal = document.getElementById('modal-editar-jornada');
+      if (modal) modal.style.display = 'none';
+    }
+
+    (window as any).abrirModalEditar = abrirModalEditar;
+    (window as any).cerrarModalEditar = cerrarModalEditar;
+  </script>
 </AdminLayout>
 
 <style>

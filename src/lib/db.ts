@@ -371,7 +371,8 @@ export async function crearJornadaHistorial(
       votos: total_votos,
       categorias,
       proyectos,
-      resultados
+      resultados,
+      listaAsistentes: asistentes
     };
 
     const { data, error } = await supabase
