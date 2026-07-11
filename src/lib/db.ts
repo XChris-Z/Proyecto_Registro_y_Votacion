@@ -1,18 +1,36 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl =
+function cleanEnvVar(val?: string): string {
+  if (!val) return '';
+  return val.trim().replace(/^["']|["']$/g, '');
+}
+
+function cleanSupabaseUrl(url?: string): string {
+  let cleaned = cleanEnvVar(url);
+  // Eliminar barras finales o rutas como /rest/v1 si se pegaron por error
+  cleaned = cleaned.replace(/\/+$/, '');
+  cleaned = cleaned.replace(/\/rest\/v1.*$/i, '');
+  cleaned = cleaned.replace(/\/auth\/v1.*$/i, '');
+  return cleaned;
+}
+
+const rawUrl =
   (import.meta.env.PUBLIC_SUPABASE_URL as string) ||
   (process.env.PUBLIC_SUPABASE_URL as string);
 
-const supabaseKey =
+const rawKey =
   (import.meta.env.SUPABASE_SERVICE_ROLE_KEY as string) ||
   (process.env.SUPABASE_SERVICE_ROLE_KEY as string);
+
+const supabaseUrl = cleanSupabaseUrl(rawUrl);
+const supabaseKey = cleanEnvVar(rawKey);
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error('Faltan variables de entorno: PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
