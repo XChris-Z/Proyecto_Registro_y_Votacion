@@ -1,0 +1,84 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { obtenerAsistentes } from '../../lib/db';
+
+const asistentes = obtenerAsistentes();
+const q = Astro.url.searchParams.get('q') || '';
+const filtrados = q
+  ? asistentes.filter(a =>
+      a.nombre.toLowerCase().includes(q.toLowerCase()) ||
+      a.documento.includes(q) ||
+      a.correo.toLowerCase().includes(q.toLowerCase()) ||
+      a.dependencia.toLowerCase().includes(q.toLowerCase())
+    )
+  : asistentes;
+---
+
+<AdminLayout title="Asistentes" activePage="asistentes">
+  <div style="max-width:1000px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
+      <div>
+        <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Asistentes registrados</h1>
+        <p><strong style="color:var(--clr-text);">{asistentes.length}</strong> personas registradas</p>
+      </div>
+    </div>
+
+    <!-- Buscador -->
+    <form method="GET" style="margin-bottom:1.5rem;">
+      <div style="display:flex;gap:0.75rem;">
+        <input
+          class="form-input"
+          type="text"
+          name="q"
+          value={q}
+          placeholder="Buscar por nombre, documento, correo o dependencia..."
+          style="flex:1;"
+        />
+        <button type="submit" class="btn btn--primary">Buscar</button>
+        {q && <a href="/admin/asistentes" class="btn btn--outline">Limpiar</a>}
+      </div>
+    </form>
+
+    {q && (
+      <p style="font-size:0.85rem;color:var(--clr-text-muted);margin-bottom:1rem;">
+        Mostrando {filtrados.length} resultado{filtrados.length !== 1 ? 's' : ''} para "<strong>{q}</strong>"
+      </p>
+    )}
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Dependencia</th>
+            <th>Correo</th>
+            <th>Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtrados.map((a, i) => (
+            <tr>
+              <td style="color:var(--clr-text-dim);font-size:0.8rem;">{a.id}</td>
+              <td style="font-weight:600;">{a.nombre}</td>
+              <td style="font-family:monospace;font-size:0.85rem;">{a.documento}</td>
+              <td style="font-size:0.85rem;color:var(--clr-text-muted);">{a.dependencia}</td>
+              <td style="font-size:0.82rem;color:var(--clr-text-muted);">{a.correo}</td>
+              <td style="font-size:0.8rem;color:var(--clr-text-dim);">
+                {new Date(a.fecha_registro).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' })}
+              </td>
+            </tr>
+          ))}
+          {filtrados.length === 0 && (
+            <tr>
+              <td colspan={6} style="text-align:center;color:var(--clr-text-dim);padding:2rem;">
+                {q ? 'Sin resultados para esa búsqueda' : 'Sin asistentes registrados aún'}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>

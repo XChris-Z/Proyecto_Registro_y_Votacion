@@ -1,0 +1,188 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+
+const error = Astro.url.searchParams.get('error');
+---
+
+<MainLayout title="Registro de Asistencia">
+  <section class="page-hero">
+    <div class="container--narrow">
+      <div class="page-hero__eyebrow animate-fade-up" style="animation-delay:0s;">
+        <span>📋</span> Registro de Asistencia
+      </div>
+      <h1 class="page-hero__title animate-fade-up" style="animation-delay:0.1s;">
+        ¡Únete al evento!
+      </h1>
+      <p class="page-hero__sub animate-fade-up" style="animation-delay:0.2s;">
+        Completa tu registro en menos de un minuto y asegura tu participación.
+      </p>
+    </div>
+  </section>
+
+  <section style="padding-bottom:4rem;">
+    <div class="container--narrow">
+      <div class="glass animate-fade-up" style="padding:2.5rem;animation-delay:0.3s;">
+
+        {error && (
+          <div class="alert alert--error mb-3">
+            <span>⚠️</span>
+            {error === 'duplicate'
+              ? 'Ya existe un registro con ese documento y correo. ¿Ya te registraste antes?'
+              : 'Ocurrió un error. Por favor intenta de nuevo.'}
+          </div>
+        )}
+
+        <form id="registro-form" method="POST" action="/api/registro" novalidate>
+          <div style="display:grid;gap:1.25rem;">
+
+            <!-- Nombre -->
+            <div class="form-group">
+              <label class="form-label" for="nombre">Nombre completo</label>
+              <input
+                id="nombre"
+                class="form-input"
+                type="text"
+                name="nombre"
+                placeholder="Ej: María García López"
+                required
+                minlength="3"
+                autocomplete="name"
+              />
+            </div>
+
+            <!-- Documento -->
+            <div class="form-group">
+              <label class="form-label" for="documento">Número de documento</label>
+              <input
+                id="documento"
+                class="form-input"
+                type="text"
+                name="documento"
+                placeholder="Ej: 1234567890"
+                required
+                pattern="[0-9]+"
+                inputmode="numeric"
+              />
+              <span class="form-hint">Solo números, sin puntos ni guiones</span>
+            </div>
+
+            <!-- Dependencia -->
+            <div class="form-group">
+              <label class="form-label" for="dependencia">Dependencia / Institución</label>
+              <input
+                id="dependencia"
+                class="form-input"
+                type="text"
+                name="dependencia"
+                placeholder="Ej: Universidad Nacional, Facultad de Ingeniería..."
+                required
+                minlength="2"
+              />
+            </div>
+
+            <!-- Correo -->
+            <div class="form-group">
+              <label class="form-label" for="correo">Correo electrónico</label>
+              <input
+                id="correo"
+                class="form-input"
+                type="email"
+                name="correo"
+                placeholder="Ej: maria@universidad.edu.co"
+                required
+                autocomplete="email"
+              />
+            </div>
+
+            <!-- Botón -->
+            <div style="margin-top:0.5rem;">
+              <button id="submit-btn" type="submit" class="btn btn--primary btn--lg btn--full">
+                <span id="btn-text">Registrarme ahora</span>
+                <span id="btn-spinner" class="spinner hidden"></span>
+              </button>
+            </div>
+
+            <p class="text-center" style="font-size:0.8rem;color:var(--clr-text-dim);">
+              🔒 Tu información es confidencial y solo se usa para el evento
+            </p>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Steps decorativos -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;">
+        {[
+          { icon: '✍️', title: 'Completa', desc: '4 campos simples' },
+          { icon: '✅', title: 'Confirma', desc: 'Un solo clic' },
+          { icon: '🗳️', title: 'Vota', desc: 'En los proyectos' },
+        ].map(step => (
+          <div class="card text-center animate-fade-up" style="padding:1.25rem;">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">{step.icon}</div>
+            <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem;">{step.title}</div>
+            <div style="font-size:0.8rem;color:var(--clr-text-muted);">{step.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<script>
+  const form = document.getElementById('registro-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const btnText = document.getElementById('btn-text') as HTMLSpanElement;
+  const btnSpinner = document.getElementById('btn-spinner') as HTMLSpanElement;
+
+  // Validación en tiempo real
+  const inputs = form.querySelectorAll<HTMLInputElement>('input[required]');
+  inputs.forEach(input => {
+    input.addEventListener('blur', () => validateInput(input));
+    input.addEventListener('input', () => {
+      if (input.classList.contains('error')) validateInput(input);
+    });
+  });
+
+  function validateInput(input: HTMLInputElement) {
+    const group = input.closest('.form-group');
+    const existingError = group?.querySelector('.form-error');
+    existingError?.remove();
+
+    if (!input.validity.valid) {
+      input.style.borderColor = 'var(--clr-error)';
+      const errorEl = document.createElement('span');
+      errorEl.className = 'form-error';
+      errorEl.textContent = getErrorMsg(input);
+      input.classList.add('error');
+      group?.appendChild(errorEl);
+    } else {
+      input.style.borderColor = '';
+      input.classList.remove('error');
+    }
+  }
+
+  function getErrorMsg(input: HTMLInputElement): string {
+    if (input.validity.valueMissing) return 'Este campo es obligatorio';
+    if (input.validity.typeMismatch) return 'Ingresa un correo válido';
+    if (input.validity.patternMismatch) return 'Solo se permiten números';
+    if (input.validity.tooShort) return `Mínimo ${input.minLength} caracteres`;
+    return 'Campo inválido';
+  }
+
+  form.addEventListener('submit', (e) => {
+    let valid = true;
+    inputs.forEach(input => {
+      if (!input.validity.valid) {
+        validateInput(input);
+        valid = false;
+      }
+    });
+    if (!valid) {
+      e.preventDefault();
+      return;
+    }
+    btnText.textContent = 'Registrando...';
+    btnSpinner.classList.remove('hidden');
+    submitBtn.disabled = true;
+  });
+</script>

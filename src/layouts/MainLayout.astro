@@ -1,0 +1,59 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Sistema de Registro y Votación de Eventos' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} — EventoVota</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <div class="site-header__inner">
+          <a href="/" class="site-logo">
+            <div class="site-logo__icon">✦</div>
+            <span>EventoVota</span>
+          </a>
+          <nav style="display:flex;gap:0.75rem;align-items:center;">
+            <a href="/" class="btn btn--outline btn--sm">Registro</a>
+            <a href="/votacion" class="btn btn--primary btn--sm">Votar</a>
+            <a
+              href="/admin"
+              class="admin-nav-btn"
+              title="Panel de Administración"
+              aria-label="Iniciar sesión como administrador"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/>
+                <path d="M12 14c-7 0-9 3.5-9 5v1h18v-1c0-1.5-2-5-9-5z"/>
+              </svg>
+              <span class="admin-nav-btn__label">Admin</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer style="text-align:center;padding:2rem 0;color:var(--clr-text-dim);font-size:0.8rem;border-top:1px solid var(--clr-border);margin-top:4rem;">
+      <div class="container">
+        <p>Sistema de Registro y Votación &copy; {new Date().getFullYear()}</p>
+      </div>
+    </footer>
+  </body>
+</html>

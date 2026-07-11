@@ -1,0 +1,64 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+
+const nombre = Astro.url.searchParams.get('nombre') || 'Participante';
+const dependencia = Astro.url.searchParams.get('dependencia') || '';
+---
+
+<MainLayout title="¡Registro Exitoso!">
+  <section style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:2rem 0;">
+    <div class="container--narrow" style="text-align:center;">
+
+      <!-- Ícono animado -->
+      <div style="
+        width:100px;height:100px;
+        background:var(--gradient-primary);
+        border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        font-size:3rem;
+        margin:0 auto 2rem;
+        box-shadow:0 0 60px rgba(108,99,255,0.5);
+        animation:fadeInUp 0.5s ease, pulse-glow 2s infinite 0.5s;
+      ">✓</div>
+
+      <h1 class="animate-fade-up" style="
+        animation-delay:0.1s;
+        background:linear-gradient(135deg,#fff,rgba(255,255,255,0.7));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        background-clip:text;
+      ">¡Registro exitoso!</h1>
+
+      <p class="animate-fade-up" style="animation-delay:0.2s;font-size:1.1rem;margin:1rem 0 2rem;">
+        Gracias <strong style="color:var(--clr-text);">{nombre}</strong>, tu asistencia al evento ha sido confirmada.
+        {dependencia && <span> Representando a <strong style="color:var(--clr-primary-light);">{dependencia}</strong>.</span>}
+      </p>
+
+      <div class="glass animate-fade-up" style="animation-delay:0.3s;padding:1.5rem;margin-bottom:2rem;text-align:left;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+          <span style="font-size:1.2rem;">🗳️</span>
+          <strong>¿Sabías que puedes votar?</strong>
+        </div>
+        <p style="font-size:0.9rem;margin:0;">
+          Con tu correo o documento puedes acceder al sistema de votación y votar por tus proyectos favoritos en las 3 categorías del evento.
+        </p>
+      </div>
+
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;" class="animate-fade-up" style="animation-delay:0.4s;">
+        <a href="/votacion" class="btn btn--primary btn--lg">
+          🗳️ Ir a Votar
+        </a>
+        <a href="/" class="btn btn--outline btn--lg">
+          Registrar otro
+        </a>
+      </div>
+
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 60px rgba(108,99,255,0.5); }
+  50% { box-shadow: 0 0 100px rgba(108,99,255,0.8); }
+}
+</style>

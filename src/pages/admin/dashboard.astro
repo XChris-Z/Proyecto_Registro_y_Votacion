@@ -1,0 +1,101 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { obtenerAsistentes, obtenerCategorias, obtenerProyectos, obtenerResultados } from '../../lib/db';
+
+const asistentes = obtenerAsistentes();
+const categorias = obtenerCategorias();
+const proyectos = obtenerProyectos();
+const resultados = obtenerResultados();
+
+const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
+---
+
+<AdminLayout title="Dashboard" activePage="dashboard">
+  <div style="max-width:1100px;">
+    <div style="margin-bottom:2rem;">
+      <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Dashboard</h1>
+      <p>Resumen general del evento</p>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
+      {[
+        { label: 'Asistentes registrados', value: asistentes.length, icon: '👥' },
+        { label: 'Categorías activas', value: categorias.filter(c => c.activa).length, icon: '🏷️' },
+        { label: 'Proyectos candidatos', value: proyectos.length, icon: '📁' },
+        { label: 'Votos emitidos', value: totalVotos, icon: '🗳️' },
+      ].map((stat, i) => (
+        <div class={`stat-card stagger-${i + 1}`} style={`animation: fadeInUp 0.5s ease ${0.05 + i * 0.08}s both`}>
+          <div class="stat-card__icon">{stat.icon}</div>
+          <div class="stat-card__value">{stat.value}</div>
+          <div class="stat-card__label">{stat.label}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Resultados rápidos -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <div>
+        <h2 style="font-size:1.1rem;margin-bottom:1rem;font-weight:700;">Resultados por categoría</h2>
+        {categorias.filter(c => c.activa).map(cat => {
+          const catResultados = resultados.filter(r => r.categoria_id === cat.id).slice(0, 3);
+          const maxVotos = Math.max(...catResultados.map(r => r.total_votos), 1);
+          return (
+            <div class="card" style="margin-bottom:1rem;">
+              <h3 style="font-size:0.9rem;margin-bottom:1rem;color:var(--clr-text-muted);">{cat.nombre}</h3>
+              {catResultados.length === 0 && <p style="font-size:0.8rem;color:var(--clr-text-dim);">Sin votos aún</p>}
+              {catResultados.map((r, i) => (
+                <div style="margin-bottom:0.75rem;">
+                  <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.3rem;">
+                    <span style={i === 0 ? 'color:var(--clr-accent);font-weight:600;' : ''}>{r.proyecto_nombre}</span>
+                    <strong>{r.total_votos}</strong>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-bar__fill" style={`width:${(r.total_votos / maxVotos) * 100}%`}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Últimos registros -->
+      <div>
+        <h2 style="font-size:1.1rem;margin-bottom:1rem;font-weight:700;">Últimos registros</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Dependencia</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {asistentes.slice(0, 8).map(a => (
+                <tr>
+                  <td style="font-weight:500;">{a.nombre}</td>
+                  <td style="color:var(--clr-text-muted);font-size:0.85rem;">{a.dependencia}</td>
+                  <td style="color:var(--clr-text-dim);font-size:0.8rem;">
+                    {new Date(a.fecha_registro).toLocaleDateString('es-CO')}
+                  </td>
+                </tr>
+              ))}
+              {asistentes.length === 0 && (
+                <tr>
+                  <td colspan={3} style="text-align:center;color:var(--clr-text-dim);padding:2rem;">Sin registros aún</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        {asistentes.length > 8 && (
+          <a href="/admin/asistentes" style="font-size:0.8rem;color:var(--clr-primary-light);display:block;text-align:right;margin-top:0.5rem;">
+            Ver todos ({asistentes.length}) →
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</AdminLayout>

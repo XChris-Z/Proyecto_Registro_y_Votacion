@@ -1,0 +1,85 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { obtenerCategorias, obtenerResultados, obtenerAsistentes } from '../../lib/db';
+
+const categorias = obtenerCategorias().filter(c => c.activa);
+const resultados = obtenerResultados();
+const asistentes = obtenerAsistentes();
+
+const resultadosPorCat = categorias.map(cat => {
+  const res = resultados.filter(r => r.categoria_id === cat.id);
+  const maxVotos = Math.max(...res.map(r => r.total_votos), 1);
+  return { ...cat, resultados: res, maxVotos };
+});
+---
+
+<AdminLayout title="Resultados" activePage="resultados">
+  <div style="max-width:1000px;">
+    <div style="margin-bottom:2rem;">
+      <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Resultados de Votación</h1>
+      <p>Resultados en tiempo real. Total de registrados: <strong style="color:var(--clr-text);">{asistentes.length}</strong></p>
+    </div>
+
+    <div style="display:grid;gap:2rem;">
+      {resultadosPorCat.map((cat, i) => (
+        <div class="category-section">
+          <div class="category-header">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span style="font-size:1.3rem;">{i === 0 ? '💡' : i === 1 ? '🌿' : '🌍'}</span>
+              <h3 style="font-size:1rem;margin:0;">{cat.nombre}</h3>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;">
+              <span class="badge badge--purple">
+                {cat.resultados.reduce((s, r) => s + r.total_votos, 0)} votos
+              </span>
+            </div>
+          </div>
+
+          <div style="padding:1.5rem;">
+            {cat.resultados.length === 0 && (
+              <p style="color:var(--clr-text-dim);font-size:0.85rem;text-align:center;padding:1rem 0;">
+                Sin votos registrados aún en esta categoría
+              </p>
+            )}
+
+            {cat.resultados.map((r, idx) => {
+              const pct = cat.maxVotos > 0 ? Math.round((r.total_votos / cat.maxVotos) * 100) : 0;
+              const isWinner = idx === 0 && r.total_votos > 0;
+              return (
+                <div style="margin-bottom:1.25rem;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;gap:1rem;">
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:0;">
+                      {isWinner && <span title="Ganando">🥇</span>}
+                      <span style={`font-weight:${isWinner ? 700 : 500};color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`}>
+                        {r.proyecto_nombre}
+                      </span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+                      <span style="font-size:0.8rem;color:var(--clr-text-muted);">{pct}%</span>
+                      <strong style={`font-size:1.1rem;color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};min-width:1.5rem;text-align:right;`}>
+                        {r.total_votos}
+                      </strong>
+                    </div>
+                  </div>
+                  <div class="progress-bar">
+                    <div
+                      class="progress-bar__fill"
+                      style={`width:${pct}%;${isWinner ? 'background:var(--gradient-accent);' : ''}`}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Botón recargar -->
+    <div style="text-align:center;margin-top:2rem;">
+      <button class="btn btn--outline" onclick="window.location.reload()">
+        🔄 Actualizar resultados
+      </button>
+    </div>
+  </div>
+</AdminLayout>

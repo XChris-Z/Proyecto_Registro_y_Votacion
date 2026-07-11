@@ -1,0 +1,341 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { obtenerCategorias, obtenerProyectos, obtenerVotosDeAsistente } from '../../lib/db';
+
+// Verificar sesión
+const asistente_id = Number(Astro.cookies.get('votacion_session')?.value || 0);
+const nombre = Astro.cookies.get('votacion_nombre')?.value || 'Participante';
+
+if (!asistente_id) {
+  return Astro.redirect('/votacion');
+}
+
+const categorias = obtenerCategorias().filter(c => c.activa);
+const proyectos = obtenerProyectos();
+const votosEmitidos = obtenerVotosDeAsistente(asistente_id);
+const categoriasVotadas = votosEmitidos.map(v => v.categoria_id);
+const votosCompletos = categoriasVotadas.length === categorias.length;
+
+// Agrupar proyectos por categoría
+const proyectosPorCategoria = categorias.map(cat => ({
+  ...cat,
+  proyectos: proyectos.filter(p => p.categoria_id === cat.id),
+  votado: categoriasVotadas.includes(cat.id),
+  votoProyectoId: votosEmitidos.find(v => v.categoria_id === cat.id)?.proyecto_id,
+}));
+---
+
+<MainLayout title="Votar por Proyectos">
+  <div style="padding:2rem 0 4rem;">
+    <div class="container">
+
+      <!-- Header de votación -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
+        <div>
+          <div class="page-hero__eyebrow" style="margin-bottom:0.5rem;">
+            <span>🗳️</span> Panel de Votación
+          </div>
+          <h1 style="
+            font-size:clamp(1.5rem,3vw,2.2rem);
+            background:linear-gradient(135deg,#fff,rgba(255,255,255,0.7));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text;
+          ">Hola, {nombre.split(' ')[0]} 👋</h1>
+        </div>
+
+        <!-- Progreso de votos -->
+        <div class="glass" style="padding:1.25rem 1.75rem;min-width:220px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+            <span style="font-size:0.8rem;color:var(--clr-text-muted);font-weight:600;">Votos emitidos</span>
+            <strong style="color:var(--clr-primary-light);">{categoriasVotadas.length}/{categorias.length}</strong>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" style={`width:${(categoriasVotadas.length / Math.max(categorias.length, 1)) * 100}%`}></div>
+          </div>
+          {votosCompletos && (
+            <p style="font-size:0.75rem;color:var(--clr-success);margin-top:0.5rem;text-align:center;font-weight:600;">
+              ✅ ¡Votación completa!
+            </p>
+          )}
+        </div>
+      </div>
+
+      {votosCompletos && (
+        <div class="alert alert--success mb-4" style="font-size:1rem;padding:1.25rem 1.5rem;">
+          <span style="font-size:1.3rem;">🎉</span>
+          <div>
+            <strong>¡Gracias por votar!</strong> Has emitido tus votos en las {categorias.length} categorías.
+            <a href="/votacion/gracias" style="display:block;margin-top:0.25rem;font-size:0.85rem;">Ver confirmación →</a>
+          </div>
+        </div>
+      )}
+
+      {categorias.length === 0 && (
+        <div class="alert alert--info" style="margin-bottom:2rem;">
+          <span>ℹ️</span> Aún no hay categorías ni proyectos configurados. El administrador debe configurarlos primero.
+        </div>
+      )}
+
+      <!-- Categorías y proyectos -->
+      <div style="display:grid;gap:1.5rem;" id="categorias-container">
+        {proyectosPorCategoria.map((cat, catIdx) => (
+          <div
+            class={`category-section ${cat.votado ? 'category-section--done' : ''}`}
+            id={`cat-${cat.id}`}
+            data-categoria-id={cat.id}
+            data-votado={cat.votado ? 'true' : 'false'}
+          >
+            <div class="category-header">
+              <div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                  <span style={`
+                    width:32px;height:32px;border-radius:8px;
+                    background:${catIdx === 0 ? 'rgba(108,99,255,0.2)' : catIdx === 1 ? 'rgba(245,197,24,0.15)' : 'rgba(255,107,107,0.15)'};
+                    display:flex;align-items:center;justify-content:center;font-size:1rem;
+                    border:1px solid ${catIdx === 0 ? 'rgba(108,99,255,0.3)' : catIdx === 1 ? 'rgba(245,197,24,0.3)' : 'rgba(255,107,107,0.3)'};
+                  `}>
+                    {catIdx === 0 ? '💡' : catIdx === 1 ? '🌿' : '🌍'}
+                  </span>
+                  <div>
+                    <h3 style="font-size:1rem;margin:0;">{cat.nombre}</h3>
+                    {cat.descripcion && (
+                      <p style="font-size:0.8rem;margin:0;color:var(--clr-text-muted);">{cat.descripcion}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div>
+                {cat.votado
+                  ? <span class="badge badge--green">✓ Votado</span>
+                  : <span class="badge badge--purple">Pendiente</span>
+                }
+              </div>
+            </div>
+
+            <div class="category-body">
+              {cat.proyectos.length === 0 && (
+                <p style="color:var(--clr-text-dim);font-size:0.85rem;grid-column:1/-1;">Sin proyectos en esta categoría aún.</p>
+              )}
+              {cat.proyectos.map(proyecto => (
+                <div
+                  class={`vote-card ${cat.votado && cat.votoProyectoId === proyecto.id ? 'vote-card--voted' : ''} ${cat.votado && cat.votoProyectoId !== proyecto.id ? 'vote-card--locked' : ''}`}
+                  data-proyecto-id={proyecto.id}
+                  data-categoria-id={cat.id}
+                  data-nombre={proyecto.nombre}
+                  onclick={!cat.votado ? `selectProyecto(this)` : undefined}
+                  role={!cat.votado ? 'button' : undefined}
+                  tabindex={!cat.votado ? 0 : undefined}
+                >
+                  <div class="vote-card__check">
+                    {(cat.votado && cat.votoProyectoId === proyecto.id) ? '✓' : ''}
+                  </div>
+                  <div style="padding-right:2rem;">
+                    <h4 style="font-size:0.95rem;margin:0 0 0.4rem;">{proyecto.nombre}</h4>
+                    {proyecto.descripcion && (
+                      <p style="font-size:0.8rem;margin:0 0 0.5rem;line-height:1.5;">{proyecto.descripcion}</p>
+                    )}
+                    {proyecto.autores && (
+                      <span style="font-size:0.75rem;color:var(--clr-text-dim);">👤 {proyecto.autores}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {!cat.votado && cat.proyectos.length > 0 && (
+              <div style="padding:1rem 1.5rem;border-top:1px solid var(--clr-border);display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                <p style="font-size:0.85rem;color:var(--clr-text-muted);margin:0;">
+                  Selecciona un proyecto y confirma tu voto
+                </p>
+                <button
+                  id={`btn-votar-${cat.id}`}
+                  class="btn btn--primary"
+                  disabled
+                  onclick={`confirmarVoto(${cat.id})`}
+                >
+                  Votar →
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div style="margin-top:2rem;text-align:center;">
+        <a href="/votacion" style="font-size:0.85rem;color:var(--clr-text-dim);">← Salir de la votación</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <div style="font-size:2.5rem;margin-bottom:0.75rem;">🗳️</div>
+        <h3 style="margin-bottom:0.5rem;">¿Confirmas tu voto?</h3>
+        <p style="font-size:0.9rem;">
+          Estás votando por <strong id="modal-proyecto-nombre" style="color:var(--clr-primary-light);">—</strong>
+          en la categoría <strong id="modal-categoria-nombre" style="color:var(--clr-accent);">—</strong>.
+        </p>
+      </div>
+
+      <div class="alert alert--info" style="margin-bottom:1.5rem;font-size:0.85rem;">
+        <span>⚠️</span> Esta acción es <strong>irreversible</strong>. Una vez confirmado, no podrás cambiar tu voto en esta categoría.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <button class="btn btn--outline" onclick="cerrarModal()">Cancelar</button>
+        <button id="confirmar-btn" class="btn btn--primary" onclick="enviarVoto()">
+          ✓ Confirmar voto
+        </button>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  let selectedProyectoId: number | null = null;
+  let selectedCategoriaId: number | null = null;
+  let selectedProyectoNombre = '';
+
+  const categorias = document.querySelectorAll<HTMLElement>('[data-categoria-id].category-section');
+
+  function selectProyecto(el: HTMLElement) {
+    const catId = Number(el.dataset.categoriaId);
+    const section = document.getElementById(`cat-${catId}`);
+    if (!section || section.dataset.votado === 'true') return;
+
+    // Deselect others in same category
+    section.querySelectorAll('.vote-card').forEach(card => {
+      (card as HTMLElement).classList.remove('vote-card--selected');
+      const check = card.querySelector('.vote-card__check');
+      if (check) check.textContent = '';
+    });
+
+    // Select this one
+    el.classList.add('vote-card--selected');
+    const check = el.querySelector('.vote-card__check');
+    if (check) check.textContent = '✓';
+
+    selectedProyectoId = Number(el.dataset.proyectoId);
+    selectedCategoriaId = catId;
+    selectedProyectoNombre = el.dataset.nombre || '';
+
+    // Enable vote button
+    const btn = document.getElementById(`btn-votar-${catId}`) as HTMLButtonElement;
+    if (btn) btn.disabled = false;
+  }
+
+  function confirmarVoto(catId: number) {
+    selectedCategoriaId = catId;
+    const catEl = document.getElementById(`cat-${catId}`);
+    const categoriaLabel = catEl?.querySelector('h3')?.textContent || '';
+
+    document.getElementById('modal-proyecto-nombre')!.textContent = selectedProyectoNombre;
+    document.getElementById('modal-categoria-nombre')!.textContent = categoriaLabel;
+
+    document.getElementById('modal-overlay')!.classList.add('active');
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal-overlay')!.classList.remove('active');
+  }
+
+  async function enviarVoto() {
+    if (!selectedProyectoId || !selectedCategoriaId) return;
+
+    const btn = document.getElementById('confirmar-btn') as HTMLButtonElement;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      const res = await fetch('/api/votar/emitir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proyecto_id: selectedProyectoId,
+          categoria_id: selectedCategoriaId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        cerrarModal();
+        // Actualizar UI sin recargar
+        const catEl = document.getElementById(`cat-${selectedCategoriaId}`);
+        if (catEl) {
+          catEl.dataset.votado = 'true';
+          catEl.classList.add('category-section--done');
+
+          // Actualizar badge
+          const badge = catEl.querySelector('.badge');
+          if (badge) {
+            badge.className = 'badge badge--green';
+            badge.textContent = '✓ Votado';
+          }
+
+          // Bloquear todas las cards
+          catEl.querySelectorAll('.vote-card').forEach(card => {
+            const cardEl = card as HTMLElement;
+            const proyId = Number(cardEl.dataset.proyectoId);
+            cardEl.classList.remove('vote-card--selected');
+            if (proyId === selectedProyectoId) {
+              cardEl.classList.add('vote-card--voted');
+              const check = cardEl.querySelector('.vote-card__check');
+              if (check) check.textContent = '✓';
+            } else {
+              cardEl.classList.add('vote-card--locked');
+            }
+            cardEl.removeAttribute('onclick');
+            cardEl.removeAttribute('role');
+            cardEl.removeAttribute('tabindex');
+          });
+
+          // Ocultar botón de votar y barra de acción
+          const footer = catEl.querySelector('[id^="btn-votar-"]')?.parentElement;
+          if (footer) footer.remove();
+        }
+
+        // Actualizar progreso
+        const votosActuales = data.categoriasVotadas.length;
+        const totalCats = document.querySelectorAll('.category-section').length;
+        const progressFill = document.querySelector<HTMLElement>('.progress-bar__fill');
+        if (progressFill) {
+          progressFill.style.width = `${(votosActuales / totalCats) * 100}%`;
+        }
+        const counter = document.querySelector('strong[style*="primary-light"]');
+        if (counter) counter.textContent = `${votosActuales}/${totalCats}`;
+
+        if (votosActuales === totalCats) {
+          setTimeout(() => window.location.href = '/votacion/gracias', 1000);
+        }
+
+      } else {
+        cerrarModal();
+        alert('Error: ' + (data.error || 'No se pudo emitir el voto'));
+      }
+    } catch {
+      cerrarModal();
+      alert('Error de conexión. Intenta de nuevo.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✓ Confirmar voto';
+    }
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cerrarModal();
+  });
+
+  document.getElementById('modal-overlay')!.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) cerrarModal();
+  });
+
+  // Make functions global
+  (window as any).selectProyecto = selectProyecto;
+  (window as any).confirmarVoto = confirmarVoto;
+  (window as any).cerrarModal = cerrarModal;
+  (window as any).enviarVoto = enviarVoto;
+</script>
