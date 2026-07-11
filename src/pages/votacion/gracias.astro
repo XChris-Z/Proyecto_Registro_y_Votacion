@@ -1,7 +1,9 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import { obtenerCategorias } from '@lib/db';
 
 const nombre = Astro.cookies.get('votacion_nombre')?.value || 'Participante';
+const categorias = (await obtenerCategorias()).filter(c => c.activa === true);
 ---
 
 <MainLayout title="¡Gracias por Votar!">
@@ -36,20 +38,16 @@ const nombre = Astro.cookies.get('votacion_nombre')?.value || 'Participante';
         <strong style="color:var(--clr-text);">{nombre}</strong>, tu participación es muy importante.
       </p>
       <p class="animate-fade-up" style="animation-delay:0.25s;">
-        Tus votos han sido registrados exitosamente en las 3 categorías.
+        Tus votos han sido registrados exitosamente en {categorias.length > 0 ? `las ${categorias.length} categorías configuradas` : 'la votación'}.
       </p>
 
       <div class="glass animate-fade-up" style="animation-delay:0.35s;padding:1.5rem;margin:2rem 0;text-align:left;">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
-          {[
-            { icon: '💡', label: 'Tecnología' },
-            { icon: '🌿', label: 'Ciencia' },
-            { icon: '🌍', label: 'Social' },
-          ].map(cat => (
+        <div style={`display:grid;grid-template-columns:repeat(${Math.min(Math.max(categorias.length, 1), 4)},1fr);gap:1rem;text-align:center;`}>
+          {categorias.map(cat => (
             <div>
-              <div style="font-size:1.8rem;">{cat.icon}</div>
-              <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.3rem;">{cat.label}</div>
-              <div style="color:var(--clr-success);font-weight:700;font-size:0.9rem;margin-top:0.2rem;">✓ Votado</div>
+              <div style="font-size:1.8rem;">🗳️</div>
+              <div style="font-size:0.9rem;color:var(--clr-text);font-weight:600;margin-top:0.3rem;">{cat.nombre}</div>
+              <div style="color:var(--clr-success);font-weight:700;font-size:0.85rem;margin-top:0.2rem;">✓ Votado</div>
             </div>
           ))}
         </div>
