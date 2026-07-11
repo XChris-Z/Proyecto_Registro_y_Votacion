@@ -319,3 +319,105 @@ export async function buscarAdmin(
   if (error || !data) return null;
   return data as any;
 }
+
+// ─── HISTORIAL DE JORNADAS (CIERRE DE EVENTO) ─────────────────────────────────
+
+export interface JornadaHistorial {
+  id: number;
+  nombre: string;
+  fecha_cierre: string;
+  total_asistentes: number;
+  total_votos: number;
+  snapshot_json: any;
+  notas?: string;
+}
+
+export async function obtenerJornadasHistorial(): Promise<JornadaHistorial[]> {
+  const { data, error } = await supabase
+    .from('jornadas_historial')
+    .select('*')
+    .order('fecha_cierre', { ascending: false });
+
+  if (error || !data) return [];
+  return data as JornadaHistorial[];
+}
+
+export async function obtenerJornadaHistorialPorId(id: number): Promise<JornadaHistorial | null> {
+  const { data, error } = await supabase
+    .from('jornadas_historial')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as JornadaHistorial;
+}
+
+export async function crearJornadaHistorial(
+  nombre: string,
+  notas?: string
+): Promise<{ success: boolean; error?: string; id?: number }> {
+  try {
+    const asistentes = await obtenerAsistentes();
+    const resultados = await obtenerResultados();
+    const categorias = await obtenerCategorias();
+    const proyectos = await obtenerProyectos();
+
+    const total_votos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
+
+    const snapshot = {
+      fecha: new Date().toISOString(),
+      asistentes: asistentes.length,
+      votos: total_votos,
+      categorias,
+      proyectos,
+      resultados
+    };
+
+    const { data, error } = await supabase
+      .from('jornadas_historial')
+      .insert({
+        nombre,
+        total_asistentes: asistentes.length,
+        total_votos,
+        snapshot_json: snapshot,
+        notas: notas || ''
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, id: data.id };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function actualizarJornadaHistorial(
+  id: number,
+  datos: Partial<Pick<JornadaHistorial, 'nombre' | 'notas'>>
+): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('jornadas_historial')
+    .update(datos)
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+export async function eliminarJornadaHistorial(
+  id: number
+): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('jornadas_historial')
+    .delete()
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+

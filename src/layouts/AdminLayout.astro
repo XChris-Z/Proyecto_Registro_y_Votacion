@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 interface Props {
   title: string;
@@ -14,6 +16,7 @@ const navItems = [
   { href: '/admin/categorias', icon: '🏷️', label: 'Categorías', id: 'categorias' },
   { href: '/admin/asistentes', icon: '👥', label: 'Asistentes', id: 'asistentes' },
   { href: '/admin/resultados', icon: '🏆', label: 'Resultados', id: 'resultados' },
+  { href: '/admin/historial', icon: '📜', label: 'Historial / Cierre', id: 'historial' },
 ];
 ---
 
@@ -26,7 +29,7 @@ const navItems = [
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>{title} — Admin EventoVota</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/logo.png" type="image/png" />
   </head>
   <body class="admin-body">
     <!-- Orbes de fondo animados -->
@@ -39,11 +42,11 @@ const navItems = [
     <div class="admin-layout">
       <aside class="admin-sidebar">
         <div class="admin-sidebar__logo">
-          <a href="/" class="site-logo" style="color:var(--clr-text);">
-            <div class="site-logo__icon">✦</div>
-            <span>EventoVota</span>
+          <a href="/" class="site-logo" style="color:var(--clr-text);display:flex;align-items:center;gap:0.6rem;">
+            <img src="/logo.png" alt="Logo Unitrópico" style="height:2.1rem;width:auto;" />
+            <span style="font-weight:800;font-size:1.2rem;">EventoVota</span>
           </a>
-          <p style="font-size:0.75rem;color:var(--clr-text-muted);margin-top:0.4rem;padding-left:0.25rem;">Panel Admin</p>
+          <p style="font-size:0.75rem;color:var(--clr-text-muted);margin-top:0.4rem;padding-left:0.25rem;">Panel Admin Unitrópico</p>
         </div>
         <nav class="admin-sidebar__nav">
           {navItems.map((item, i) => (
@@ -73,11 +76,17 @@ const navItems = [
       </aside>
 
       <main class="admin-main" id="admin-main-content">
+        <div style="display:flex;justify-content:flex-end;padding:1rem 2rem 0;align-items:center;gap:1rem;">
+          <span style="font-size:0.85rem;color:var(--clr-text-muted);">Tema:</span>
+          <ThemeToggle />
+        </div>
         <div class="admin-page-enter">
           <slot />
         </div>
+        <Footer />
       </main>
     </div>
+
 
     <!-- Overlay de bloqueo mientras redirige (evita flash de contenido si la sesión expiró) -->
     <div id="session-guard-overlay" style="display:none;position:fixed;inset:0;background:var(--clr-bg);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:1rem;">

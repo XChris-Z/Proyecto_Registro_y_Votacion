@@ -81,3 +81,19 @@ ALTER TABLE categorias DISABLE ROW LEVEL SECURITY;
 ALTER TABLE proyectos DISABLE ROW LEVEL SECURITY;
 ALTER TABLE votos DISABLE ROW LEVEL SECURITY;
 ALTER TABLE administradores DISABLE ROW LEVEL SECURITY;
+
+-- ============================================================
+-- TABLA DE HISTORIAL DE JORNADAS (CIERRE DE EVENTO)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS jornadas_historial (
+    id SERIAL PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    fecha_cierre TIMESTAMPTZ DEFAULT NOW(),
+    total_asistentes INTEGER DEFAULT 0,
+    total_votos INTEGER DEFAULT 0,
+    snapshot_json JSONB NOT NULL,
+    notas TEXT
+);
+
+ALTER TABLE jornadas_historial DISABLE ROW LEVEL SECURITY;
+

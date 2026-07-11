@@ -11,44 +11,64 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
 ---
 
 <AdminLayout title="Dashboard" activePage="dashboard">
-  <div style="max-width:1100px;">
-    <div style="margin-bottom:2rem;">
-      <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Dashboard</h1>
-      <p>Resumen general del evento</p>
+  <div style="max-width:1150px;">
+    <div style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h1 style="font-size:2rem;margin-bottom:0.25rem;">Dashboard Unitrópico</h1>
+        <p>Estadísticas y participación en tiempo real del evento</p>
+      </div>
+      <a href="/admin/historial" class="btn btn--outline btn--sm" style="border-color:var(--clr-accent);color:var(--clr-accent);">
+        📜 Archivar Jornada / Historial →
+      </a>
+    </div>
+
+    <!-- Hero Card — Total Participantes Destacado -->
+    <div class="hero-participantes card mb-4 animate-fade-up">
+      <div class="hero-participantes__content">
+        <div class="hero-badge">⚡ EN VIVO — SISTEMA DE REGISTRO</div>
+        <h2 class="hero-title">Número Total de Participantes Registrados</h2>
+        <p class="hero-subtitle">Asistentes acreditados con documento y correo institucional</p>
+      </div>
+      <div class="hero-participantes__counter">
+        <div class="counter-number animated-counter" data-target={asistentes.length}>0</div>
+        <div class="counter-label">Participantes</div>
+      </div>
     </div>
 
     <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.25rem;margin-bottom:2.5rem;">
       {[
         { label: 'Asistentes registrados', value: asistentes.length, icon: '👥' },
         { label: 'Categorías activas', value: categorias.filter(c => c.activa === true).length, icon: '🏷️' },
         { label: 'Proyectos candidatos', value: proyectos.length, icon: '📁' },
         { label: 'Votos emitidos', value: totalVotos, icon: '🗳️' },
       ].map((stat, i) => (
-        <div class={`stat-card stagger-${i + 1}`} style={`animation: fadeInUp 0.5s ease ${0.05 + i * 0.08}s both`}>
+        <div class="stat-card" style={`animation: fadeInUp 0.5s ease ${0.05 + i * 0.08}s both`}>
           <div class="stat-card__icon">{stat.icon}</div>
-          <div class="stat-card__value">{stat.value}</div>
+          <div class="stat-card__value animated-counter" data-target={stat.value}>0</div>
           <div class="stat-card__label">{stat.label}</div>
         </div>
       ))}
     </div>
 
     <!-- Resultados rápidos -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.75rem;">
       <div>
-        <h2 style="font-size:1.1rem;margin-bottom:1rem;font-weight:700;">Resultados por categoría</h2>
+        <h2 style="font-size:1.15rem;margin-bottom:1rem;font-weight:700;">Resultados por Categoría</h2>
         {categorias.filter(c => c.activa).map(cat => {
           const catResultados = resultados.filter(r => r.categoria_id === cat.id).slice(0, 3);
           const maxVotos = Math.max(...catResultados.map(r => r.total_votos), 1);
           return (
-            <div class="card" style="margin-bottom:1rem;">
-              <h3 style="font-size:0.9rem;margin-bottom:1rem;color:var(--clr-text-muted);">{cat.nombre}</h3>
+            <div class="card" style="margin-bottom:1.2rem;">
+              <h3 style="font-size:0.95rem;margin-bottom:1rem;color:var(--clr-text-muted);">{cat.nombre}</h3>
               {catResultados.length === 0 && <p style="font-size:0.8rem;color:var(--clr-text-dim);">Sin votos aún</p>}
               {catResultados.map((r, i) => (
-                <div style="margin-bottom:0.75rem;">
-                  <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.3rem;">
-                    <span style={i === 0 ? 'color:var(--clr-accent);font-weight:600;' : ''}>{r.proyecto_nombre}</span>
-                    <strong>{r.total_votos}</strong>
+                <div style="margin-bottom:0.85rem;">
+                  <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:0.35rem;">
+                    <span style={i === 0 ? 'color:var(--clr-accent);font-weight:700;' : ''}>
+                      {i === 0 ? '🏆 ' : ''}{r.proyecto_nombre}
+                    </span>
+                    <strong style={i === 0 ? 'color:var(--clr-accent);' : ''}>{r.total_votos}</strong>
                   </div>
                   <div class="progress-bar">
                     <div class="progress-bar__fill" style={`width:${(r.total_votos / maxVotos) * 100}%`}></div>
@@ -62,7 +82,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
 
       <!-- Últimos registros -->
       <div>
-        <h2 style="font-size:1.1rem;margin-bottom:1rem;font-weight:700;">Últimos registros</h2>
+        <h2 style="font-size:1.15rem;margin-bottom:1rem;font-weight:700;">Últimos Registros</h2>
         <div class="table-wrapper">
           <table>
             <thead>
@@ -75,7 +95,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
             <tbody>
               {asistentes.slice(0, 8).map(a => (
                 <tr>
-                  <td style="font-weight:500;">{a.nombre}</td>
+                  <td style="font-weight:600;">{a.nombre}</td>
                   <td style="color:var(--clr-text-muted);font-size:0.85rem;">{a.dependencia}</td>
                   <td style="color:var(--clr-text-dim);font-size:0.8rem;">
                     {new Date(a.fecha_registro).toLocaleDateString('es-CO')}
@@ -91,11 +111,101 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
           </table>
         </div>
         {asistentes.length > 8 && (
-          <a href="/admin/asistentes" style="font-size:0.8rem;color:var(--clr-primary-light);display:block;text-align:right;margin-top:0.5rem;">
-            Ver todos ({asistentes.length}) →
+          <a href="/admin/asistentes" style="font-size:0.85rem;color:var(--clr-primary-light);display:block;text-align:right;margin-top:0.75rem;font-weight:600;">
+            Ver todos los {asistentes.length} asistentes →
           </a>
         )}
       </div>
     </div>
   </div>
 </AdminLayout>
+
+<style>
+  .hero-participantes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 89, 78, 0.45) 0%, rgba(181, 161, 96, 0.18) 100%);
+    border: 1px solid var(--clr-border-hover);
+    padding: 2rem 2.5rem;
+    border-radius: var(--radius-lg);
+  }
+  .hero-badge {
+    background: rgba(181, 161, 96, 0.25);
+    color: var(--clr-accent);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  .hero-title {
+    font-size: 1.55rem;
+    color: var(--clr-text);
+    margin-bottom: 0.35rem;
+  }
+  .hero-subtitle {
+    font-size: 0.92rem;
+    color: var(--clr-text-muted);
+  }
+  .hero-participantes__counter {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 1.25rem 2rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--clr-border);
+    min-width: 170px;
+  }
+  .counter-number {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: var(--clr-accent);
+    line-height: 1;
+    text-shadow: 0 0 25px rgba(181, 161, 96, 0.4);
+  }
+  .counter-label {
+    font-size: 0.82rem;
+    color: var(--clr-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.35rem;
+  }
+  .mb-4 { margin-bottom: 1.75rem; }
+</style>
+
+<script>
+  function animateCounters() {
+    const counters = document.querySelectorAll('.animated-counter');
+
+    counters.forEach(counter => {
+      const target = parseInt(counter.getAttribute('data-target') || '0', 10);
+      const duration = 1400; // 1.4 segundos
+      const startTime = performance.now();
+
+      function update(currentTime: number) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(easeOut * target);
+
+        counter.textContent = String(current);
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          counter.textContent = String(target);
+        }
+      }
+
+      requestAnimationFrame(update);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', animateCounters);
+</script>

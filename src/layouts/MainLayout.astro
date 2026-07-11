@@ -1,12 +1,14 @@
 ---
 import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = 'Sistema de Registro y Votación de Eventos' } = Astro.props;
+const { title, description = 'Sistema Institucional de Registro y Votación — Unitrópico' } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,17 +18,18 @@ const { title, description = 'Sistema de Registro y Votación de Eventos' } = As
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title} — EventoVota</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/logo.png" type="image/png" />
   </head>
   <body>
     <header class="site-header">
       <div class="container">
         <div class="site-header__inner">
           <a href="/" class="site-logo">
-            <div class="site-logo__icon">✦</div>
-            <span>EventoVota</span>
+            <img src="/logo.png" alt="Logo Unitrópico" class="site-logo__img" />
+            <span class="site-logo__text">EventoVota</span>
           </a>
           <nav style="display:flex;gap:0.75rem;align-items:center;">
+            <ThemeToggle />
             <a href="/" class="btn btn--outline btn--sm">Registro</a>
             <a href="/votacion" class="btn btn--primary btn--sm">Votar</a>
             <a
@@ -50,10 +53,26 @@ const { title, description = 'Sistema de Registro y Votación de Eventos' } = As
       <slot />
     </main>
 
-    <footer style="text-align:center;padding:2rem 0;color:var(--clr-text-dim);font-size:0.8rem;border-top:1px solid var(--clr-border);margin-top:4rem;">
-      <div class="container">
-        <p>Sistema de Registro y Votación &copy; {new Date().getFullYear()}</p>
-      </div>
-    </footer>
+    <Footer />
+
+    <style>
+      .site-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        text-decoration: none;
+      }
+      .site-logo__img {
+        height: 2.4rem;
+        width: auto;
+        object-fit: contain;
+      }
+      .site-logo__text {
+        font-weight: 800;
+        font-size: 1.35rem;
+        color: var(--clr-text);
+        letter-spacing: -0.02em;
+      }
+    </style>
   </body>
 </html>

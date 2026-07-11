@@ -8,63 +8,90 @@ const asistentes = await obtenerAsistentes();
 
 const resultadosPorCat = categorias.map(cat => {
   const res = resultados.filter(r => r.categoria_id === cat.id);
+  const totalVotosCat = res.reduce((s, r) => s + r.total_votos, 0);
   const maxVotos = Math.max(...res.map(r => r.total_votos), 1);
-  return { ...cat, resultados: res, maxVotos };
+  return { ...cat, resultados: res, maxVotos, totalVotosCat };
 });
 ---
 
-<AdminLayout title="Resultados" activePage="resultados">
-  <div style="max-width:1000px;">
-    <div style="margin-bottom:2rem;">
-      <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Resultados de Votación</h1>
-      <p>Resultados en tiempo real. Total de registrados: <strong style="color:var(--clr-text);">{asistentes.length}</strong></p>
+<AdminLayout title="Resultados en Vivo" activePage="resultados">
+  <div style="max-width:1100px;">
+    <div style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h1 style="font-size:2rem;margin-bottom:0.25rem;">Resultados de Votación en Vivo</h1>
+        <p>Conteo oficial por categoría. Total de registrados: <strong style="color:var(--clr-accent);">{asistentes.length}</strong></p>
+      </div>
+      <div style="display:flex;gap:0.75rem;">
+        <button class="btn btn--outline btn--sm" onclick="window.location.reload()">
+          🔄 Actualizar
+        </button>
+        <a href="/admin/historial" class="btn btn--primary btn--sm" style="background:var(--clr-accent);color:#000;">
+          📜 Archivar y Descargar Excel →
+        </a>
+      </div>
     </div>
 
-    <div style="display:grid;gap:2rem;">
+    <div style="display:grid;gap:2.5rem;">
       {resultadosPorCat.map((cat, i) => (
         <div class="category-section">
-          <div class="category-header">
+          <div class="category-header" style="background:var(--clr-primary-dark);border-bottom:2px solid var(--clr-accent);">
             <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span style="font-size:1.3rem;">{i === 0 ? '💡' : i === 1 ? '🌿' : '🌍'}</span>
-              <h3 style="font-size:1rem;margin:0;">{cat.nombre}</h3>
+              <span style="font-size:1.4rem;">{i === 0 ? '💡' : i === 1 ? '🌿' : '🌍'}</span>
+              <div>
+                <h3 style="font-size:1.15rem;margin:0;color:#fff;">{cat.nombre}</h3>
+                <span style="font-size:0.78rem;color:rgba(255,255,255,0.7);">Categoría oficial Unitrópico</span>
+              </div>
             </div>
             <div style="display:flex;align-items:center;gap:1rem;">
-              <span class="badge badge--purple">
-                {cat.resultados.reduce((s, r) => s + r.total_votos, 0)} votos
+              <span class="badge" style="background:var(--clr-accent);color:#041815;font-weight:800;padding:0.4rem 0.8rem;">
+                {cat.totalVotosCat} votos emitidos
               </span>
             </div>
           </div>
 
-          <div style="padding:1.5rem;">
+          <div style="padding:1.75rem;">
             {cat.resultados.length === 0 && (
-              <p style="color:var(--clr-text-dim);font-size:0.85rem;text-align:center;padding:1rem 0;">
+              <p style="color:var(--clr-text-dim);font-size:0.9rem;text-align:center;padding:1.5rem 0;">
                 Sin votos registrados aún en esta categoría
               </p>
             )}
 
             {cat.resultados.map((r, idx) => {
-              const pct = cat.maxVotos > 0 ? Math.round((r.total_votos / cat.maxVotos) * 100) : 0;
+              const pct = cat.totalVotosCat > 0 ? Math.round((r.total_votos / cat.totalVotosCat) * 100) : 0;
               const isWinner = idx === 0 && r.total_votos > 0;
               return (
-                <div style="margin-bottom:1.25rem;">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;gap:1rem;">
-                    <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:0;">
-                      {isWinner && <span title="Ganando">🥇</span>}
-                      <span style={`font-weight:${isWinner ? 700 : 500};color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`}>
-                        {r.proyecto_nombre}
-                      </span>
+                <div class={isWinner ? 'winner-card' : 'regular-card'} style="margin-bottom:1.4rem;">
+                  {isWinner && (
+                    <div class="winner-header">
+                      <span class="winner-badge">🏆 MÁS VOTADO / GANADOR DE LA CATEGORÍA</span>
                     </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
-                      <span style="font-size:0.8rem;color:var(--clr-text-muted);">{pct}%</span>
-                      <strong style={`font-size:1.1rem;color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};min-width:1.5rem;text-align:right;`}>
-                        {r.total_votos}
-                      </strong>
+                  )}
+
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;gap:1rem;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:240px;">
+                      <div style="display:flex;align-items:center;gap:0.6rem;">
+                        <span style={`font-size:1.1rem;font-weight:${isWinner ? 800 : 600};color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};`}>
+                          {r.proyecto_nombre}
+                        </span>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:1.25rem;flex-shrink:0;">
+                      <span style="font-size:0.9rem;color:var(--clr-text-muted);font-weight:600;">
+                        {pct}% del total
+                      </span>
+                      <div style="background:rgba(0,0,0,0.25);padding:0.35rem 0.8rem;border-radius:var(--radius-sm);border:1px solid var(--clr-border);">
+                        <strong style={`font-size:1.35rem;color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};`}>
+                          {r.total_votos}
+                        </strong>
+                        <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:0.25rem;">votos</span>
+                      </div>
                     </div>
                   </div>
-                  <div class="progress-bar">
+
+                  <div class="progress-bar" style="height:12px;border-radius:999px;background:rgba(255,255,255,0.08);">
                     <div
                       class="progress-bar__fill"
-                      style={`width:${pct}%;${isWinner ? 'background:var(--gradient-accent);' : ''}`}
+                      style={`width:${pct}%;height:100%;border-radius:999px;${isWinner ? 'background:linear-gradient(90deg, #B5A160 0%, #ffe494 100%);box-shadow: 0 0 12px rgba(181, 161, 96, 0.6);' : 'background:var(--clr-primary-light);'}`}
                     ></div>
                   </div>
                 </div>
@@ -74,12 +101,35 @@ const resultadosPorCat = categorias.map(cat => {
         </div>
       ))}
     </div>
-
-    <!-- Botón recargar -->
-    <div style="text-align:center;margin-top:2rem;">
-      <button class="btn btn--outline" onclick="window.location.reload()">
-        🔄 Actualizar resultados
-      </button>
-    </div>
   </div>
 </AdminLayout>
+
+<style>
+  .winner-card {
+    background: linear-gradient(135deg, rgba(181, 161, 96, 0.15) 0%, rgba(0, 89, 78, 0.25) 100%);
+    border: 2px solid var(--clr-accent);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.4rem;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(181, 161, 96, 0.2);
+  }
+  .regular-card {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.3rem;
+  }
+  .winner-header {
+    margin-bottom: 0.65rem;
+  }
+  .winner-badge {
+    background: var(--clr-accent);
+    color: #041815;
+    font-size: 0.72rem;
+    font-weight: 900;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+</style>

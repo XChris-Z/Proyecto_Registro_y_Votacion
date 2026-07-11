@@ -1,0 +1,78 @@
+---
+---
+
+<button
+  id="theme-toggle"
+  class="theme-toggle-btn"
+  type="button"
+  aria-label="Alternar entre modo oscuro y claro"
+  title="Alternar tema"
+>
+  <span id="icon-dark" class="theme-icon">🌙</span>
+  <span id="icon-light" class="theme-icon hidden">☀️</span>
+</button>
+
+<style>
+  .theme-toggle-btn {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    padding: 0.45rem 0.65rem;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+  .theme-toggle-btn:hover {
+    background: var(--clr-surface-hover);
+    border-color: var(--clr-accent);
+    transform: scale(1.05);
+  }
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const isLight = savedTheme === 'light' || (!savedTheme && systemLight);
+
+    applyTheme(isLight ? 'light' : 'dark');
+  }
+
+  function applyTheme(theme: 'light' | 'dark') {
+    const iconDark = document.getElementById('icon-dark');
+    const iconLight = document.getElementById('icon-light');
+
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      iconDark?.classList.add('hidden');
+      iconLight?.classList.remove('hidden');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      iconDark?.classList.remove('hidden');
+      iconLight?.classList.add('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+
+    const btn = document.getElementById('theme-toggle');
+    btn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    });
+  });
+
+  // Ejecutar inmediatamente antes de DOMContentLoaded para evitar destellos (FOUC)
+  initTheme();
+</script>

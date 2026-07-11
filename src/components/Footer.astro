@@ -1,0 +1,203 @@
+---
+---
+
+<footer class="footer-unitropico" aria-label="Pie de página institucional">
+  <div class="footer-container">
+    <div class="custom-footer-grid">
+
+      <!-- Bloque Co branding -->
+      <div class="footer-col">
+        <div class="cobranding-box">
+          <!-- GOV.CO Logo -->
+          <a href="https://www.gov.co" target="_blank" rel="noopener noreferrer"
+             class="cobrand-link"
+             aria-label="Ir al portal único del Estado Colombiano, GOV.CO (abre en una nueva pestaña)">
+            <img src="https://cdn.www.gov.co/assets/images/logo.png" alt="Logo GOV.CO" class="gov-logo" loading="lazy" />
+          </a>
+          <!-- Marca Colombia Logo -->
+          <a href="https://www.colombia.co" target="_blank" rel="noopener noreferrer"
+             class="cobrand-link"
+             aria-label="Ir al portal oficial de Marca País Colombia (abre en una nueva pestaña)">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Marca_pa%C3%ADs_Colombia_logo.svg/500px-Marca_pa%C3%ADs_Colombia_logo.svg.png"
+                 alt="Marca Colombia" class="colombia-logo" loading="lazy" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Bloque 2 Información Institucional -->
+      <div class="footer-col">
+        <p class="footer-inst-title">
+          Institución sujeta a inspección y vigilancia por el Ministerio de Educación Nacional de Colombia.
+        </p>
+        <p class="footer-subtext mt-2">
+          Derechos Reservados - <a href="https://www.unitropico.edu.co/" target="_blank"
+             rel="noopener noreferrer"
+             class="footer-link-underline"
+             aria-label="Portal Principal de Unitrópico (abre en nueva pestaña)">Unitrópico</a> - Copyright ©
+          <span id="year"></span>    
+        </p>
+        <p class="footer-subtext mt-1">
+          Designed by <a href="https://sistemasunitropico.com/" target="_blank" rel="noopener noreferrer"
+             class="footer-link-gold"
+             aria-label="Ir al sitio web del Programa de Ingeniería de Sistemas (abre en nueva pestaña)">Programa de Ingeniería de Sistemas</a>.
+        </p>
+      </div>
+
+      <!-- Bloque 3 enlaces de Interés -->
+      <div class="footer-col">
+        <h2 class="footer-heading" id="footer-links-title">
+          Enlaces de Interés
+        </h2>
+        <nav aria-labelledby="footer-links-title" class="footer-nav">
+          <a href="https://www.unitropico.edu.co/" target="_blank" rel="noopener noreferrer"
+             class="footer-link-underline">
+            Portal Principal de la Universidad
+          </a>
+          <a href="https://unitropico.edu.co/atencion-y-servicio-a-la-ciudadania/pqrs/" target="_blank"
+             rel="noopener noreferrer"
+             class="footer-link-underline">
+            Peticiones, quejas y reclamos
+          </a>
+        </nav>
+      </div>
+
+      <!-- Bloque 4 datos de contacto y PQRS -->
+      <div class="footer-col">
+        <h2 class="footer-heading" id="footer-contact-title">
+          Contacto y Atención
+        </h2>
+        <div aria-labelledby="footer-contact-title" class="footer-contact-info">
+          <p>Carrera 19 No. 39-40, Yopal, Casanare, Colombia.</p>
+          <p>Lunes a Viernes de 8:00 a.m. a 12:00 m. y de 2:00 p.m. a 6:00 p.m.</p>
+          <div style="margin-top:0.4rem;">
+            <a href="https://unitropico.edu.co/conocenos-quienes-somos-y-filosofia-institucional-de-unitropico/contactanos-atencion-al-ciudadano-y-canales-de-contacto-con-unitropico/"
+               target="_blank" rel="noopener noreferrer"
+               class="footer-link-gold">
+              Líneas de contacto
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-unitropico {
+    background-color: #00594E;
+    color: #ffffff;
+    padding: 3.5rem 0 2.5rem;
+    border-top: 2px solid #004A41;
+    margin-top: 4rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .footer-container {
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .custom-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.2rem;
+  }
+  @media (min-width: 768px) {
+    .custom-footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .custom-footer-grid {
+      grid-template-columns: 18fr 32fr 25fr 25fr;
+      gap: 2rem;
+    }
+  }
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .cobranding-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    width: 100%;
+    margin-top: 0.2rem;
+  }
+  .cobrand-link {
+    transition: transform 0.2s ease;
+    display: inline-block;
+  }
+  .cobrand-link:hover {
+    transform: scale(1.06);
+  }
+  .gov-logo {
+    height: 1.5rem;
+    width: auto;
+  }
+  .colombia-logo {
+    height: 2.4rem;
+    width: auto;
+  }
+  .footer-inst-title {
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.5;
+  }
+  .footer-subtext {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .mt-2 { margin-top: 0.5rem; }
+  .mt-1 { margin-top: 0.25rem; }
+
+  .footer-heading {
+    font-weight: 700;
+    font-size: 1.08rem;
+    color: #ffffff;
+    margin-bottom: 0.35rem;
+    border-bottom: 1px solid #004A41;
+    padding-bottom: 0.5rem;
+  }
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .footer-link-underline {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    transition: var(--transition);
+  }
+  .footer-link-underline:hover {
+    color: #B5A160;
+    text-decoration-color: #B5A160;
+  }
+  .footer-link-gold {
+    color: #B5A160;
+    font-weight: 700;
+    text-decoration: underline;
+    transition: var(--transition);
+  }
+  .footer-link-gold:hover {
+    color: #ffffff;
+  }
+  .footer-contact-info p {
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 0.3rem;
+  }
+</style>
+
+<script>
+  const yearEl = document.getElementById('year');
+  if (yearEl) {
+    yearEl.textContent = String(new Date().getFullYear());
+  }
+</script>
