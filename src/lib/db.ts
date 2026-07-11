@@ -426,6 +426,7 @@ export interface JornadaActual {
   nombre: string;
   descripcion: string;
   fecha_inicio: string;
+  estado?: 'ACTIVA' | 'CERRADA';
 }
 
 export async function obtenerJornadaActual(): Promise<JornadaActual> {
@@ -441,21 +442,30 @@ export async function obtenerJornadaActual(): Promise<JornadaActual> {
         id: 1,
         nombre: 'Jornada Institucional de Votación 2026',
         descripcion: 'Elección Oficial de Proyectos y Prototipos — Unitrópico',
-        fecha_inicio: new Date().toISOString()
+        fecha_inicio: new Date().toISOString(),
+        estado: 'ACTIVA'
       };
     }
-    return data as JornadaActual;
+    return {
+      ...data,
+      estado: data.estado || 'ACTIVA'
+    } as JornadaActual;
   } catch {
     return {
       id: 1,
       nombre: 'Jornada Institucional de Votación 2026',
       descripcion: 'Elección Oficial de Proyectos y Prototipos — Unitrópico',
-      fecha_inicio: new Date().toISOString()
+      fecha_inicio: new Date().toISOString(),
+      estado: 'ACTIVA'
     };
   }
 }
 
-export async function guardarJornadaActual(nombre: string, descripcion: string): Promise<{ success: boolean; error?: string }> {
+export async function guardarJornadaActual(
+  nombre: string,
+  descripcion: string,
+  estado: 'ACTIVA' | 'CERRADA' = 'ACTIVA'
+): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
       .from('jornada_actual')
@@ -463,9 +473,31 @@ export async function guardarJornadaActual(nombre: string, descripcion: string):
         id: 1,
         nombre: nombre || 'Jornada Institucional de Votación',
         descripcion: descripcion || '',
-        fecha_inicio: new Date().toISOString()
+        fecha_inicio: new Date().toISOString(),
+        estado
       });
 
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function actualizarEstadoJornadaActual(
+  estado: 'ACTIVA' | 'CERRADA'
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const actual = await obtenerJornadaActual();
+    const { error } = await supabase
+      .from('jornada_actual')
+      .upsert({
+        id: 1,
+        nombre: actual.nombre,
+        descripcion: actual.descripcion,
+        fecha_inicio: actual.fecha_inicio || new Date().toISOString(),
+        estado
+      });
     if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (err: any) {

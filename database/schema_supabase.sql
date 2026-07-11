@@ -104,13 +104,14 @@ CREATE TABLE IF NOT EXISTS jornada_actual (
     id INTEGER PRIMARY KEY DEFAULT 1,
     nombre TEXT NOT NULL,
     descripcion TEXT,
-    fecha_inicio TIMESTAMPTZ DEFAULT NOW()
+    fecha_inicio TIMESTAMPTZ DEFAULT NOW(),
+    estado TEXT DEFAULT 'ACTIVA'
 );
 
 ALTER TABLE jornada_actual DISABLE ROW LEVEL SECURITY;
 
-INSERT INTO jornada_actual (id, nombre, descripcion)
-VALUES (1, 'Jornada Institucional de Votación 2026', 'Elección Oficial de Proyectos y Prototipos — Unitrópico')
+INSERT INTO jornada_actual (id, nombre, descripcion, estado)
+VALUES (1, 'Jornada Institucional de Votación 2026', 'Elección Oficial de Proyectos y Prototipos — Unitrópico', 'ACTIVA')
 ON CONFLICT (id) DO NOTHING;
 
 

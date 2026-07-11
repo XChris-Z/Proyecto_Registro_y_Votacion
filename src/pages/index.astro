@@ -1,7 +1,10 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import { obtenerJornadaActual } from '@lib/db';
 
 const error = Astro.url.searchParams.get('error');
+const jornadaActual = await obtenerJornadaActual();
+const estaCerrada = jornadaActual.estado === 'CERRADA';
 ---
 
 <MainLayout title="Registro de Asistencia">
@@ -11,10 +14,12 @@ const error = Astro.url.searchParams.get('error');
         <span>📋</span> Registro de Asistencia
       </div>
       <h1 class="page-hero__title animate-fade-up" style="animation-delay:0.1s;">
-        ¡Únete al evento!
+        {estaCerrada ? 'Jornada Finalizada' : '¡Únete al evento!'}
       </h1>
       <p class="page-hero__sub animate-fade-up" style="animation-delay:0.2s;">
-        Completa tu registro en menos de un minuto y asegura tu participación.
+        {estaCerrada
+          ? 'El proceso de registro y votación se encuentra cerrado.'
+          : 'Completa tu registro en menos de un minuto y asegura tu participación.'}
       </p>
     </div>
   </section>
@@ -23,6 +28,11 @@ const error = Astro.url.searchParams.get('error');
     <div class="container--narrow">
       <div class="glass animate-fade-up" style="padding:2.5rem;animation-delay:0.3s;">
 
+        {error === 'closed' && (
+          <div class="alert alert--error mb-3">
+            <span>🔒</span> La jornada electoral se encuentra cerrada en este momento.
+          </div>
+        )}
         {error === 'fields' && (
           <div class="alert alert--error mb-3">
             <span>⚠️</span> Todos los campos son obligatorios. Por favor compótalos.
@@ -54,99 +64,117 @@ const error = Astro.url.searchParams.get('error');
           </div>
         )}
 
-        <form id="registro-form" method="POST" action="/api/registro" novalidate>
-          <div style="display:grid;gap:1.25rem;">
-
-            <!-- Nombre -->
-            <div class="form-group">
-              <label class="form-label" for="nombre">Nombre completo</label>
-              <input
-                id="nombre"
-                class="form-input"
-                type="text"
-                name="nombre"
-                placeholder="Ej: María García López"
-                required
-                minlength="3"
-                autocomplete="name"
-              />
-            </div>
-
-            <!-- Documento -->
-            <div class="form-group">
-              <label class="form-label" for="documento">Número de documento</label>
-              <input
-                id="documento"
-                class="form-input"
-                type="text"
-                name="documento"
-                placeholder="Ej: 1234567890"
-                required
-                pattern="[0-9]+"
-                inputmode="numeric"
-              />
-              <span class="form-hint">Solo números, sin puntos ni guiones</span>
-            </div>
-
-            <!-- Dependencia -->
-            <div class="form-group">
-              <label class="form-label" for="dependencia">Dependencia / Institución</label>
-              <input
-                id="dependencia"
-                class="form-input"
-                type="text"
-                name="dependencia"
-                placeholder="Ej: Universidad Nacional, Facultad de Ingeniería..."
-                required
-                minlength="2"
-              />
-            </div>
-
-            <!-- Correo -->
-            <div class="form-group">
-              <label class="form-label" for="correo">Correo electrónico</label>
-              <input
-                id="correo"
-                class="form-input"
-                type="email"
-                name="correo"
-                placeholder="Ej: maria@universidad.edu.co"
-                required
-                autocomplete="email"
-              />
-            </div>
-
-            <!-- Teléfono -->
-            <div class="form-group">
-              <label class="form-label" for="telefono">Número de teléfono</label>
-              <input
-                id="telefono"
-                class="form-input"
-                type="tel"
-                name="telefono"
-                placeholder="Ej: 3001234567"
-                required
-                pattern="[0-9]{7,15}"
-                inputmode="numeric"
-                autocomplete="tel"
-              />
-              <span class="form-hint">Solo números, sin espacios ni guiones (7 a 15 dígitos)</span>
-            </div>
-
-            <!-- Botón -->
-            <div style="margin-top:0.5rem;">
-              <button id="submit-btn" type="submit" class="btn btn--primary btn--lg btn--full">
-                <span id="btn-text">Registrarme ahora</span>
-                <span id="btn-spinner" class="spinner hidden"></span>
-              </button>
-            </div>
-
-            <p class="text-center" style="font-size:0.8rem;color:var(--clr-text-dim);">
-              🔒 Tu información es confidencial y solo se usa para el evento
+        {estaCerrada ? (
+          <div style="text-align:center;padding:1.5rem 0;">
+            <div style="font-size:3.5rem;margin-bottom:1rem;">🔒</div>
+            <span style="background:var(--clr-accent);color:#041815;font-weight:800;font-size:0.78rem;padding:0.4rem 1rem;border-radius:999px;">
+              JORNADA OFICIALMENTE CERRADA
+            </span>
+            <h2 style="font-size:1.8rem;margin-top:1.2rem;color:var(--clr-text);font-weight:800;">
+              {jornadaActual.nombre}
+            </h2>
+            <p style="color:var(--clr-text-muted);font-size:1.02rem;max-width:520px;margin:1rem auto 2rem;line-height:1.6;">
+              El proceso de registro de asistencia y votación para esta jornada ha concluido oficialmente. Agradecemos tu interés y participación.
             </p>
-
+            <div style="border-top:1px solid var(--clr-border);padding-top:1.5rem;color:var(--clr-text-dim);font-size:0.85rem;">
+              Unitrópico — Institución Universitaria del Trópico Colombiano
+            </div>
           </div>
-        </form>
+        ) : (
+          <form id="registro-form" method="POST" action="/api/registro" novalidate>
+            <div style="display:grid;gap:1.25rem;">
+
+              <!-- Nombre -->
+              <div class="form-group">
+                <label class="form-label" for="nombre">Nombre completo</label>
+                <input
+                  id="nombre"
+                  class="form-input"
+                  type="text"
+                  name="nombre"
+                  placeholder="Ej: María García López"
+                  required
+                  minlength="3"
+                  autocomplete="name"
+                />
+              </div>
+
+              <!-- Documento -->
+              <div class="form-group">
+                <label class="form-label" for="documento">Número de documento</label>
+                <input
+                  id="documento"
+                  class="form-input"
+                  type="text"
+                  name="documento"
+                  placeholder="Ej: 1234567890"
+                  required
+                  pattern="[0-9]+"
+                  inputmode="numeric"
+                />
+                <span class="form-hint">Solo números, sin puntos ni guiones</span>
+              </div>
+
+              <!-- Dependencia -->
+              <div class="form-group">
+                <label class="form-label" for="dependencia">Dependencia / Institución</label>
+                <input
+                  id="dependencia"
+                  class="form-input"
+                  type="text"
+                  name="dependencia"
+                  placeholder="Ej: Universidad Nacional, Facultad de Ingeniería..."
+                  required
+                  minlength="2"
+                />
+              </div>
+
+              <!-- Correo -->
+              <div class="form-group">
+                <label class="form-label" for="correo">Correo electrónico</label>
+                <input
+                  id="correo"
+                  class="form-input"
+                  type="email"
+                  name="correo"
+                  placeholder="Ej: maria@universidad.edu.co"
+                  required
+                  autocomplete="email"
+                />
+              </div>
+
+              <!-- Teléfono -->
+              <div class="form-group">
+                <label class="form-label" for="telefono">Número de teléfono</label>
+                <input
+                  id="telefono"
+                  class="form-input"
+                  type="tel"
+                  name="telefono"
+                  placeholder="Ej: 3001234567"
+                  required
+                  pattern="[0-9]{7,15}"
+                  inputmode="numeric"
+                  autocomplete="tel"
+                />
+                <span class="form-hint">Solo números, sin espacios ni guiones (7 a 15 dígitos)</span>
+              </div>
+
+              <!-- Botón -->
+              <div style="margin-top:0.5rem;">
+                <button id="submit-btn" type="submit" class="btn btn--primary btn--lg btn--full">
+                  <span id="btn-text">Registrarme ahora</span>
+                  <span id="btn-spinner" class="spinner hidden"></span>
+                </button>
+              </div>
+
+              <p class="text-center" style="font-size:0.8rem;color:var(--clr-text-dim);">
+                🔒 Tu información es confidencial y solo se usa para el evento
+              </p>
+
+            </div>
+          </form>
+        )}
       </div>
 
       <!-- Steps decorativos -->

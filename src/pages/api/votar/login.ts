@@ -1,7 +1,12 @@
 import type { APIRoute } from 'astro';
-import { buscarAsistente } from '@lib/db';
+import { buscarAsistente, obtenerJornadaActual } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
+  const jornada = await obtenerJornadaActual();
+  if (jornada.estado === 'CERRADA') {
+    return redirect('/votacion?error=closed');
+  }
+
   const formData = await request.formData();
   const identificador = (formData.get('identificador') as string || '').trim();
 
