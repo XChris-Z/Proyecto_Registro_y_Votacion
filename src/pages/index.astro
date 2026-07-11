@@ -23,12 +23,34 @@ const error = Astro.url.searchParams.get('error');
     <div class="container--narrow">
       <div class="glass animate-fade-up" style="padding:2.5rem;animation-delay:0.3s;">
 
-        {error && (
+        {error === 'fields' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span>
-            {error === 'duplicate'
-              ? 'Ya existe un registro con ese documento y correo. ¿Ya te registraste antes?'
-              : 'Ocurrió un error. Por favor intenta de nuevo.'}
+            <span>⚠️</span> Todos los campos son obligatorios. Por favor compótalos.
+          </div>
+        )}
+        {error === 'documento' && (
+          <div class="alert alert--error mb-3">
+            <span>⚠️</span> El número de documento solo debe contener dígitos.
+          </div>
+        )}
+        {error === 'correo' && (
+          <div class="alert alert--error mb-3">
+            <span>⚠️</span> El correo electrónico no tiene un formato válido.
+          </div>
+        )}
+        {error === 'telefono' && (
+          <div class="alert alert--error mb-3">
+            <span>⚠️</span> El número de teléfono debe tener entre 7 y 15 dígitos.
+          </div>
+        )}
+        {error === 'duplicate' && (
+          <div class="alert alert--error mb-3">
+            <span>⚠️</span> Ya existe un registro con ese documento y correo. ¿Ya te registraste antes?
+          </div>
+        )}
+        {error === 'server' && (
+          <div class="alert alert--error mb-3">
+            <span>⚠️</span> Error al guardar. Verifica tu conexión o intenta de nuevo.
           </div>
         )}
 
@@ -96,17 +118,19 @@ const error = Astro.url.searchParams.get('error');
 
             <!-- Teléfono -->
             <div class="form-group">
-              <label class="form-label" for="telefono">Número de teléfono <span style="font-size:0.8rem;color:var(--clr-text-dim);font-weight:400;">(opcional)</span></label>
+              <label class="form-label" for="telefono">Número de teléfono</label>
               <input
                 id="telefono"
                 class="form-input"
                 type="tel"
                 name="telefono"
                 placeholder="Ej: 3001234567"
+                required
+                pattern="[0-9]{7,15}"
                 inputmode="numeric"
                 autocomplete="tel"
               />
-              <span class="form-hint">Solo números, sin espacios ni guiones</span>
+              <span class="form-hint">Solo números, sin espacios ni guiones (7 a 15 dígitos)</span>
             </div>
 
             <!-- Botón -->

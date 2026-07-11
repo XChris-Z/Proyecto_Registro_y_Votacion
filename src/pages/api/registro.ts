@@ -10,8 +10,8 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const correo = (formData.get('correo') as string || '').trim().toLowerCase();
   const telefono = (formData.get('telefono') as string || '').trim();
 
-  // Validaciones básicas
-  if (!nombre || !documento || !dependencia || !correo) {
+  // Validaciones: todos los campos obligatorios
+  if (!nombre || !documento || !dependencia || !correo || !telefono) {
     return redirect('/?error=fields');
   }
 
@@ -23,19 +23,19 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     return redirect('/?error=correo');
   }
 
+  if (!/^\d{7,15}$/.test(telefono)) {
+    return redirect('/?error=telefono');
+  }
+
   const result = await registrarAsistente({ nombre, documento, dependencia, correo, telefono });
 
   if (!result.success) {
     if (result.error?.includes('Ya existe')) {
       return redirect('/?error=duplicate');
     }
-    return redirect('/?error=server');
+    return redirect(`/?error=server&msg=${encodeURIComponent(result.error || 'Error desconocido')}`);
   }
 
-  const params = new URLSearchParams({
-    nombre,
-    dependencia,
-  });
-
+  const params = new URLSearchParams({ nombre, dependencia });
   return redirect(`/registro-exitoso?${params.toString()}`);
 };

@@ -1,9 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl =
+  (import.meta.env.PUBLIC_SUPABASE_URL as string) ||
+  (process.env.PUBLIC_SUPABASE_URL as string);
+
+const supabaseKey =
+  (import.meta.env.SUPABASE_SERVICE_ROLE_KEY as string) ||
+  (process.env.SUPABASE_SERVICE_ROLE_KEY as string);
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Faltan variables de entorno: PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
