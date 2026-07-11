@@ -76,14 +76,16 @@ const navItems = [
       </aside>
 
       <main class="admin-main" id="admin-main-content">
-        <div style="display:flex;justify-content:flex-end;padding:1rem 2rem 0;align-items:center;gap:1rem;">
+        <div style="display:flex;justify-content:flex-end;padding:1rem 2rem 0;align-items:center;gap:1rem;flex-shrink:0;">
           <span style="font-size:0.85rem;color:var(--clr-text-muted);">Tema:</span>
           <ThemeToggle />
         </div>
-        <div class="admin-page-enter">
+        <div class="admin-page-enter" style="flex:1;padding:1.5rem 2rem 3rem;">
           <slot />
         </div>
-        <Footer />
+        <div style="width:100%;margin-top:auto;flex-shrink:0;">
+          <Footer />
+        </div>
       </main>
     </div>
 

@@ -38,7 +38,6 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
     <!-- Stats -->
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.25rem;margin-bottom:2.5rem;">
       {[
-        { label: 'Asistentes registrados', value: asistentes.length, icon: '👥' },
         { label: 'Categorías activas', value: categorias.filter(c => c.activa === true).length, icon: '🏷️' },
         { label: 'Proyectos candidatos', value: proyectos.length, icon: '📁' },
         { label: 'Votos emitidos', value: totalVotos, icon: '🗳️' },

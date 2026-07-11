@@ -1,5 +1,7 @@
 ---
 import "../../styles/global.css";
+import Footer from "../../components/Footer.astro";
+import ThemeToggle from "../../components/ThemeToggle.astro";
 
 const error = Astro.url.searchParams.get("error");
 
@@ -15,10 +17,10 @@ if (session) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin — EventoVota</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Acceso Admin — EventoVota Unitrópico</title>
+    <link rel="icon" href="/logo.png" type="image/png" />
   </head>
-  <body>
+  <body style="display:flex;flex-direction:column;min-height:100vh;">
     <!-- Fondo decorativo -->
     <div
       style="
@@ -30,10 +32,14 @@ if (session) {
     >
     </div>
 
+    <div style="display:flex;justify-content:flex-end;padding:1rem 2rem 0;position:relative;z-index:2;">
+      <ThemeToggle />
+    </div>
+
     <section
       style="
     position:relative;z-index:1;
-    min-height:100vh;
+    flex:1;
     display:flex;align-items:center;justify-content:center;
     padding:2rem;
   "
@@ -240,6 +246,9 @@ if (session) {
         </div>
       </div>
     </section>
+    <div style="width:100%;margin-top:auto;position:relative;z-index:2;">
+      <Footer />
+    </div>
   </body>
 </html>
 

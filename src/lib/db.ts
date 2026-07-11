@@ -415,9 +415,34 @@ export async function eliminarJornadaHistorial(
   const { error } = await supabase
     .from('jornadas_historial')
     .delete()
-    .eq('id', id);
-
   if (error) return { success: false, error: error.message };
   return { success: true };
+}
+
+export async function reiniciarJornada(
+  reiniciarAsistentes: boolean = false
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // 1. Eliminar todos los votos para iniciar nueva jornada limpia
+    const { error: errVotos } = await supabase
+      .from('votos')
+      .delete()
+      .neq('id', 0);
+
+    if (errVotos) return { success: false, error: errVotos.message };
+
+    // 2. Opcionalmente limpiar asistentes si quieren nuevo censo
+    if (reiniciarAsistentes) {
+      const { error: errAsist } = await supabase
+        .from('asistentes')
+        .delete()
+        .neq('id', 0);
+      if (errAsist) return { success: false, error: errAsist.message };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 }
 

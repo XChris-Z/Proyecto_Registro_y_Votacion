@@ -35,38 +35,68 @@ const exito = Astro.url.searchParams.get('exito');
       <div class="alert alert--success mb-4">
         <span>✅</span>
         {exito === 'creado' && 'Jornada archivada y guardada en el historial exitosamente.'}
+        {exito === 'nueva_jornada' && '¡Jornada archivada e iniciada nueva jornada limpia con éxito! Contadores listos para la nueva votación.'}
         {exito === 'editado' && 'Registro histórico modificado correctamente.'}
         {exito === 'eliminado' && 'Registro histórico eliminado del archivo.'}
       </div>
     )}
 
-    <!-- Tarjeta para Cierre de Jornada Actual -->
-    <div class="card mb-4" style="border:1px solid var(--clr-accent);background:linear-gradient(135deg, rgba(0,89,78,0.25) 0%, rgba(181,161,96,0.1) 100%);">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;">
-        <div>
-          <span style="background:var(--clr-accent);color:#041815;font-weight:800;font-size:0.75rem;padding:0.25rem 0.7rem;border-radius:999px;">
-            📸 SNAPSHOT DE JORNADA EN VIVO
-          </span>
-          <h2 style="font-size:1.35rem;margin-top:0.6rem;color:var(--clr-text);">Cerrar y Archivar Jornada Actual</h2>
-          <p style="color:var(--clr-text-muted);font-size:0.9rem;margin-top:0.25rem;">
-            Se congelará una fotografía de los {asistentesActuales.length} participantes y {totalVotosActuales} votos actuales.
-          </p>
+    <!-- Tarjeta para Personalizar Cierre y Opcionalmente Iniciar Nueva Jornada -->
+    <div class="card mb-4" style="border:2px solid var(--clr-accent);background:linear-gradient(135deg, rgba(0,89,78,0.2) 0%, rgba(181,161,96,0.12) 100%);padding:1.75rem;">
+      <div style="margin-bottom:1.25rem;">
+        <span style="background:var(--clr-accent);color:#041815;font-weight:800;font-size:0.78rem;padding:0.3rem 0.8rem;border-radius:999px;">
+          📸 PERSONALIZAR CIERRE E INICIO DE NUEVA JORNADA
+        </span>
+        <h2 style="font-size:1.45rem;margin-top:0.75rem;color:var(--clr-text);">Cierre Oficial de Jornada y Creación de Historial</h2>
+        <p style="color:var(--clr-text-muted);font-size:0.92rem;margin-top:0.3rem;">
+          Actual en vivo: <strong>{asistentesActuales.length} participantes</strong> registrados y <strong>{totalVotosActuales} votos</strong> emitidos. Personaliza el título y notas antes de archivar.
+        </p>
+      </div>
+
+      <form method="POST" action="/api/admin/jornadas" style="display:flex;flex-direction:column;gap:1.1rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="form-label" style="color:var(--clr-text);">Nombre / Título de la Jornada *</label>
+            <input
+              type="text"
+              name="nombre"
+              class="form-input"
+              placeholder="Ej: Feria de Proyectos de Grado 2026-II"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--clr-text);">Acción de Archivo *</label>
+            <select name="accion" class="form-input form-select" id="accion-select">
+              <option value="crear">Solo Archivar (Mantener datos en vivo)</option>
+              <option value="crear_y_reiniciar" selected>Archivar e Iniciar NUEVA JORNADA LIMPIA (Reiniciar votos a 0)</option>
+            </select>
+          </div>
         </div>
-        <form method="POST" action="/api/admin/jornadas" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
-          <input type="hidden" name="accion" value="crear" />
+
+        <div class="form-group">
+          <label class="form-label" style="color:var(--clr-text);">Notas o Descripción del Evento (Opcional)</label>
           <input
             type="text"
-            name="nombre"
+            name="notas"
             class="form-input"
-            placeholder="Ej: Feria de Proyectos 2026-I"
-            required
-            style="min-width:250px;margin:0;"
+            placeholder="Ej: Jornada institucional con participación de los programas de Ingeniería"
           />
-          <button type="submit" class="btn btn--primary" style="background:var(--clr-accent);color:#041815;font-weight:800;white-space:nowrap;">
-            🔒 Archivar Jornada
+        </div>
+
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;">
+          <input type="checkbox" name="reiniciar_asistentes" value="si" id="reiniciar_asistentes" />
+          <label for="reiniciar_asistentes" style="font-size:0.88rem;color:var(--clr-text);cursor:pointer;">
+            Reiniciar también la lista de asistentes registrados (censo electoral desde cero para la nueva jornada)
+          </label>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:0.5rem;">
+          <button type="submit" class="btn btn--primary" style="background:var(--clr-accent);color:#041815;font-weight:800;padding:0.8rem 1.6rem;font-size:0.98rem;">
+            🔒 Archivar Jornada y Aplicar Cambios
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
 
     <!-- Lista del Historial -->
