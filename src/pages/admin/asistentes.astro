@@ -1,8 +1,8 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerAsistentes } from '../../lib/db';
+import { obtenerAsistentes } from '@lib/db';
 
-const asistentes = obtenerAsistentes();
+const asistentes = await obtenerAsistentes();
 const q = Astro.url.searchParams.get('q') || '';
 const filtrados = q
   ? asistentes.filter(a =>

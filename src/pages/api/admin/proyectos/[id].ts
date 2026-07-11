@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { actualizarProyecto, eliminarProyecto } from '../../../../lib/db';
+import { actualizarProyecto, eliminarProyecto } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, params, redirect, url, cookies }) => {
   if (!cookies.get('admin_session')?.value) return redirect('/admin');
@@ -9,7 +9,7 @@ export const POST: APIRoute = async ({ request, params, redirect, url, cookies }
   const formData = await request.formData();
 
   if (method === 'DELETE') {
-    eliminarProyecto(id);
+    await eliminarProyecto(id);
     return redirect('/admin/proyectos?msg=deleted');
   }
 
@@ -21,6 +21,6 @@ export const POST: APIRoute = async ({ request, params, redirect, url, cookies }
 
   if (!nombre || !categoria_id) return redirect('/admin/proyectos?msg=error');
 
-  actualizarProyecto(id, { nombre, descripcion, autores, categoria_id });
+  await actualizarProyecto(id, { nombre, descripcion, autores, categoria_id });
   return redirect('/admin/proyectos?msg=updated');
 };

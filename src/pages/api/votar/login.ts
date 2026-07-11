@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { buscarAsistente } from '../../../lib/db';
+import { buscarAsistente } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   const formData = await request.formData();
@@ -9,7 +9,7 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     return redirect('/votacion?error=empty');
   }
 
-  const asistente = buscarAsistente(identificador);
+  const asistente = await buscarAsistente(identificador);
 
   if (!asistente) {
     return redirect('/votacion?error=notfound');

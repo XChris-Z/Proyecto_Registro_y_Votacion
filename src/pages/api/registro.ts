@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { registrarAsistente } from '../../lib/db';
+import { registrarAsistente } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, redirect }) => {
   const formData = await request.formData();
@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     return redirect('/?error=correo');
   }
 
-  const result = registrarAsistente({ nombre, documento, dependencia, correo });
+  const result = await registrarAsistente({ nombre, documento, dependencia, correo });
 
   if (!result.success) {
     if (result.error?.includes('Ya existe')) {

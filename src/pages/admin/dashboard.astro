@@ -1,11 +1,11 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerAsistentes, obtenerCategorias, obtenerProyectos, obtenerResultados } from '../../lib/db';
+import { obtenerAsistentes, obtenerCategorias, obtenerProyectos, obtenerResultados } from '@lib/db';
 
-const asistentes = obtenerAsistentes();
-const categorias = obtenerCategorias();
-const proyectos = obtenerProyectos();
-const resultados = obtenerResultados();
+const asistentes = await obtenerAsistentes();
+const categorias = await obtenerCategorias();
+const proyectos = await obtenerProyectos();
+const resultados = await obtenerResultados();
 
 const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
 ---
@@ -21,7 +21,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
       {[
         { label: 'Asistentes registrados', value: asistentes.length, icon: '👥' },
-        { label: 'Categorías activas', value: categorias.filter(c => c.activa).length, icon: '🏷️' },
+        { label: 'Categorías activas', value: categorias.filter(c => c.activa === true).length, icon: '🏷️' },
         { label: 'Proyectos candidatos', value: proyectos.length, icon: '📁' },
         { label: 'Votos emitidos', value: totalVotos, icon: '🗳️' },
       ].map((stat, i) => (

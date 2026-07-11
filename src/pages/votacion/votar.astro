@@ -1,6 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-import { obtenerCategorias, obtenerProyectos, obtenerVotosDeAsistente } from '../../lib/db';
+import { obtenerCategorias, obtenerProyectos, obtenerVotosDeAsistente } from '@lib/db';
 
 // Verificar sesión
 const asistente_id = Number(Astro.cookies.get('votacion_session')?.value || 0);
@@ -10,9 +10,9 @@ if (!asistente_id) {
   return Astro.redirect('/votacion');
 }
 
-const categorias = obtenerCategorias().filter(c => c.activa);
-const proyectos = obtenerProyectos();
-const votosEmitidos = obtenerVotosDeAsistente(asistente_id);
+const categorias = (await obtenerCategorias()).filter(c => c.activa === true);
+const proyectos = await obtenerProyectos();
+const votosEmitidos = await obtenerVotosDeAsistente(asistente_id);
 const categoriasVotadas = votosEmitidos.map(v => v.categoria_id);
 const votosCompletos = categoriasVotadas.length === categorias.length;
 

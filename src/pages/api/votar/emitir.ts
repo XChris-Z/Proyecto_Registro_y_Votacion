@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { emitirVoto, obtenerVotosDeAsistente } from '../../../lib/db';
+import { emitirVoto, obtenerVotosDeAsistente } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   const asistente_id = Number(cookies.get('votacion_session')?.value);
@@ -23,7 +23,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   // Verificar que no haya votado ya en esta categoría
-  const votosExistentes = obtenerVotosDeAsistente(asistente_id);
+  const votosExistentes = await obtenerVotosDeAsistente(asistente_id);
   const yaVoto = votosExistentes.some(v => v.categoria_id === categoria_id);
 
   if (yaVoto) {
@@ -33,7 +33,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 
-  const result = emitirVoto({ asistente_id, proyecto_id, categoria_id });
+  const result = await emitirVoto({ asistente_id, proyecto_id, categoria_id });
 
   if (!result.success) {
     return new Response(JSON.stringify({ error: result.error }), {
@@ -43,7 +43,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   // Obtener votos actualizados para devolver el estado
-  const votosActualizados = obtenerVotosDeAsistente(asistente_id);
+  const votosActualizados = await obtenerVotosDeAsistente(asistente_id);
   const categoriasVotadas = votosActualizados.map(v => v.categoria_id);
 
   return new Response(

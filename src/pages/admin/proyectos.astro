@@ -1,9 +1,9 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerCategorias, obtenerProyectos } from '../../lib/db';
+import { obtenerCategorias, obtenerProyectos } from '@lib/db';
 
-const categorias = obtenerCategorias();
-const proyectos = obtenerProyectos();
+const categorias = await obtenerCategorias();
+const proyectos = await obtenerProyectos();
 const msg = Astro.url.searchParams.get('msg');
 ---
 
@@ -23,7 +23,7 @@ const msg = Astro.url.searchParams.get('msg');
     {msg === 'updated' && <div class="alert alert--success mb-3"><span>✅</span> Proyecto actualizado</div>}
     {msg === 'deleted' && <div class="alert alert--success mb-3"><span>✅</span> Proyecto eliminado</div>}
 
-    {categorias.filter(c => c.activa).map(cat => {
+    {categorias.filter(c => c.activa === true).map(cat => {
       const catProyectos = proyectos.filter(p => p.categoria_id === cat.id);
       return (
         <div class="category-section" style="margin-bottom:1.5rem;">
@@ -108,7 +108,7 @@ const msg = Astro.url.searchParams.get('msg');
           <div class="form-group">
             <label class="form-label" for="campo-categoria">Categoría *</label>
             <select id="campo-categoria" class="form-input form-select" name="categoria_id" required>
-              {categorias.filter(c => c.activa).map(cat => (
+              {categorias.filter(c => c.activa === true).map(cat => (
                 <option value={cat.id}>{cat.nombre}</option>
               ))}
             </select>

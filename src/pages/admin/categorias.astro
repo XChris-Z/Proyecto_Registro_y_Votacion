@@ -1,8 +1,8 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerCategorias } from '../../lib/db';
+import { obtenerCategorias } from '@lib/db';
 
-const categorias = obtenerCategorias();
+const categorias = await obtenerCategorias();
 const msg = Astro.url.searchParams.get('msg');
 ---
 

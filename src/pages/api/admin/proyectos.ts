@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { crearProyecto } from '../../../../lib/db';
+import { crearProyecto } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   if (!cookies.get('admin_session')?.value) return redirect('/admin');
@@ -13,6 +13,6 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
 
   if (!nombre || !categoria_id) return redirect('/admin/proyectos?msg=error');
 
-  crearProyecto({ nombre, descripcion, autores, categoria_id });
+  await crearProyecto({ nombre, descripcion, autores, categoria_id });
   return redirect('/admin/proyectos?msg=created');
 };

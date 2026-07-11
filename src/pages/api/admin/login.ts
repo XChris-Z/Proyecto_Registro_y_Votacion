@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { buscarAdmin } from '../../../lib/db';
+import { buscarAdmin } from '@lib/db';
 import bcrypt from 'bcryptjs';
 
 function verifyPassword(plain: string, hash: string): boolean {
@@ -15,7 +15,7 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     return redirect('/admin?error=credentials');
   }
 
-  const admin = buscarAdmin(usuario);
+  const admin = await buscarAdmin(usuario);
 
   if (!admin || !verifyPassword(password, admin.password_hash)) {
     return redirect('/admin?error=credentials');

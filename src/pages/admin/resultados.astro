@@ -1,10 +1,10 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerCategorias, obtenerResultados, obtenerAsistentes } from '../../lib/db';
+import { obtenerCategorias, obtenerResultados, obtenerAsistentes } from '@lib/db';
 
-const categorias = obtenerCategorias().filter(c => c.activa);
-const resultados = obtenerResultados();
-const asistentes = obtenerAsistentes();
+const categorias = (await obtenerCategorias()).filter(c => c.activa === true);
+const resultados = await obtenerResultados();
+const asistentes = await obtenerAsistentes();
 
 const resultadosPorCat = categorias.map(cat => {
   const res = resultados.filter(r => r.categoria_id === cat.id);

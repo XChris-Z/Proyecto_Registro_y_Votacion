@@ -22,3 +22,11 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# SQLite database files (migrado a Supabase)
+database/*.db
+database/*.db-shm
+database/*.db-wal
+
+# Vercel build output
+.vercel/

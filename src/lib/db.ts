@@ -1,25 +1,9 @@
-import Database from 'better-sqlite3';
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const DB_PATH = join(__dirname, '../../database/registro_votacion.db');
-const SCHEMA_PATH = join(__dirname, '../../database/schema.sql');
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
-let db: Database.Database;
-
-export function getDb(): Database.Database {
-  if (!db) {
-    db = new Database(DB_PATH);
-    db.pragma('journal_mode = WAL');
-    db.pragma('foreign_keys = ON');
-    // Inicializar schema si no existe
-    const schema = readFileSync(SCHEMA_PATH, 'utf-8');
-    db.exec(schema);
-  }
-  return db;
-}
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
@@ -36,7 +20,7 @@ export interface Categoria {
   id: number;
   nombre: string;
   descripcion: string | null;
-  activa: number;
+  activa: boolean;
   orden: number;
 }
 
@@ -46,7 +30,7 @@ export interface Proyecto {
   descripcion: string | null;
   autores: string | null;
   categoria_id: number;
-  activo: number;
+  activo: boolean;
   fecha_creacion: string;
   categoria_nombre?: string;
 }
@@ -69,179 +53,238 @@ export interface ResultadoVoto {
 
 // ─── ASISTENTES ───────────────────────────────────────────────────────────────
 
-export function registrarAsistente(data: {
+export async function registrarAsistente(data: {
   nombre: string;
   documento: string;
   dependencia: string;
   correo: string;
-}): { success: boolean; id?: number; error?: string } {
-  const db = getDb();
-  try {
-    const stmt = db.prepare(
-      `INSERT INTO asistentes (nombre, documento, dependencia, correo) VALUES (?, ?, ?, ?)`
-    );
-    const result = stmt.run(data.nombre, data.documento, data.dependencia, data.correo);
-    return { success: true, id: result.lastInsertRowid as number };
-  } catch (err: any) {
-    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+}): Promise<{ success: boolean; id?: number; error?: string }> {
+  const { data: result, error } = await supabase
+    .from('asistentes')
+    .insert([{ nombre: data.nombre, documento: data.documento, dependencia: data.dependencia, correo: data.correo }])
+    .select('id')
+    .single();
+
+  if (error) {
+    if (error.code === '23505') {
       return { success: false, error: 'Ya existe un registro con ese documento y correo.' };
     }
     return { success: false, error: 'Error al registrar. Intenta de nuevo.' };
   }
+
+  return { success: true, id: result.id };
 }
 
-export function buscarAsistente(identificador: string): Asistente | null {
-  const db = getDb();
-  const stmt = db.prepare(
-    `SELECT * FROM asistentes WHERE documento = ? OR correo = ? LIMIT 1`
-  );
-  return (stmt.get(identificador, identificador) as Asistente) || null;
+export async function buscarAsistente(identificador: string): Promise<Asistente | null> {
+  const { data, error } = await supabase
+    .from('asistentes')
+    .select('*')
+    .or(`documento.eq.${identificador},correo.eq.${identificador}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as Asistente;
 }
 
-export function obtenerAsistentes(): Asistente[] {
-  const db = getDb();
-  return db.prepare(`SELECT * FROM asistentes ORDER BY fecha_registro DESC`).all() as Asistente[];
+export async function obtenerAsistentes(): Promise<Asistente[]> {
+  const { data, error } = await supabase
+    .from('asistentes')
+    .select('*')
+    .order('fecha_registro', { ascending: false });
+
+  if (error) return [];
+  return (data as Asistente[]) || [];
 }
 
 // ─── CATEGORÍAS ───────────────────────────────────────────────────────────────
 
-export function obtenerCategorias(): Categoria[] {
-  const db = getDb();
-  return db.prepare(`SELECT * FROM categorias ORDER BY orden, id`).all() as Categoria[];
+export async function obtenerCategorias(): Promise<Categoria[]> {
+  const { data, error } = await supabase
+    .from('categorias')
+    .select('*')
+    .order('orden', { ascending: true })
+    .order('id', { ascending: true });
+
+  if (error) return [];
+  return (data as Categoria[]) || [];
 }
 
-export function crearCategoria(data: { nombre: string; descripcion?: string; orden?: number }): number {
-  const db = getDb();
-  const result = db
-    .prepare(`INSERT INTO categorias (nombre, descripcion, orden) VALUES (?, ?, ?)`)
-    .run(data.nombre, data.descripcion || null, data.orden || 0);
-  return result.lastInsertRowid as number;
+export async function crearCategoria(data: {
+  nombre: string;
+  descripcion?: string;
+  orden?: number;
+}): Promise<number> {
+  const { data: result, error } = await supabase
+    .from('categorias')
+    .insert([{ nombre: data.nombre, descripcion: data.descripcion || null, orden: data.orden || 0 }])
+    .select('id')
+    .single();
+
+  if (error) throw new Error(error.message);
+  return result.id;
 }
 
-export function actualizarCategoria(
+export async function actualizarCategoria(
   id: number,
-  data: { nombre: string; descripcion?: string; orden?: number; activa?: number }
-): void {
-  const db = getDb();
-  db.prepare(
-    `UPDATE categorias SET nombre=?, descripcion=?, orden=?, activa=? WHERE id=?`
-  ).run(data.nombre, data.descripcion || null, data.orden || 0, data.activa ?? 1, id);
+  data: { nombre: string; descripcion?: string; orden?: number; activa?: boolean | number }
+): Promise<void> {
+  const activa = data.activa === undefined ? true : Boolean(data.activa);
+  await supabase
+    .from('categorias')
+    .update({ nombre: data.nombre, descripcion: data.descripcion || null, orden: data.orden || 0, activa })
+    .eq('id', id);
 }
 
-export function eliminarCategoria(id: number): void {
-  const db = getDb();
-  db.prepare(`DELETE FROM categorias WHERE id=?`).run(id);
+export async function eliminarCategoria(id: number): Promise<void> {
+  await supabase.from('categorias').delete().eq('id', id);
 }
 
 // ─── PROYECTOS ────────────────────────────────────────────────────────────────
 
-export function obtenerProyectos(): Proyecto[] {
-  const db = getDb();
-  return db
-    .prepare(
-      `SELECT p.*, c.nombre as categoria_nombre
-       FROM proyectos p
-       JOIN categorias c ON c.id = p.categoria_id
-       WHERE p.activo = 1
-       ORDER BY c.orden, p.nombre`
-    )
-    .all() as Proyecto[];
+export async function obtenerProyectos(): Promise<Proyecto[]> {
+  const { data, error } = await supabase
+    .from('proyectos')
+    .select(`
+      *,
+      categorias!inner(nombre, orden)
+    `)
+    .eq('activo', true)
+    .order('nombre', { ascending: true });
+
+  if (error) return [];
+
+  return (data || []).map((p: any) => ({
+    ...p,
+    categoria_nombre: p.categorias?.nombre,
+  })) as Proyecto[];
 }
 
-export function obtenerProyectoPorId(id: number): Proyecto | null {
-  const db = getDb();
-  return (
-    (db
-      .prepare(
-        `SELECT p.*, c.nombre as categoria_nombre
-         FROM proyectos p
-         JOIN categorias c ON c.id = p.categoria_id
-         WHERE p.id = ?`
-      )
-      .get(id) as Proyecto) || null
-  );
+export async function obtenerProyectoPorId(id: number): Promise<Proyecto | null> {
+  const { data, error } = await supabase
+    .from('proyectos')
+    .select(`*, categorias!inner(nombre)`)
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return { ...data, categoria_nombre: data.categorias?.nombre } as Proyecto;
 }
 
-export function crearProyecto(data: {
+export async function crearProyecto(data: {
   nombre: string;
   descripcion?: string;
   autores?: string;
   categoria_id: number;
-}): number {
-  const db = getDb();
-  const result = db
-    .prepare(
-      `INSERT INTO proyectos (nombre, descripcion, autores, categoria_id) VALUES (?, ?, ?, ?)`
-    )
-    .run(data.nombre, data.descripcion || null, data.autores || null, data.categoria_id);
-  return result.lastInsertRowid as number;
+}): Promise<number> {
+  const { data: result, error } = await supabase
+    .from('proyectos')
+    .insert([{
+      nombre: data.nombre,
+      descripcion: data.descripcion || null,
+      autores: data.autores || null,
+      categoria_id: data.categoria_id,
+    }])
+    .select('id')
+    .single();
+
+  if (error) throw new Error(error.message);
+  return result.id;
 }
 
-export function actualizarProyecto(
+export async function actualizarProyecto(
   id: number,
   data: { nombre: string; descripcion?: string; autores?: string; categoria_id: number }
-): void {
-  const db = getDb();
-  db.prepare(
-    `UPDATE proyectos SET nombre=?, descripcion=?, autores=?, categoria_id=? WHERE id=?`
-  ).run(data.nombre, data.descripcion || null, data.autores || null, data.categoria_id, id);
+): Promise<void> {
+  await supabase
+    .from('proyectos')
+    .update({
+      nombre: data.nombre,
+      descripcion: data.descripcion || null,
+      autores: data.autores || null,
+      categoria_id: data.categoria_id,
+    })
+    .eq('id', id);
 }
 
-export function eliminarProyecto(id: number): void {
-  const db = getDb();
-  db.prepare(`UPDATE proyectos SET activo=0 WHERE id=?`).run(id);
+export async function eliminarProyecto(id: number): Promise<void> {
+  await supabase.from('proyectos').update({ activo: false }).eq('id', id);
 }
 
 // ─── VOTOS ────────────────────────────────────────────────────────────────────
 
-export function obtenerVotosDeAsistente(asistente_id: number): Voto[] {
-  const db = getDb();
-  return db
-    .prepare(`SELECT * FROM votos WHERE asistente_id = ?`)
-    .all(asistente_id) as Voto[];
+export async function obtenerVotosDeAsistente(asistente_id: number): Promise<Voto[]> {
+  const { data, error } = await supabase
+    .from('votos')
+    .select('*')
+    .eq('asistente_id', asistente_id);
+
+  if (error) return [];
+  return (data as Voto[]) || [];
 }
 
-export function emitirVoto(data: {
+export async function emitirVoto(data: {
   asistente_id: number;
   proyecto_id: number;
   categoria_id: number;
-}): { success: boolean; error?: string } {
-  const db = getDb();
-  try {
-    db.prepare(
-      `INSERT INTO votos (asistente_id, proyecto_id, categoria_id) VALUES (?, ?, ?)`
-    ).run(data.asistente_id, data.proyecto_id, data.categoria_id);
-    return { success: true };
-  } catch (err: any) {
-    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+}): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('votos')
+    .insert([{ asistente_id: data.asistente_id, proyecto_id: data.proyecto_id, categoria_id: data.categoria_id }]);
+
+  if (error) {
+    if (error.code === '23505') {
       return { success: false, error: 'Ya votaste en esta categoría.' };
     }
     return { success: false, error: 'Error al emitir voto.' };
   }
+
+  return { success: true };
 }
 
-export function obtenerResultados(): ResultadoVoto[] {
-  const db = getDb();
-  return db
-    .prepare(
-      `SELECT p.id as proyecto_id, p.nombre as proyecto_nombre,
-              c.id as categoria_id, c.nombre as categoria_nombre,
-              COUNT(v.id) as total_votos
-       FROM proyectos p
-       JOIN categorias c ON c.id = p.categoria_id
-       LEFT JOIN votos v ON v.proyecto_id = p.id
-       WHERE p.activo = 1
-       GROUP BY p.id
-       ORDER BY c.orden, total_votos DESC`
-    )
-    .all() as ResultadoVoto[];
+export async function obtenerResultados(): Promise<ResultadoVoto[]> {
+  const { data, error } = await supabase
+    .from('proyectos')
+    .select(`
+      id,
+      nombre,
+      categorias!inner(id, nombre, orden),
+      votos(id)
+    `)
+    .eq('activo', true)
+    .order('nombre', { ascending: true });
+
+  if (error) return [];
+
+  const resultados: ResultadoVoto[] = (data || []).map((p: any) => ({
+    proyecto_id: p.id,
+    proyecto_nombre: p.nombre,
+    categoria_id: p.categorias.id,
+    categoria_nombre: p.categorias.nombre,
+    total_votos: Array.isArray(p.votos) ? p.votos.length : 0,
+  }));
+
+  // Ordenar por categoría (orden) y luego por votos descendente
+  return resultados.sort((a, b) => {
+    const catA = (data as any[]).find(p => p.id === a.proyecto_id)?.categorias?.orden ?? 0;
+    const catB = (data as any[]).find(p => p.id === b.proyecto_id)?.categorias?.orden ?? 0;
+    if (catA !== catB) return catA - catB;
+    return b.total_votos - a.total_votos;
+  });
 }
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
 
-export function buscarAdmin(usuario: string): { id: number; usuario: string; password_hash: string; nombre: string } | null {
-  const db = getDb();
-  return db
-    .prepare(`SELECT * FROM administradores WHERE usuario = ? AND activo = 1`)
-    .get(usuario) as any || null;
+export async function buscarAdmin(
+  usuario: string
+): Promise<{ id: number; usuario: string; password_hash: string; nombre: string } | null> {
+  const { data, error } = await supabase
+    .from('administradores')
+    .select('*')
+    .eq('usuario', usuario)
+    .eq('activo', true)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as any;
 }
