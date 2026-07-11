@@ -208,11 +208,11 @@ const exito = Astro.url.searchParams.get('exito');
         <input type="hidden" name="accion" value="modificar_actual" />
         <div class="form-group">
           <label class="form-label" style="color:var(--clr-text);">Nombre / Título *</label>
-          <input type="text" name="nombre" class="form-input" defaultValue={jornadaActual.nombre} required />
+          <input type="text" name="nombre" class="form-input" value={jornadaActual.nombre} required />
         </div>
         <div class="form-group">
           <label class="form-label" style="color:var(--clr-text);">Descripción o Notas (Opcional)</label>
-          <input type="text" name="notas" class="form-input" defaultValue={jornadaActual.descripcion} />
+          <input type="text" name="notas" class="form-input" value={jornadaActual.descripcion} />
         </div>
         <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:0.75rem;">
           <button type="button" class="btn btn--outline btn-cerrar-modal">Cancelar</button>
