@@ -8,6 +8,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const documento = (formData.get('documento') as string || '').trim();
   const dependencia = (formData.get('dependencia') as string || '').trim();
   const correo = (formData.get('correo') as string || '').trim().toLowerCase();
+  const telefono = (formData.get('telefono') as string || '').trim();
 
   // Validaciones básicas
   if (!nombre || !documento || !dependencia || !correo) {
@@ -22,7 +23,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     return redirect('/?error=correo');
   }
 
-  const result = await registrarAsistente({ nombre, documento, dependencia, correo });
+  const result = await registrarAsistente({ nombre, documento, dependencia, correo, telefono });
 
   if (!result.success) {
     if (result.error?.includes('Ya existe')) {

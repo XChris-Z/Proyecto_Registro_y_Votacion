@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS asistentes (
     documento TEXT NOT NULL,
     dependencia TEXT NOT NULL,
     correo TEXT NOT NULL,
+    telefono TEXT,
     fecha_registro TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(documento, correo)
 );
@@ -68,7 +69,7 @@ ON CONFLICT DO NOTHING;
 -- Administrador por defecto: usuario=admin, password=admin123
 -- IMPORTANTE: Cambia esta contraseña en producción desde el panel admin
 INSERT INTO administradores (usuario, password_hash, nombre) VALUES
-    ('admin', '$2b$10$ewyvVKYYGuMDRE9inARWW.qmW58uhRifsspMQ0O0OjhdbQbdSs1M.', 'Administrador')
+    ('admin', '$2b$10$ThuV.Kq6mBzV2.wc7HuX3.J3fMtNJtwcZA3G5.vVtvbCa/yP1hISy', 'Administrador')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================

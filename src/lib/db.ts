@@ -13,6 +13,7 @@ export interface Asistente {
   documento: string;
   dependencia: string;
   correo: string;
+  telefono: string | null;
   fecha_registro: string;
 }
 
@@ -58,10 +59,11 @@ export async function registrarAsistente(data: {
   documento: string;
   dependencia: string;
   correo: string;
+  telefono?: string;
 }): Promise<{ success: boolean; id?: number; error?: string }> {
   const { data: result, error } = await supabase
     .from('asistentes')
-    .insert([{ nombre: data.nombre, documento: data.documento, dependencia: data.dependencia, correo: data.correo }])
+    .insert([{ nombre: data.nombre, documento: data.documento, dependencia: data.dependencia, correo: data.correo, telefono: data.telefono || null }])
     .select('id')
     .single();
 

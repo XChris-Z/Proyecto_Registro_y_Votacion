@@ -94,6 +94,21 @@ const error = Astro.url.searchParams.get('error');
               />
             </div>
 
+            <!-- Teléfono -->
+            <div class="form-group">
+              <label class="form-label" for="telefono">Número de teléfono <span style="font-size:0.8rem;color:var(--clr-text-dim);font-weight:400;">(opcional)</span></label>
+              <input
+                id="telefono"
+                class="form-input"
+                type="tel"
+                name="telefono"
+                placeholder="Ej: 3001234567"
+                inputmode="numeric"
+                autocomplete="tel"
+              />
+              <span class="form-hint">Solo números, sin espacios ni guiones</span>
+            </div>
+
             <!-- Botón -->
             <div style="margin-top:0.5rem;">
               <button id="submit-btn" type="submit" class="btn btn--primary btn--lg btn--full">
@@ -113,7 +128,7 @@ const error = Astro.url.searchParams.get('error');
       <!-- Steps decorativos -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;">
         {[
-          { icon: '✍️', title: 'Completa', desc: '4 campos simples' },
+          { icon: '✍️', title: 'Completa', desc: '5 campos simples' },
           { icon: '✅', title: 'Confirma', desc: 'Un solo clic' },
           { icon: '🗳️', title: 'Vota', desc: 'En los proyectos' },
         ].map(step => (

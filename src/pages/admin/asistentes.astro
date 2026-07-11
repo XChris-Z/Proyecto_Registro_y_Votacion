@@ -53,6 +53,7 @@ const filtrados = q
             <th>Nombre</th>
             <th>Documento</th>
             <th>Dependencia</th>
+            <th>Teléfono</th>
             <th>Correo</th>
             <th>Registro</th>
           </tr>
@@ -64,6 +65,7 @@ const filtrados = q
               <td style="font-weight:600;">{a.nombre}</td>
               <td style="font-family:monospace;font-size:0.85rem;">{a.documento}</td>
               <td style="font-size:0.85rem;color:var(--clr-text-muted);">{a.dependencia}</td>
+              <td style="font-size:0.85rem;color:var(--clr-text-muted);">{a.telefono || <span style="color:var(--clr-text-dim);">—</span>}</td>
               <td style="font-size:0.82rem;color:var(--clr-text-muted);">{a.correo}</td>
               <td style="font-size:0.8rem;color:var(--clr-text-dim);">
                 {new Date(a.fecha_registro).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' })}
@@ -72,7 +74,7 @@ const filtrados = q
           ))}
           {filtrados.length === 0 && (
             <tr>
-              <td colspan={6} style="text-align:center;color:var(--clr-text-dim);padding:2rem;">
+              <td colspan={7} style="text-align:center;color:var(--clr-text-dim);padding:2rem;">
                 {q ? 'Sin resultados para esa búsqueda' : 'Sin asistentes registrados aún'}
               </td>
             </tr>
