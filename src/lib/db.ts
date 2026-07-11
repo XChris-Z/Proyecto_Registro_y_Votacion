@@ -1,18 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
-function cleanEnvVar(val?: string): string {
+export function cleanEnvVar(val?: string): string {
   if (!val) return '';
   return val.trim().replace(/^["']|["']$/g, '');
 }
 
-function cleanSupabaseUrl(url?: string): string {
+export function cleanSupabaseUrl(url?: string): string {
   let cleaned = cleanEnvVar(url);
-  // Eliminar barras finales o rutas como /rest/v1 si se pegaron por error
+  // Eliminar /rest/v1 o /auth/v1 con o sin barra final
+  cleaned = cleaned.replace(/\/rest\/v1\/?.*$/i, '');
+  cleaned = cleaned.replace(/\/auth\/v1\/?.*$/i, '');
   cleaned = cleaned.replace(/\/+$/, '');
-  cleaned = cleaned.replace(/\/rest\/v1.*$/i, '');
-  cleaned = cleaned.replace(/\/auth\/v1.*$/i, '');
   return cleaned;
 }
+
 
 const rawUrl =
   (import.meta.env.PUBLIC_SUPABASE_URL as string) ||
