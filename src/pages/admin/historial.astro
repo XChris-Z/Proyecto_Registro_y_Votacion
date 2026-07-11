@@ -35,12 +35,20 @@ const exito = Astro.url.searchParams.get("exito");
           votaciones de manera independiente
         </p>
       </div>
-      <div>
+      <div style="display:flex;gap:0.85rem;flex-wrap:wrap;align-items:center;">
+        <button
+          type="button"
+          class="btn"
+          style="background:#B5A160;color:#041815;font-weight:800;padding:0.75rem 1.4rem;border:none;box-shadow:0 4px 14px rgba(181,161,96,0.35);cursor:pointer;"
+          onclick="window.abrirModalNuevaJornada()"
+        >
+          🚀 Iniciar NUEVA Jornada Limpia
+        </button>
         <a
           href="/api/admin/exportar-excel"
           target="_blank"
-          class="btn btn--primary btn--sm"
-          style="background:var(--clr-primary);color:#fff;"
+          class="btn"
+          style="background:#00594E;color:#fff;font-weight:700;border:1px solid #B5A160;padding:0.75rem 1.4rem;text-decoration:none;"
         >
           📊 Descargar Excel Jornada Actual (.xlsx)
         </a>
@@ -124,15 +132,13 @@ const exito = Astro.url.searchParams.get("exito");
           </div>
         </div>
 
-        <!-- Botones Totalmente Separados -->
-        <div
-          style="display:flex;flex-direction:column;gap:0.65rem;min-width:230px;"
-        >
+        <!-- Botones específicos de la Jornada Actual -->
+        <div style="display:flex;flex-direction:column;gap:0.65rem;min-width:230px;">
           <button
             type="button"
-            id="btn-modificar-actual"
-            class="btn btn--outline"
-            style="border-color:var(--clr-accent);color:var(--clr-accent);width:100%;justify-content:center;"
+            class="btn"
+            style="border:2px solid #B5A160;background:transparent;color:#B5A160;font-weight:700;width:100%;justify-content:center;cursor:pointer;"
+            onclick="window.abrirModalModificarActual()"
           >
             ✏️ Modificar Nombre
           </button>
@@ -141,9 +147,9 @@ const exito = Astro.url.searchParams.get("exito");
             !estaCerrada ? (
               <button
                 type="button"
-                id="btn-cerrar-archivar"
-                class="btn btn--primary"
-                style="background:#e67e22;color:#fff;font-weight:700;width:100%;justify-content:center;"
+                class="btn"
+                style="background:#00594E;color:#fff;border:1px solid #B5A160;font-weight:700;width:100%;justify-content:center;cursor:pointer;"
+                onclick="window.abrirModalCerrarJornada()"
               >
                 🔒 Cerrar y Archivar Jornada
               </button>
@@ -156,23 +162,14 @@ const exito = Astro.url.searchParams.get("exito");
                 <input type="hidden" name="accion" value="reabrir_jornada" />
                 <button
                   type="submit"
-                  class="btn btn--outline"
-                  style="border-color:#2ecc71;color:#2ecc71;width:100%;justify-content:center;"
+                  class="btn"
+                  style="border:2px solid #2ecc71;background:transparent;color:#2ecc71;font-weight:700;width:100%;justify-content:center;cursor:pointer;"
                 >
                   🔓 Reabrir Votación
                 </button>
               </form>
             )
           }
-
-          <button
-            type="button"
-            id="btn-nueva-jornada"
-            class="btn btn--primary"
-            style="background:var(--clr-accent);color:#041815;font-weight:800;width:100%;justify-content:center;"
-          >
-            🚀 Iniciar NUEVA Jornada
-          </button>
         </div>
       </div>
     </div>
@@ -292,7 +289,7 @@ const exito = Astro.url.searchParams.get("exito");
   >
     <div class="custom-modal-box">
       <h3 style="font-size:1.3rem;margin-bottom:0.5rem;color:var(--clr-text);">
-        Modificar Jornada Actual
+        ✏️ Modificar Jornada Actual
       </h3>
       <p
         style="color:var(--clr-text-muted);font-size:0.9rem;margin-bottom:1.25rem;"
@@ -353,7 +350,7 @@ const exito = Astro.url.searchParams.get("exito");
   >
     <div class="custom-modal-box" style="max-width:500px;">
       <h3 style="font-size:1.35rem;margin-bottom:0.5rem;color:#e67e22;">
-        Cerrar y Archivar Jornada
+        🔒 Cerrar y Archivar Jornada
       </h3>
       <p
         style="color:var(--clr-text-muted);font-size:0.9rem;margin-bottom:1rem;"
@@ -409,7 +406,7 @@ const exito = Astro.url.searchParams.get("exito");
       <h3
         style="font-size:1.35rem;margin-bottom:0.5rem;color:var(--clr-accent);"
       >
-        Iniciar Nueva Jornada de Votación
+        🚀 Iniciar Nueva Jornada de Votación
       </h3>
       <p
         style="color:var(--clr-text-muted);font-size:0.9rem;margin-bottom:1.25rem;"
