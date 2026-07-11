@@ -90,88 +90,88 @@ const exito = Astro.url.searchParams.get("exito");
       class="card mb-4"
       style={`border:2px solid ${estaCerrada ? "#e74c3c" : "var(--clr-accent)"};background:linear-gradient(135deg, rgba(0,89,78,0.22) 0%, rgba(181,161,96,0.15) 100%);padding:1.75rem;`}
     >
+      <div>
+        <div
+          style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;"
+        >
+          <span
+            style={`background:${estaCerrada ? "#e74c3c" : "var(--clr-accent)"};color:${estaCerrada ? "#fff" : "#041815"};font-weight:800;font-size:0.78rem;padding:0.35rem 0.9rem;border-radius:999px;`}
+          >
+            {
+              estaCerrada
+                ? "🔴 JORNADA CERRADA (VOTACIÓN INHABILITADA)"
+                : "🟢 JORNADA ACTIVA EN VIVO"
+            }
+          </span>
+        </div>
+        <h2
+          style="font-size:1.65rem;margin-top:0.75rem;color:var(--clr-text);"
+        >
+          {jornadaActual.nombre}
+        </h2>
+        <p
+          style="color:var(--clr-text-muted);font-size:0.95rem;margin-top:0.25rem;"
+        >
+          {jornadaActual.descripcion || "Sin descripción adicional"}
+        </p>
+        <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
+          <span
+            class="badge"
+            style="background:var(--clr-surface);color:var(--clr-text);padding:0.45rem 0.95rem;font-size:0.9rem;"
+          >
+            👥 <strong>{asistentesActuales.length}</strong> Participantes registrados
+          </span>
+          <span
+            class="badge"
+            style="background:rgba(181, 161, 96, 0.25);color:var(--clr-accent);padding:0.45rem 0.95rem;font-size:0.9rem;"
+          >
+            🗳️ <strong>{totalVotosActuales}</strong> Votos emitidos
+          </span>
+        </div>
+      </div>
+
+      <!-- Barra de Botones ordenada y estética al pie de la tarjeta -->
       <div
-        style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;"
+        style="border-top:1px solid rgba(181, 161, 96, 0.3);margin-top:1.5rem;padding-top:1.25rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:flex-end;align-items:center;"
       >
-        <div style="flex:1;min-width:280px;">
-          <div
-            style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;"
-          >
-            <span
-              style={`background:${estaCerrada ? "#e74c3c" : "var(--clr-accent)"};color:${estaCerrada ? "#fff" : "#041815"};font-weight:800;font-size:0.78rem;padding:0.35rem 0.9rem;border-radius:999px;`}
-            >
-              {
-                estaCerrada
-                  ? "🔴 JORNADA CERRADA (VOTACIÓN INHABILITADA)"
-                  : "🟢 JORNADA ACTIVA EN VIVO"
-              }
-            </span>
-          </div>
-          <h2
-            style="font-size:1.65rem;margin-top:0.75rem;color:var(--clr-text);"
-          >
-            {jornadaActual.nombre}
-          </h2>
-          <p
-            style="color:var(--clr-text-muted);font-size:0.95rem;margin-top:0.25rem;"
-          >
-            {jornadaActual.descripcion || "Sin descripción adicional"}
-          </p>
-          <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
-            <span
-              class="badge"
-              style="background:var(--clr-surface);color:var(--clr-text);padding:0.45rem 0.95rem;font-size:0.9rem;"
-            >
-              👥 <strong>{asistentesActuales.length}</strong> Participantes registrados
-            </span>
-            <span
-              class="badge"
-              style="background:rgba(181, 161, 96, 0.25);color:var(--clr-accent);padding:0.45rem 0.95rem;font-size:0.9rem;"
-            >
-              🗳️ <strong>{totalVotosActuales}</strong> Votos emitidos
-            </span>
-          </div>
-        </div>
+        <button
+          type="button"
+          id="btn-modificar-actual"
+          class="btn"
+          style="border:2px solid #B5A160;background:transparent;color:#B5A160;font-weight:700;padding:0.65rem 1.4rem;cursor:pointer;"
+          onclick="window.abrirModalModificarActual()"
+        >
+          ✏️ Modificar Nombre
+        </button>
 
-        <!-- Botones específicos de la Jornada Actual -->
-        <div style="display:flex;flex-direction:column;gap:0.65rem;min-width:230px;">
-          <button
-            type="button"
-            class="btn"
-            style="border:2px solid #B5A160;background:transparent;color:#B5A160;font-weight:700;width:100%;justify-content:center;cursor:pointer;"
-            onclick="window.abrirModalModificarActual()"
-          >
-            ✏️ Modificar Nombre
-          </button>
-
-          {
-            !estaCerrada ? (
+        {
+          !estaCerrada ? (
+            <button
+              type="button"
+              id="btn-cerrar-archivar"
+              class="btn"
+              style="background:#00594E;color:#fff;border:1px solid #B5A160;font-weight:700;padding:0.65rem 1.4rem;cursor:pointer;"
+              onclick="window.abrirModalCerrarJornada()"
+            >
+              🔒 Cerrar y Archivar Jornada
+            </button>
+          ) : (
+            <form
+              method="POST"
+              action="/api/admin/jornadas"
+              style="margin:0;"
+            >
+              <input type="hidden" name="accion" value="reabrir_jornada" />
               <button
-                type="button"
+                type="submit"
                 class="btn"
-                style="background:#00594E;color:#fff;border:1px solid #B5A160;font-weight:700;width:100%;justify-content:center;cursor:pointer;"
-                onclick="window.abrirModalCerrarJornada()"
+                style="border:2px solid #2ecc71;background:transparent;color:#2ecc71;font-weight:700;padding:0.65rem 1.4rem;cursor:pointer;"
               >
-                🔒 Cerrar y Archivar Jornada
+                🔓 Reabrir Votación
               </button>
-            ) : (
-              <form
-                method="POST"
-                action="/api/admin/jornadas"
-                style="width:100%;"
-              >
-                <input type="hidden" name="accion" value="reabrir_jornada" />
-                <button
-                  type="submit"
-                  class="btn"
-                  style="border:2px solid #2ecc71;background:transparent;color:#2ecc71;font-weight:700;width:100%;justify-content:center;cursor:pointer;"
-                >
-                  🔓 Reabrir Votación
-                </button>
-              </form>
-            )
-          }
-        </div>
+            </form>
+          )
+        }
       </div>
     </div>
 
