@@ -416,8 +416,61 @@ export async function eliminarJornadaHistorial(
   const { error } = await supabase
     .from('jornadas_historial')
     .delete()
+    .eq('id', id);
   if (error) return { success: false, error: error.message };
   return { success: true };
+}
+
+export interface JornadaActual {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  fecha_inicio: string;
+}
+
+export async function obtenerJornadaActual(): Promise<JornadaActual> {
+  try {
+    const { data, error } = await supabase
+      .from('jornada_actual')
+      .select('*')
+      .eq('id', 1)
+      .maybeSingle();
+
+    if (error || !data) {
+      return {
+        id: 1,
+        nombre: 'Jornada Institucional de Votación 2026',
+        descripcion: 'Elección Oficial de Proyectos y Prototipos — Unitrópico',
+        fecha_inicio: new Date().toISOString()
+      };
+    }
+    return data as JornadaActual;
+  } catch {
+    return {
+      id: 1,
+      nombre: 'Jornada Institucional de Votación 2026',
+      descripcion: 'Elección Oficial de Proyectos y Prototipos — Unitrópico',
+      fecha_inicio: new Date().toISOString()
+    };
+  }
+}
+
+export async function guardarJornadaActual(nombre: string, descripcion: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await supabase
+      .from('jornada_actual')
+      .upsert({
+        id: 1,
+        nombre: nombre || 'Jornada Institucional de Votación',
+        descripcion: descripcion || '',
+        fecha_inicio: new Date().toISOString()
+      });
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 }
 
 export async function reiniciarJornada(

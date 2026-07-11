@@ -5,15 +5,29 @@ import {
   obtenerCategorias,
   obtenerProyectos,
   obtenerResultados,
-  obtenerJornadaHistorialPorId
+  obtenerJornadaHistorialPorId,
+  obtenerJornadaActual
 } from '@lib/db';
+
+const formatBogotaDate = (date: Date) => {
+  return date.toLocaleString('es-CO', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  }) + ' (Hora Bogotá - Colombia)';
+};
 
 export const GET: APIRoute = async ({ url }) => {
   try {
     const idParam = url.searchParams.get('id');
 
     let tituloEvento = 'Jornada de Votación en Vivo';
-    let fechaEvento = new Date().toLocaleDateString('es-CO');
+    let fechaEvento = formatBogotaDate(new Date());
     let listaAsistentes: any[] = [];
     let listaCategorias: any[] = [];
     let listaProyectos: any[] = [];
@@ -23,13 +37,15 @@ export const GET: APIRoute = async ({ url }) => {
       const jornada = await obtenerJornadaHistorialPorId(parseInt(idParam, 10));
       if (jornada && jornada.snapshot_json) {
         tituloEvento = jornada.nombre;
-        fechaEvento = new Date(jornada.fecha_cierre).toLocaleDateString('es-CO');
+        fechaEvento = formatBogotaDate(new Date(jornada.fecha_cierre));
         listaCategorias = jornada.snapshot_json.categorias || [];
         listaProyectos = jornada.snapshot_json.proyectos || [];
         listaResultados = jornada.snapshot_json.resultados || [];
         listaAsistentes = jornada.snapshot_json.listaAsistentes || await obtenerAsistentes();
       }
     } else {
+      const jornadaActual = await obtenerJornadaActual();
+      tituloEvento = jornadaActual.nombre;
       listaAsistentes = await obtenerAsistentes();
       listaCategorias = await obtenerCategorias();
       listaProyectos = await obtenerProyectos();
@@ -107,7 +123,7 @@ export const GET: APIRoute = async ({ url }) => {
         a.dependencia || '',
         a.correo || '',
         a.telefono || 'N/A',
-        a.fecha_registro ? new Date(a.fecha_registro).toLocaleString('es-CO') : ''
+        a.fecha_registro ? new Date(a.fecha_registro).toLocaleString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) + ' (Bogotá)' : ''
       ]);
 
       const isEven = idx % 2 === 0;

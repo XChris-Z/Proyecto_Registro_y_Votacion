@@ -97,3 +97,20 @@ CREATE TABLE IF NOT EXISTS jornadas_historial (
 
 ALTER TABLE jornadas_historial DISABLE ROW LEVEL SECURITY;
 
+-- ============================================================
+-- TABLA DE CONFIGURACIÓN DE JORNADA ACTUAL EN VIVO
+-- ============================================================
+CREATE TABLE IF NOT EXISTS jornada_actual (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    nombre TEXT NOT NULL,
+    descripcion TEXT,
+    fecha_inicio TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE jornada_actual DISABLE ROW LEVEL SECURITY;
+
+INSERT INTO jornada_actual (id, nombre, descripcion)
+VALUES (1, 'Jornada Institucional de Votación 2026', 'Elección Oficial de Proyectos y Prototipos — Unitrópico')
+ON CONFLICT (id) DO NOTHING;
+
+
