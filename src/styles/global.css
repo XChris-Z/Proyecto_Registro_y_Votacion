@@ -612,43 +612,51 @@ tr:hover td {
 .admin-nav-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.85rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--clr-text-dim);
-  border: 1px solid transparent;
-  transition: var(--transition);
+  gap: 0.45rem;
+  padding: 0.42rem 0.95rem;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: rgba(181, 161, 96, 0.18);
+  border: 1.5px solid var(--clr-accent);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.02em;
 }
 
 .admin-nav-btn:hover {
-  color: var(--clr-text-muted);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--clr-border);
+  color: #041815;
+  background: var(--clr-accent);
+  border-color: #d4bf7a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(181, 161, 96, 0.45);
 }
 
 .admin-nav-btn svg {
   flex-shrink: 0;
-  opacity: 0.7;
-  transition: var(--transition);
+  opacity: 0.95;
+  transition: all 0.25s ease;
 }
 
 .admin-nav-btn:hover svg {
-  opacity: 1;
-  color: var(--clr-primary-light);
+  transform: scale(1.15);
 }
 
 .admin-nav-btn__label {
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 @media (max-width: 480px) {
   .admin-nav-btn__label {
     display: none;
+  }
+  .admin-nav-btn {
+    padding: 0.45rem;
+    border-radius: 50%;
   }
 }
 
