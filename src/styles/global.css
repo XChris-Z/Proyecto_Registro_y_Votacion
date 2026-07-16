@@ -1031,6 +1031,7 @@ tbody tr:hover td {
   opacity: 0;
   transition: opacity 0.3s ease;
   border-radius: inherit;
+  pointer-events: none; /* No bloquear clics en botones dentro de la tarjeta */
 }
 
 .card:hover::before {

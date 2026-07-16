@@ -572,87 +572,89 @@ const exito = Astro.url.searchParams.get("exito");
 
   <!-- SCRIPT CON is:inline PARA GARANTIZAR RESPUESTA RÁPIDA SIN PROBLEMAS DE SCOPE -->
   <script is:inline>
-    // Funciones globales inmediatas
-    window.abrirModalNuevaJornada = function() {
+    // ── Funciones globales inmediatas (accesibles desde onclick y desde listeners) ──
+    window.abrirModalNuevaJornada = function () {
       const modal = document.getElementById("modal-nueva-jornada");
       if (modal) modal.style.display = "flex";
     };
-    window.abrirModalModificarActual = function() {
+    window.abrirModalModificarActual = function () {
       const modal = document.getElementById("modal-modificar-actual");
       if (modal) modal.style.display = "flex";
     };
-    window.abrirModalCerrarJornada = function() {
+    window.abrirModalCerrarJornada = function () {
       const modal = document.getElementById("modal-cerrar-jornada");
       if (modal) modal.style.display = "flex";
     };
+    window.cerrarTodosLosModales = function () {
+      document.querySelectorAll(".custom-modal-overlay").forEach((m) => {
+        m.style.display = "none";
+      });
+    };
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Botón Modificar Actual
-      const btnModificar = document.getElementById("btn-modificar-actual");
-      if (btnModificar) {
-        btnModificar.addEventListener("click", window.abrirModalModificarActual);
-      }
-
-      // Botón Cerrar y Archivar
-      const btnCerrar = document.getElementById("btn-cerrar-archivar");
-      if (btnCerrar) {
-        btnCerrar.addEventListener("click", window.abrirModalCerrarJornada);
-      }
-
-      // Botón Nueva Jornada
+      // ── Botón Nueva Jornada (fuera de la tarjeta) ──
       const btnNueva = document.getElementById("btn-nueva-jornada");
       if (btnNueva) {
         btnNueva.addEventListener("click", window.abrirModalNuevaJornada);
       }
 
-      // Botones Editar Historial
+      // ── Delegación de eventos en el contenedor de la tarjeta activa ──
+      // Esto garantiza que los botones dentro del .card funcionen aunque
+      // el pseudo-elemento ::before u otro elemento los tape visualmente.
+      document.addEventListener("click", (e) => {
+        const target = e.target.closest("button[id], a[id]");
+        if (!target) return;
+
+        if (target.id === "btn-modificar-actual") {
+          e.preventDefault();
+          window.abrirModalModificarActual();
+          return;
+        }
+        if (target.id === "btn-cerrar-archivar") {
+          e.preventDefault();
+          window.abrirModalCerrarJornada();
+          return;
+        }
+      });
+
+      // ── Botones Editar Historial (tabla) ──
       document.querySelectorAll(".btn-editar-historial").forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          const target = e.currentTarget;
-          const id = target.getAttribute("data-id");
-          const nombre = target.getAttribute("data-nombre");
-          const notas = target.getAttribute("data-notas");
-
-          document.getElementById("edit-jornada-id").value = id;
-          document.getElementById("edit-jornada-nombre").value = nombre;
-          document.getElementById("edit-jornada-notas").value = notas;
+          const t = e.currentTarget;
+          document.getElementById("edit-jornada-id").value =
+            t.getAttribute("data-id");
+          document.getElementById("edit-jornada-nombre").value =
+            t.getAttribute("data-nombre");
+          document.getElementById("edit-jornada-notas").value =
+            t.getAttribute("data-notas");
           document.getElementById("modal-editar-jornada").style.display =
             "flex";
         });
       });
 
-      // Botones Eliminar Historial
+      // ── Botones Eliminar Historial (tabla) ──
       document.querySelectorAll(".btn-eliminar-historial").forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          const target = e.currentTarget;
-          const id = target.getAttribute("data-id");
-          const nombre = target.getAttribute("data-nombre");
-
-          document.getElementById("eliminar-jornada-id").value = id;
+          const t = e.currentTarget;
+          document.getElementById("eliminar-jornada-id").value =
+            t.getAttribute("data-id");
           document.getElementById("eliminar-jornada-nombre").textContent =
-            nombre;
-          document.getElementById("modal-confirmar-eliminar").style.display =
-            "flex";
+            t.getAttribute("data-nombre");
+          document.getElementById(
+            "modal-confirmar-eliminar"
+          ).style.display = "flex";
         });
       });
 
-      // Botones Cerrar cualquier Modal
+      // ── Cerrar cualquier modal (botón Cancelar) ──
       document.querySelectorAll(".btn-cerrar-modal").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".custom-modal-overlay")
-            .forEach((modal) => {
-              modal.style.display = "none";
-            });
-        });
+        btn.addEventListener("click", window.cerrarTodosLosModales);
       });
 
-      // Cerrar modal si hacen clic fuera del cuadro
+      // ── Cerrar modal al hacer clic fuera del cuadro ──
       document.querySelectorAll(".custom-modal-overlay").forEach((overlay) => {
         overlay.addEventListener("click", (e) => {
-          if (e.target === overlay) {
-            overlay.style.display = "none";
-          }
+          if (e.target === overlay) overlay.style.display = "none";
         });
       });
     });
