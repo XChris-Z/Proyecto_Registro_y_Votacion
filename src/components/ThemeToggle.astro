@@ -40,22 +40,22 @@
 <script>
   function initTheme() {
     const savedTheme = localStorage.getItem('theme');
-    const systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    const isLight = savedTheme === 'light' || (!savedTheme && systemLight);
+    // El tema claro es el principal por defecto si no hay preferencia en localStorage
+    const isDark = savedTheme === 'dark';
 
-    applyTheme(isLight ? 'light' : 'dark');
+    applyTheme(isDark ? 'dark' : 'light');
   }
 
   function applyTheme(theme: 'light' | 'dark') {
     const iconDark = document.getElementById('icon-dark');
     const iconLight = document.getElementById('icon-light');
 
-    if (theme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
       iconDark?.classList.add('hidden');
       iconLight?.classList.remove('hidden');
     } else {
-      document.documentElement.removeAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', 'light');
       iconDark?.classList.remove('hidden');
       iconLight?.classList.add('hidden');
     }
@@ -67,7 +67,8 @@
     const btn = document.getElementById('theme-toggle');
     btn?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'light' ? 'dark' : 'light';
+      // Si el actual es 'dark', pasamos a 'light'. De lo contrario (o si es 'light'), pasamos a 'dark'.
+      const next = current === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', next);
       applyTheme(next);
     });
