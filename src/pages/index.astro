@@ -177,19 +177,34 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
         )}
       </div>
 
-      <!-- Steps decorativos -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;">
-        {[
-          { icon: '✍️', title: 'Completa', desc: '5 campos simples' },
-          { icon: '✅', title: 'Confirma', desc: 'Un solo clic' },
-          { icon: '🗳️', title: 'Vota', desc: 'En los proyectos' },
-        ].map(step => (
-          <div class="card text-center animate-fade-up" style="padding:1.25rem;">
-            <div style="font-size:1.8rem;margin-bottom:0.5rem;">{step.icon}</div>
-            <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem;">{step.title}</div>
-            <div style="font-size:0.8rem;color:var(--clr-text-muted);">{step.desc}</div>
-          </div>
-        ))}
+      <!-- Guía visual del proceso (no interactiva) -->
+      <div class="process-steps animate-fade-up" style="animation-delay:0.4s;">
+        <div class="process-steps__header">
+          <span>⚡</span> Guía rápida del proceso
+        </div>
+        <div class="process-steps__grid">
+          {[
+            { num: 'PASO 1', icon: '✍️', title: 'Completa', desc: '5 campos simples' },
+            { num: 'PASO 2', icon: '✅', title: 'Confirma', desc: 'Un solo clic' },
+            { num: 'PASO 3', icon: '🗳️', title: 'Vota', desc: 'En los proyectos' },
+          ].map((step, idx) => (
+            <>
+              <div class="process-step">
+                <span class="process-step__number">{step.num}</span>
+                <div class="process-step__icon">{step.icon}</div>
+                <div class="process-step__content">
+                  <div class="process-step__title">{step.title}</div>
+                  <div class="process-step__desc">{step.desc}</div>
+                </div>
+              </div>
+              {idx < 2 && (
+                <div class="process-connector" aria-hidden="true">
+                  ➔
+                </div>
+              )}
+            </>
+          ))}
+        </div>
       </div>
     </div>
   </section>
