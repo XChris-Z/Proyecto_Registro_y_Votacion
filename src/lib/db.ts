@@ -320,6 +320,28 @@ export async function buscarAdmin(
   return data as any;
 }
 
+export async function obtenerAdminPorId(
+  id: number
+): Promise<{ id: number; usuario: string; password_hash: string; nombre: string } | null> {
+  const { data, error } = await supabase
+    .from('administradores')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as any;
+}
+
+export async function actualizarPasswordAdmin(id: number, passwordHash: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('administradores')
+    .update({ password_hash: passwordHash })
+    .eq('id', id);
+
+  return !error;
+}
+
 // ─── HISTORIAL DE JORNADAS (CIERRE DE EVENTO) ─────────────────────────────────
 
 export interface JornadaHistorial {
