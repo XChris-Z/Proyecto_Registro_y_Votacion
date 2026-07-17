@@ -14,11 +14,12 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
   <div style="max-width:1150px;">
     <div style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
       <div>
-        <h1 style="font-size:2rem;margin-bottom:0.25rem;">Dashboard Unitrópico</h1>
-        <p>Estadísticas y participación en tiempo real del evento</p>
+        <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Dashboard Unitrópico</h1>
+        <p style="color:var(--clr-text-muted);">Estadísticas institucionales y participación en tiempo real del evento</p>
       </div>
-      <a href="/admin/historial" class="btn btn--outline btn--sm" style="border-color:var(--clr-accent);color:var(--clr-accent);">
-        📜 Archivar Jornada / Historial →
+      <a href="/admin/historial" class="admin-nav-btn" style="padding:0.55rem 1.2rem;font-size:0.85rem;">
+        <span>📜</span>
+        <span class="admin-nav-btn__label">Archivar / Cierre de Jornada</span>
       </a>
     </div>
 
@@ -27,7 +28,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
       <div class="hero-participantes__content">
         <div class="hero-badge">⚡ EN VIVO — SISTEMA DE REGISTRO</div>
         <h2 class="hero-title">Número Total de Participantes Registrados</h2>
-        <p class="hero-subtitle">Asistentes acreditados con documento y correo institucional</p>
+        <p class="hero-subtitle">Asistentes acreditados con documento y correo institucional de Unitrópico</p>
       </div>
       <div class="hero-participantes__counter">
         <div class="counter-number animated-counter" data-target={asistentes.length}>0</div>
@@ -36,7 +37,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
     </div>
 
     <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.25rem;margin-bottom:2.5rem;">
+    <div class="stats-grid">
       {[
         { label: 'Categorías activas', value: categorias.filter(c => c.activa === true).length, icon: '🏷️' },
         { label: 'Proyectos candidatos', value: proyectos.length, icon: '📁' },
@@ -51,26 +52,29 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
     </div>
 
     <!-- Resultados rápidos -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.75rem;">
+    <div class="dashboard-results-grid">
       <div>
-        <h2 style="font-size:1.15rem;margin-bottom:1rem;font-weight:700;">Resultados por Categoría</h2>
+        <h2 style="font-size:1.2rem;margin-bottom:1.1rem;font-weight:800;color:var(--clr-text);">Resultados por Categoría</h2>
         {categorias.filter(c => c.activa).map(cat => {
           const catResultados = resultados.filter(r => r.categoria_id === cat.id).slice(0, 3);
           const maxVotos = Math.max(...catResultados.map(r => r.total_votos), 1);
           return (
-            <div class="card" style="margin-bottom:1.2rem;">
-              <h3 style="font-size:0.95rem;margin-bottom:1rem;color:var(--clr-text-muted);">{cat.nombre}</h3>
-              {catResultados.length === 0 && <p style="font-size:0.8rem;color:var(--clr-text-dim);">Sin votos aún</p>}
+            <div class="card" style="margin-bottom:1.25rem;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient-primary);"></div>
+              <h3 style="font-size:1rem;margin-bottom:1rem;font-weight:700;color:var(--clr-text);display:flex;align-items:center;gap:0.4rem;">
+                <span>🏷️</span> {cat.nombre}
+              </h3>
+              {catResultados.length === 0 && <p style="font-size:0.82rem;color:var(--clr-text-dim);">Sin votos registrados aún</p>}
               {catResultados.map((r, i) => (
-                <div style="margin-bottom:0.85rem;">
+                <div style="margin-bottom:0.9rem;">
                   <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:0.35rem;">
-                    <span style={i === 0 ? 'color:var(--clr-accent);font-weight:700;' : ''}>
+                    <span style={i === 0 ? 'color:var(--clr-primary);font-weight:800;' : 'font-weight:600;color:var(--clr-text);'}>
                       {i === 0 ? '🏆 ' : ''}{r.proyecto_nombre}
                     </span>
-                    <strong style={i === 0 ? 'color:var(--clr-accent);' : ''}>{r.total_votos}</strong>
+                    <strong style={i === 0 ? 'color:var(--clr-primary);' : 'color:var(--clr-text-muted);'}>{r.total_votos} votos</strong>
                   </div>
-                  <div class="progress-bar">
-                    <div class="progress-bar__fill" style={`width:${(r.total_votos / maxVotos) * 100}%`}></div>
+                  <div class="progress-bar" style="height:8px;border-radius:100px;">
+                    <div class="progress-bar__fill" style={`width:${(r.total_votos / maxVotos) * 100}%;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);`}></div>
                   </div>
                 </div>
               ))}
@@ -81,7 +85,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
 
       <!-- Últimos registros -->
       <div>
-        <h2 style="font-size:1.15rem;margin-bottom:1rem;font-weight:700;">Últimos Registros</h2>
+        <h2 style="font-size:1.2rem;margin-bottom:1.1rem;font-weight:800;color:var(--clr-text);">Últimos Registros</h2>
         <div class="table-wrapper">
           <table>
             <thead>
@@ -94,8 +98,8 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
             <tbody>
               {asistentes.slice(0, 8).map(a => (
                 <tr>
-                  <td style="font-weight:600;">{a.nombre}</td>
-                  <td style="color:var(--clr-text-muted);font-size:0.85rem;">{a.dependencia}</td>
+                  <td style="font-weight:700;color:var(--clr-text);">{a.nombre}</td>
+                  <td style="color:var(--clr-text-muted);font-size:0.85rem;font-weight:500;">{a.dependencia}</td>
                   <td style="color:var(--clr-text-dim);font-size:0.8rem;">
                     {new Date(a.fecha_registro).toLocaleDateString('es-CO')}
                   </td>
@@ -110,8 +114,8 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
           </table>
         </div>
         {asistentes.length > 8 && (
-          <a href="/admin/asistentes" style="font-size:0.85rem;color:var(--clr-primary-light);display:block;text-align:right;margin-top:0.75rem;font-weight:600;">
-            Ver todos los {asistentes.length} asistentes →
+          <a href="/admin/asistentes" class="admin-nav-btn" style="float:right;margin-top:0.85rem;padding:0.45rem 1.1rem;">
+            <span>Ver todos los {asistentes.length} asistentes →</span>
           </a>
         )}
       </div>
@@ -125,54 +129,77 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 1.5rem;
-    background: linear-gradient(135deg, rgba(0, 89, 78, 0.45) 0%, rgba(181, 161, 96, 0.18) 100%);
-    border: 1px solid var(--clr-border-hover);
-    padding: 2rem 2.5rem;
+    gap: 1.75rem;
+    background: linear-gradient(135deg, #00594E 0%, #003a33 100%);
+    border: 2px solid #B5A160;
+    padding: 2.25rem 2.75rem;
     border-radius: var(--radius-lg);
+    box-shadow: 0 14px 40px rgba(0, 89, 78, 0.25);
+    position: relative;
+    overflow: hidden;
   }
+
+  .hero-participantes::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(181, 161, 96, 0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
   .hero-badge {
-    background: rgba(181, 161, 96, 0.25);
-    color: var(--clr-accent);
-    font-size: 0.75rem;
+    background: #B5A160;
+    color: #041815;
+    font-size: 0.76rem;
     font-weight: 800;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
+    padding: 0.38rem 0.95rem;
+    border-radius: 100px;
     display: inline-block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.85rem;
     letter-spacing: 0.05em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
   .hero-title {
-    font-size: 1.55rem;
-    color: var(--clr-text);
-    margin-bottom: 0.35rem;
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 0.4rem;
+    line-height: 1.25;
   }
   .hero-subtitle {
-    font-size: 0.92rem;
-    color: var(--clr-text-muted);
+    font-size: 0.94rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 500;
   }
   .hero-participantes__counter {
     text-align: center;
-    background: rgba(0, 0, 0, 0.25);
-    padding: 1.25rem 2rem;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 1.4rem 2.2rem;
     border-radius: var(--radius-md);
-    border: 1px solid var(--clr-border);
-    min-width: 170px;
+    border: 1.5px solid #B5A160;
+    min-width: 180px;
+    box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
   }
   .counter-number {
-    font-size: 3.2rem;
+    font-size: 3.5rem;
     font-weight: 900;
-    color: var(--clr-accent);
+    color: #B5A160;
     line-height: 1;
-    text-shadow: 0 0 25px rgba(181, 161, 96, 0.4);
+    text-shadow: 0 0 25px rgba(181, 161, 96, 0.55);
   }
   .counter-label {
     font-size: 0.82rem;
-    color: var(--clr-text-muted);
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-top: 0.35rem;
+    letter-spacing: 0.06em;
+    margin-top: 0.4rem;
   }
   .mb-4 { margin-bottom: 1.75rem; }
 </style>

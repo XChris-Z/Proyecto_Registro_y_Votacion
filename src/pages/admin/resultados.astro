@@ -18,14 +18,14 @@ const resultadosPorCat = categorias.map(cat => {
   <div style="max-width:1100px;">
     <div style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
       <div>
-        <h1 style="font-size:2rem;margin-bottom:0.25rem;">Resultados de Votación en Vivo</h1>
-        <p>Conteo oficial por categoría. Total de registrados: <strong style="color:var(--clr-accent);">{asistentes.length}</strong></p>
+        <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Resultados de Votación en Vivo</h1>
+        <p style="color:var(--clr-text-muted);">Conteo oficial por categoría. Total de registrados: <strong style="color:var(--clr-primary);font-weight:800;">{asistentes.length}</strong></p>
       </div>
-      <div style="display:flex;gap:0.75rem;">
-        <button class="btn btn--outline btn--sm" onclick="window.location.reload()">
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn--outline" style="border-radius:100px;padding:0.65rem 1.3rem;font-weight:700;" onclick="window.location.reload()">
           🔄 Actualizar
         </button>
-        <a href="/admin/historial" class="btn btn--primary btn--sm" style="background:var(--clr-accent);color:#000;">
+        <a href="/admin/historial" class="btn btn--primary" style="background:var(--clr-accent);color:#041815;font-weight:800;border-radius:100px;padding:0.65rem 1.4rem;box-shadow:0 4px 14px rgba(181, 161, 96, 0.35);">
           📜 Archivar y Descargar Excel →
         </a>
       </div>
@@ -33,17 +33,17 @@ const resultadosPorCat = categorias.map(cat => {
 
     <div style="display:grid;gap:2.5rem;">
       {resultadosPorCat.map((cat, i) => (
-        <div class="category-section">
-          <div class="category-header" style="background:var(--clr-primary-dark);border-bottom:2px solid var(--clr-accent);">
+        <div class="category-section" style="border:1.5px solid var(--clr-border);border-radius:var(--radius-lg);overflow:hidden;background:var(--clr-surface);">
+          <div class="category-header" style="background:#00594E;border-bottom:2px solid var(--clr-accent);padding:1.4rem 1.75rem;">
             <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span style="font-size:1.4rem;">{i === 0 ? '💡' : i === 1 ? '🌿' : '🌍'}</span>
+              <span style="font-size:1.6rem;">{i === 0 ? '💡' : i === 1 ? '🌿' : '🌍'}</span>
               <div>
-                <h3 style="font-size:1.15rem;margin:0;color:#fff;">{cat.nombre}</h3>
-                <span style="font-size:0.78rem;color:rgba(255,255,255,0.7);">Categoría oficial Unitrópico</span>
+                <h3 style="font-size:1.2rem;font-weight:800;margin:0;color:#fff;">{cat.nombre}</h3>
+                <span style="font-size:0.8rem;color:rgba(255,255,255,0.75);font-weight:500;">Categoría oficial Unitrópico</span>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:1rem;">
-              <span class="badge" style="background:var(--clr-accent);color:#041815;font-weight:800;padding:0.4rem 0.8rem;">
+              <span class="badge" style="background:#B5A160;color:#041815;font-weight:800;padding:0.45rem 0.95rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
                 {cat.totalVotosCat} votos emitidos
               </span>
             </div>
@@ -51,7 +51,7 @@ const resultadosPorCat = categorias.map(cat => {
 
           <div style="padding:1.75rem;">
             {cat.resultados.length === 0 && (
-              <p style="color:var(--clr-text-dim);font-size:0.9rem;text-align:center;padding:1.5rem 0;">
+              <p style="color:var(--clr-text-dim);font-size:0.92rem;text-align:center;padding:2rem 0;font-weight:500;">
                 Sin votos registrados aún en esta categoría
               </p>
             )}
@@ -70,28 +70,28 @@ const resultadosPorCat = categorias.map(cat => {
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;gap:1rem;flex-wrap:wrap;">
                     <div style="flex:1;min-width:240px;">
                       <div style="display:flex;align-items:center;gap:0.6rem;">
-                        <span style={`font-size:1.1rem;font-weight:${isWinner ? 800 : 600};color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};`}>
+                        <span style={`font-size:1.1rem;font-weight:${isWinner ? 800 : 700};color:${isWinner ? 'var(--clr-primary)' : 'var(--clr-text)'};`}>
                           {r.proyecto_nombre}
                         </span>
                       </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:1.25rem;flex-shrink:0;">
-                      <span style="font-size:0.9rem;color:var(--clr-text-muted);font-weight:600;">
+                      <span style="font-size:0.9rem;color:var(--clr-text-muted);font-weight:700;">
                         {pct}% del total
                       </span>
-                      <div style="background:rgba(0,0,0,0.25);padding:0.35rem 0.8rem;border-radius:var(--radius-sm);border:1px solid var(--clr-border);">
-                        <strong style={`font-size:1.35rem;color:${isWinner ? 'var(--clr-accent)' : 'var(--clr-text)'};`}>
+                      <div style="background:rgba(0, 89, 78, 0.08);padding:0.4rem 0.9rem;border-radius:100px;border:1.5px solid var(--clr-border);">
+                        <strong style={`font-size:1.35rem;color:${isWinner ? 'var(--clr-primary)' : 'var(--clr-text)'};`}>
                           {r.total_votos}
                         </strong>
-                        <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:0.25rem;">votos</span>
+                        <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:0.25rem;font-weight:600;">votos</span>
                       </div>
                     </div>
                   </div>
 
-                  <div class="progress-bar" style="height:12px;border-radius:999px;background:rgba(255,255,255,0.08);">
+                  <div class="progress-bar" style="height:12px;border-radius:100px;background:rgba(0, 89, 78, 0.1);">
                     <div
                       class="progress-bar__fill"
-                      style={`width:${pct}%;height:100%;border-radius:999px;${isWinner ? 'background:linear-gradient(90deg, #B5A160 0%, #ffe494 100%);box-shadow: 0 0 12px rgba(181, 161, 96, 0.6);' : 'background:var(--clr-primary-light);'}`}
+                      style={`width:${pct}%;height:100%;border-radius:100px;${isWinner ? 'background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);box-shadow: 0 0 12px rgba(181, 161, 96, 0.5);' : 'background:var(--clr-primary-light);'}`}
                     ></div>
                   </div>
                 </div>
@@ -106,30 +106,32 @@ const resultadosPorCat = categorias.map(cat => {
 
 <style>
   .winner-card {
-    background: linear-gradient(135deg, rgba(181, 161, 96, 0.15) 0%, rgba(0, 89, 78, 0.25) 100%);
-    border: 2px solid var(--clr-accent);
+    background: linear-gradient(135deg, rgba(181, 161, 96, 0.16) 0%, rgba(0, 89, 78, 0.12) 100%);
+    border: 2px solid #B5A160;
     border-radius: var(--radius-md);
-    padding: 1.25rem 1.4rem;
+    padding: 1.35rem 1.5rem;
     position: relative;
-    box-shadow: 0 4px 20px rgba(181, 161, 96, 0.2);
+    box-shadow: 0 6px 24px rgba(181, 161, 96, 0.22);
   }
   .regular-card {
     background: var(--clr-surface);
-    border: 1px solid var(--clr-border);
+    border: 1.5px solid var(--clr-border);
     border-radius: var(--radius-md);
-    padding: 1.1rem 1.3rem;
+    padding: 1.2rem 1.4rem;
   }
   .winner-header {
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.75rem;
   }
   .winner-badge {
-    background: var(--clr-accent);
+    background: #B5A160;
     color: #041815;
-    font-size: 0.72rem;
-    font-weight: 900;
-    padding: 0.25rem 0.65rem;
-    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 0.32rem 0.85rem;
+    border-radius: 100px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    display: inline-block;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
 </style>

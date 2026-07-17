@@ -15,33 +15,33 @@ const filtrados = q
 ---
 
 <AdminLayout title="Asistentes" activePage="asistentes">
-  <div style="max-width:1000px;">
+  <div style="max-width:1050px;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
       <div>
-        <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Asistentes registrados</h1>
-        <p><strong style="color:var(--clr-text);">{asistentes.length}</strong> personas registradas</p>
+        <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Asistentes Registrados</h1>
+        <p style="color:var(--clr-text-muted);">Participantes acreditados e inscritos: <strong style="color:var(--clr-primary);font-weight:800;">{asistentes.length}</strong> personas en total</p>
       </div>
     </div>
 
-    <!-- Buscador -->
-    <form method="GET" style="margin-bottom:1.5rem;">
-      <div style="display:flex;gap:0.75rem;">
+    <!-- Buscador Institucional -->
+    <form method="GET" style="margin-bottom:1.75rem;">
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
         <input
           class="form-input"
           type="text"
           name="q"
           value={q}
-          placeholder="Buscar por nombre, documento, correo o dependencia..."
-          style="flex:1;"
+          placeholder="🔍 Buscar por nombre, documento, correo o dependencia..."
+          style="flex:1;min-width:260px;border-radius:100px;padding:0.75rem 1.35rem;"
         />
-        <button type="submit" class="btn btn--primary">Buscar</button>
-        {q && <a href="/admin/asistentes" class="btn btn--outline">Limpiar</a>}
+        <button type="submit" class="btn btn--primary" style="border-radius:100px;padding:0.75rem 1.6rem;font-weight:700;box-shadow:0 4px 14px rgba(0, 89, 78, 0.25);">Buscar</button>
+        {q && <a href="/admin/asistentes" class="btn btn--outline" style="border-radius:100px;padding:0.75rem 1.4rem;font-weight:700;">Limpiar</a>}
       </div>
     </form>
 
     {q && (
-      <p style="font-size:0.85rem;color:var(--clr-text-muted);margin-bottom:1rem;">
-        Mostrando {filtrados.length} resultado{filtrados.length !== 1 ? 's' : ''} para "<strong>{q}</strong>"
+      <p style="font-size:0.88rem;color:var(--clr-text-muted);margin-bottom:1.2rem;font-weight:500;">
+        Mostrando <strong style="color:var(--clr-primary);">{filtrados.length}</strong> resultado{filtrados.length !== 1 ? 's' : ''} para "<strong>{q}</strong>"
       </p>
     )}
 
@@ -55,20 +55,20 @@ const filtrados = q
             <th>Dependencia</th>
             <th>Teléfono</th>
             <th>Correo</th>
-            <th>Registro</th>
+            <th>Fecha Registro</th>
           </tr>
         </thead>
         <tbody>
           {filtrados.map((a, i) => (
             <tr>
-              <td style="color:var(--clr-text-dim);font-size:0.8rem;">{a.id}</td>
-              <td style="font-weight:600;">{a.nombre}</td>
-              <td style="font-family:monospace;font-size:0.85rem;">{a.documento}</td>
-              <td style="font-size:0.85rem;color:var(--clr-text-muted);">{a.dependencia}</td>
+              <td style="color:var(--clr-text-muted);font-size:0.82rem;font-weight:700;">{a.id}</td>
+              <td style="font-weight:700;color:var(--clr-text);">{a.nombre}</td>
+              <td style="font-family:monospace;font-size:0.88rem;font-weight:600;">{a.documento}</td>
+              <td style="font-size:0.85rem;color:var(--clr-text-muted);font-weight:500;">{a.dependencia}</td>
               <td style="font-size:0.85rem;color:var(--clr-text-muted);">{a.telefono || <span style="color:var(--clr-text-dim);">—</span>}</td>
-              <td style="font-size:0.82rem;color:var(--clr-text-muted);">{a.correo}</td>
-              <td style="font-size:0.8rem;color:var(--clr-text-dim);">
-                {new Date(a.fecha_registro).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' })}
+              <td style="font-size:0.84rem;color:var(--clr-text-muted);font-weight:500;">{a.correo}</td>
+              <td style="font-size:0.82rem;color:var(--clr-text-muted);font-weight:500;">
+                {new Date(a.fecha_registro).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}
               </td>
             </tr>
           ))}

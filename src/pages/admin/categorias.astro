@@ -10,13 +10,13 @@ const msg = Astro.url.searchParams.get('msg');
   <div style="max-width:800px;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
       <div>
-        <h1 style="font-size:1.8rem;margin-bottom:0.25rem;">Categorías</h1>
-        <p>Gestiona las 3 categorías de proyectos para votación</p>
+        <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Categorías Institucionales</h1>
+        <p style="color:var(--clr-text-muted);">Gestiona las categorías oficiales de proyectos de Unitrópico</p>
       </div>
-      <button class="btn btn--primary" onclick="abrirModal()">+ Nueva categoría</button>
+      <button class="btn btn--primary" style="border-radius:100px;padding:0.65rem 1.4rem;font-weight:700;box-shadow:0 4px 14px rgba(0, 89, 78, 0.25);" onclick="abrirModal()">+ Nueva categoría</button>
     </div>
 
-    {msg === 'created' && <div class="alert alert--success mb-3"><span>✅</span> Categoría creada</div>}
+    {msg === 'created' && <div class="alert alert--success mb-3"><span>✅</span> Categoría creada exitosamente</div>}
     {msg === 'updated' && <div class="alert alert--success mb-3"><span>✅</span> Categoría actualizada</div>}
     {msg === 'deleted' && <div class="alert alert--success mb-3"><span>✅</span> Categoría eliminada</div>}
 
@@ -34,20 +34,20 @@ const msg = Astro.url.searchParams.get('msg');
         <tbody>
           {categorias.map(cat => (
             <tr>
-              <td style="color:var(--clr-text-dim);font-size:0.85rem;">{cat.orden}</td>
-              <td style="font-weight:600;">{cat.nombre}</td>
+              <td style="color:var(--clr-text-muted);font-size:0.85rem;font-weight:700;">{cat.orden}</td>
+              <td style="font-weight:700;color:var(--clr-text);">{cat.nombre}</td>
               <td style="color:var(--clr-text-muted);font-size:0.85rem;max-width:250px;">
                 {cat.descripcion || <span style="color:var(--clr-text-dim);">—</span>}
               </td>
               <td>
                 <span class={`badge ${cat.activa ? 'badge--green' : 'badge--red'}`}>
-                  {cat.activa ? 'Activa' : 'Inactiva'}
+                  {cat.activa ? '● Activa' : '○ Inactiva'}
                 </span>
               </td>
               <td style="text-align:right;">
                 <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                  <button class="btn btn--outline btn--sm" onclick={`abrirModal(${JSON.stringify(cat)})`}>Editar</button>
-                  <button class="btn btn--danger btn--sm" onclick={`eliminarCategoria(${cat.id}, '${cat.nombre.replace(/'/g, "\\'")}')`}>Eliminar</button>
+                  <button class="btn btn--outline btn--sm" style="border-radius:100px;padding:0.35rem 0.95rem;font-weight:700;" onclick={`abrirModal(${JSON.stringify(cat)})`}>Editar</button>
+                  <button class="btn btn--danger btn--sm" style="border-radius:100px;padding:0.35rem 0.95rem;font-weight:700;" onclick={`eliminarCategoria(${cat.id}, '${cat.nombre.replace(/'/g, "\\'")}')`}>Eliminar</button>
                 </div>
               </td>
             </tr>
@@ -92,9 +92,9 @@ const msg = Astro.url.searchParams.get('msg');
               </select>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.5rem;">
-            <button type="button" class="btn btn--outline" onclick="cerrarModal()">Cancelar</button>
-            <button type="submit" id="submit-btn" class="btn btn--primary">Guardar</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
+            <button type="button" class="btn btn--outline" style="border-radius:100px;font-weight:700;" onclick="cerrarModal()">Cancelar</button>
+            <button type="submit" id="submit-btn" class="btn btn--primary" style="border-radius:100px;font-weight:700;box-shadow:0 4px 14px rgba(0, 89, 78, 0.25);">Guardar</button>
           </div>
         </div>
       </form>
