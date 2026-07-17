@@ -1314,6 +1314,11 @@ tbody tr:hover td {
 
 /* ── Breakpoint Celulares Grandes y Tablets (≤ 768px) ───────── */
 @media (max-width: 768px) {
+  /* Prevención de zoom automático en inputs de iOS Safari */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
   /* Cabecera Principal Portal */
   .site-header__inner {
     flex-wrap: wrap;
@@ -1334,7 +1339,7 @@ tbody tr:hover td {
 
   /* Admin Topbar y Contenido */
   .admin-topbar {
-    padding: 0.9rem 1.1rem !important;
+    padding: 0.9rem 1rem !important;
     flex-wrap: wrap;
     gap: 0.85rem;
   }
@@ -1342,19 +1347,21 @@ tbody tr:hover td {
   .admin-topbar__right {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem;
   }
   .admin-topbar__title { font-size: 1.35rem !important; }
   .admin-page-enter {
-    padding: 1.15rem 1rem 3rem !important;
+    padding: 1.15rem 1rem 3.5rem !important;
   }
 
   /* Secciones y Contenedores */
   .container, .container--narrow { padding: 0 1rem; }
   .page-hero { padding: 2.5rem 0 1.5rem; }
   .page-hero__title { font-size: clamp(1.7rem, 6.5vw, 2.3rem); }
-  .glass { padding: 1.5rem !important; }
-  .card { padding: 1.25rem !important; }
-  .modal { padding: 1.5rem; max-width: 95vw; }
+  .glass { padding: 1.35rem !important; }
+  .card { padding: 1.35rem !important; }
+  .modal { padding: 1.5rem; max-width: 95vw; width: 95vw; max-height: 90vh; overflow-y: auto; }
   
   /* Hero Participantes Admin */
   .hero-participantes {
@@ -1373,14 +1380,16 @@ tbody tr:hover td {
   .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
   .dashboard-results-grid { grid-template-columns: 1fr; gap: 1.25rem; }
   
-  /* Tablas responsivas con scroll horizontal suave */
+  /* Tablas responsivas con scroll horizontal suave y seguro */
   .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
+    border-radius: var(--radius-md);
   }
   table {
-    min-width: 620px;
+    min-width: 600px;
+    width: 100%;
   }
 
   /* Ocultar elementos secundarios en móvil */
@@ -1391,31 +1400,55 @@ tbody tr:hover td {
 @media (max-width: 480px) {
   html { font-size: 14px; }
   
-  /* Botones accesibles en toda la pantalla */
+  /* Botones accesibles y adaptables en toda la pantalla */
   .btn {
-    padding: 0.65rem 1.1rem;
+    padding: 0.6rem 1rem;
     font-size: 0.88rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
   }
   .btn--sm {
-    padding: 0.4rem 0.8rem;
+    padding: 0.4rem 0.75rem;
     font-size: 0.8rem;
+  }
+  .admin-nav-btn {
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.82rem !important;
   }
   
   /* Logo compacto en móvil */
   .site-logo__img { height: 2rem; }
   .site-logo__text { font-size: 1.1rem; }
   
-  /* Textos y Encabezados */
-  h1 { font-size: 1.6rem !important; }
-  h2 { font-size: 1.28rem !important; }
+  /* Textos y Encabezados fluidos */
+  h1 { font-size: 1.5rem !important; line-height: 1.25; }
+  h2 { font-size: 1.25rem !important; line-height: 1.3; }
   
-  /* Tarjetas de votación */
+  /* Tarjetas de votación y modales */
   .category-body {
     grid-template-columns: 1fr;
     padding: 1rem;
     gap: 0.85rem;
   }
-  .stat-card__value { font-size: 2.2rem !important; }
+  .stat-card__value { font-size: 2.1rem !important; }
+
+  /* Adaptación fluida de botones en tarjetas y modales en pantallas compactas */
+  .card > div[style*="justify-content:flex-end"],
+  .card > div[style*="justify-content: flex-end"] {
+    justify-content: flex-start !important;
+    width: 100%;
+    gap: 0.6rem !important;
+  }
+  .card > div[style*="justify-content:flex-end"] .btn,
+  .card > div[style*="justify-content: flex-end"] .btn,
+  .card > div[style*="justify-content:flex-end"] form,
+  .card > div[style*="justify-content: flex-end"] form {
+    flex: 1 1 auto;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 
