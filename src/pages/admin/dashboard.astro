@@ -17,9 +17,9 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
         <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Dashboard Unitrópico</h1>
         <p style="color:var(--clr-text-muted);">Estadísticas institucionales y participación en tiempo real del evento</p>
       </div>
-      <a href="/admin/historial" class="admin-nav-btn" style="padding:0.55rem 1.2rem;font-size:0.85rem;">
-        <span>📜</span>
-        <span class="admin-nav-btn__label">Archivar / Cierre de Jornada</span>
+      <a href="/admin/historial" class="btn btn--primary" style="padding:0.65rem 1.4rem;font-size:0.9rem;border-radius:100px;background:#00594E !important;color:#FFFFFF !important;border:2px solid #B5A160 !important;box-shadow:0 4px 14px rgba(0,89,78,0.25);font-weight:800;display:inline-flex;align-items:center;gap:0.55rem;text-decoration:none;">
+        <span style="font-size:1.1rem;">📜</span>
+        <span>Archivar / Cierre de Jornada</span>
       </a>
     </div>
 
@@ -114,7 +114,7 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
           </table>
         </div>
         {asistentes.length > 8 && (
-          <a href="/admin/asistentes" class="admin-nav-btn" style="float:right;margin-top:0.85rem;padding:0.45rem 1.1rem;">
+          <a href="/admin/asistentes" class="btn btn--primary" style="float:right;margin-top:0.85rem;padding:0.5rem 1.25rem;border-radius:100px;background:#00594E !important;color:#FFFFFF !important;border:1.5px solid #B5A160 !important;font-weight:700;text-decoration:none;">
             <span>Ver todos los {asistentes.length} asistentes →</span>
           </a>
         )}

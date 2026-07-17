@@ -894,6 +894,7 @@ tr:hover td {
   grid-template-columns: 240px 1fr;
   min-height: 100vh;
   transition: grid-template-columns 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #00594E !important;
 }
 
 .admin-layout.sidebar-collapsed {
@@ -901,8 +902,9 @@ tr:hover td {
 }
 
 .admin-sidebar {
-  background: var(--clr-surface);
-  border-right: 1.5px solid var(--clr-border);
+  background: #00594E !important;
+  color: #FFFFFF !important;
+  border-right: 2px solid #B5A160 !important;
   padding: 1.25rem 0;
   position: sticky;
   top: 0;
@@ -913,18 +915,22 @@ tr:hover td {
   flex-direction: column;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
   z-index: 60;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .admin-sidebar__logo {
   padding: 0 1.25rem 1.25rem;
-  border-bottom: 1px solid var(--clr-border);
+  border-bottom: 1px solid rgba(181, 161, 96, 0.35);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
   transition: padding 0.35s ease;
+}
+
+.admin-sidebar__logo-text {
+  color: #FFFFFF !important;
 }
 
 .admin-layout.sidebar-collapsed .admin-sidebar__logo-text,
@@ -954,10 +960,10 @@ tr:hover td {
   align-items: center;
   gap: 0.85rem;
   padding: 0.75rem 1.5rem;
-  color: var(--clr-text-muted);
+  color: rgba(255, 255, 255, 0.85) !important;
   transition: var(--transition);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.92rem;
+  font-weight: 600;
   text-decoration: none;
   border-left: 3px solid transparent;
   white-space: nowrap;
@@ -967,6 +973,7 @@ tr:hover td {
   font-size: 1.15rem;
   flex-shrink: 0;
   transition: transform 0.2s ease;
+  color: #FFFFFF !important;
 }
 
 .admin-nav__item:hover .admin-nav__icon {
@@ -974,15 +981,20 @@ tr:hover td {
 }
 
 .admin-nav__item:hover {
-  color: var(--clr-text);
-  background: var(--clr-surface-hover);
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.14) !important;
 }
 
 .admin-nav__item.active {
-  color: var(--clr-primary);
-  background: rgba(0, 89, 78, 0.12);
-  border-left-color: var(--clr-accent);
-  font-weight: 700;
+  color: #041815 !important;
+  background: #B5A160 !important;
+  border-left-color: #FFFFFF !important;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.admin-nav__item.active .admin-nav__icon {
+  color: #041815 !important;
 }
 
 .admin-main {
@@ -990,6 +1002,8 @@ tr:hover td {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  background: var(--clr-bg) !important;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -999,6 +1013,7 @@ tr:hover td {
   .admin-layout, .admin-layout.sidebar-collapsed {
     display: flex;
     flex-direction: column;
+    background: var(--clr-bg) !important;
   }
   .admin-sidebar {
     position: sticky;
@@ -1006,10 +1021,10 @@ tr:hover td {
     height: auto;
     width: 100%;
     padding: 0.85rem 1.25rem;
-    border-right: none;
-    border-bottom: 2.5px solid var(--clr-accent);
-    background: #00594E;
-    color: #FFFFFF;
+    border-right: none !important;
+    border-bottom: 2.5px solid var(--clr-accent) !important;
+    background: #00594E !important;
+    color: #FFFFFF !important;
     z-index: 100;
     box-shadow: 0 4px 20px rgba(0, 89, 78, 0.25);
   }
