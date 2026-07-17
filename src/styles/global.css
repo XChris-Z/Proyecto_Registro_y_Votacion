@@ -873,11 +873,20 @@ tr:hover td {
 }
 
 .page-hero__title {
-  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  color: var(--clr-primary);
+  background: none;
+  -webkit-background-clip: border-box;
+  -webkit-text-fill-color: var(--clr-primary);
+  background-clip: border-box;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+[data-theme="dark"] .page-hero__title {
+  background: linear-gradient(135deg, #ffffff 0%, #B5A160 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1rem;
 }
 
 .page-hero__sub {
@@ -904,7 +913,7 @@ tr:hover td {
 .admin-sidebar {
   background: #00594E !important;
   color: #FFFFFF !important;
-  border-right: 2px solid #B5A160 !important;
+  border-right: none !important;
   padding: 1.25rem 0;
   position: sticky;
   top: 0;
@@ -915,7 +924,7 @@ tr:hover td {
   flex-direction: column;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
   z-index: 60;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  box-shadow: none !important;
 }
 
 .admin-sidebar__logo {
@@ -1004,6 +1013,7 @@ tr:hover td {
   min-height: 100vh;
   width: 100%;
   background: var(--clr-bg) !important;
+  border-left: 2px solid #B5A160 !important;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -1014,6 +1024,9 @@ tr:hover td {
     display: flex;
     flex-direction: column;
     background: var(--clr-bg) !important;
+  }
+  .admin-main {
+    border-left: none !important;
   }
   .admin-sidebar {
     position: sticky;

@@ -59,7 +59,7 @@ const navItems = [
             class="btn-desktop-toggle hide-mobile"
             title="Colapsar o expandir menú lateral"
             onclick="toggleSidebarDesktop()"
-            style="background:rgba(0,89,78,0.06);border:1.5px solid var(--clr-border);border-radius:10px;padding:0.4rem 0.6rem;color:var(--clr-primary);cursor:pointer;font-weight:800;"
+            style="background:rgba(181,161,96,0.25);border:1.5px solid #B5A160;border-radius:8px;padding:0.45rem 0.65rem;color:#FFFFFF;cursor:pointer;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:inline-flex;align-items:center;justify-content:center;transition:all 0.2s ease;"
           >
             <span id="desktop-toggle-icon">◀</span>
           </button>
@@ -70,7 +70,7 @@ const navItems = [
             class="btn-mobile-hamburger hide-desktop"
             title="Menú del Administrador"
             onclick="toggleSidebarMobile()"
-            style="background:rgba(181,161,96,0.22);border:1.5px solid #B5A160;border-radius:10px;padding:0.45rem 0.85rem;color:#fff;font-weight:800;cursor:pointer;display:none;align-items:center;gap:0.45rem;"
+            style="background:rgba(181,161,96,0.25);border:1.5px solid #B5A160;border-radius:8px;padding:0.45rem 0.85rem;color:#FFFFFF;font-weight:800;cursor:pointer;display:none;align-items:center;gap:0.45rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);"
           >
             <span id="mobile-hamburger-icon" style="font-size:1.1rem;">☰</span>
             <span style="font-size:0.85rem;">Menú</span>
@@ -180,12 +180,12 @@ const navItems = [
 
           <slot />
         </div>
-      </main>
-    </div>
 
-    <!-- Pie de página institucional abarcando 100% del ancho debajo del sidebar y contenido -->
-    <div style="width:100%;flex-shrink:0;position:relative;z-index:10;">
-      <Footer />
+        <!-- Pie de página integrado en la columna principal -->
+        <div style="width:100%;flex-shrink:0;margin-top:auto;">
+          <Footer />
+        </div>
+      </main>
     </div>
 
     <!-- Modal Seguro de Cambio de Contraseña -->
