@@ -4,7 +4,14 @@ import { obtenerCategorias, obtenerProyectos, obtenerVotosDeAsistente } from '@l
 
 // Verificar sesión
 const asistente_id = Number(Astro.cookies.get('votacion_session')?.value || 0);
-const nombre = Astro.cookies.get('votacion_nombre')?.value || 'Participante';
+let nombreRaw = Astro.cookies.get('votacion_nombre')?.value || 'Participante';
+
+// Limpieza de seguridad en caso de que en pruebas o por error se haya guardado una frase del sistema como nombre
+if (nombreRaw.trim().toLowerCase().startsWith('has ') || nombreRaw.trim().toLowerCase() === 'has') {
+  nombreRaw = 'Participante';
+}
+const primerNombre = nombreRaw.trim().split(' ')[0] || 'Participante';
+const nombreDisplay = primerNombre.charAt(0).toUpperCase() + primerNombre.slice(1).toLowerCase();
 
 if (!asistente_id) {
   return Astro.redirect('/votacion');
@@ -26,93 +33,118 @@ const proyectosPorCategoria = categorias.map(cat => ({
 ---
 
 <MainLayout title="Votar por Proyectos">
-  <div style="padding:2rem 0 4rem;">
+  <div style="padding:2.5rem 0 4.5rem;">
     <div class="container">
 
       <!-- Header de votación -->
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:2.5rem;">
         <div>
-          <div class="page-hero__eyebrow" style="margin-bottom:0.5rem;">
-            <span>🗳️</span> Panel de Votación
+          <div class="page-hero__eyebrow" style="margin-bottom:0.6rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <span>🗳️</span> Panel de Votación Oficial
           </div>
           <h1 style="
-            font-size:clamp(1.5rem,3vw,2.2rem);
+            font-size:clamp(1.7rem,3.5vw,2.5rem);
             color: var(--clr-primary);
-          ">Hola, {nombre.split(' ')[0]} 👋</h1>
+            font-weight: 800;
+            letter-spacing: -0.02em;
+          ">Hola, {nombreDisplay} 👋</h1>
+          <p style="color:var(--clr-text-muted);font-size:0.98rem;margin-top:0.3rem;">
+            Selecciona tu proyecto favorito en cada categoría y emite tu voto de manera segura.
+          </p>
         </div>
 
         <!-- Progreso de votos -->
-        <div class="glass" style="padding:1.25rem 1.75rem;min-width:220px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-            <span style="font-size:0.8rem;color:var(--clr-text-muted);font-weight:600;">Votos emitidos</span>
-            <strong style="color:var(--clr-primary-light);">{categoriasVotadas.length}/{categorias.length}</strong>
+        <div class="glass glass--hover" style="padding:1.4rem 1.8rem;min-width:250px;border-radius:18px;border:1.5px solid var(--clr-border);box-shadow:var(--shadow-md);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.65rem;">
+            <span style="font-size:0.85rem;color:var(--clr-text-muted);font-weight:700;">Progreso de votación</span>
+            <strong style="color:var(--clr-primary-light);font-size:1.1rem;font-weight:800;">{categoriasVotadas.length}/{categorias.length}</strong>
           </div>
-          <div class="progress-bar">
-            <div class="progress-bar__fill" style={`width:${(categoriasVotadas.length / Math.max(categorias.length, 1)) * 100}%`}></div>
+          <div class="progress-bar" style="height:8px;border-radius:100px;background:rgba(0,0,0,0.06);overflow:hidden;">
+            <div class="progress-bar__fill" style={`width:${(categoriasVotadas.length / Math.max(categorias.length, 1)) * 100}%;height:100%;border-radius:100px;`}></div>
           </div>
-          {votosCompletos && (
-            <p style="font-size:0.75rem;color:var(--clr-success);margin-top:0.5rem;text-align:center;font-weight:600;">
-              ✅ ¡Votación completa!
+          {votosCompletos ? (
+            <p style="font-size:0.82rem;color:var(--clr-success);margin-top:0.65rem;text-align:center;font-weight:700;display:flex;align-items:center;justify-content:center;gap:0.35rem;">
+              <span>✅</span> ¡Votación completa!
+            </p>
+          ) : (
+            <p style="font-size:0.78rem;color:var(--clr-text-dim);margin-top:0.65rem;text-align:center;">
+              {categorias.length - categoriasVotadas.length} {categorias.length - categoriasVotadas.length === 1 ? 'categoría pendiente' : 'categorías pendientes'}
             </p>
           )}
         </div>
       </div>
 
       {votosCompletos && (
-        <div class="alert alert--success mb-4" style="font-size:1rem;padding:1.25rem 1.5rem;">
-          <span style="font-size:1.3rem;">🎉</span>
+        <div class="alert alert--success mb-4" style="font-size:1.02rem;padding:1.5rem 1.8rem;border-radius:18px;border:2px solid var(--clr-success);background:linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(0, 89, 78, 0.08) 100%);box-shadow:0 10px 30px rgba(16, 185, 129, 0.15);display:flex;align-items:center;gap:1.2rem;">
+          <div style="font-size:2.4rem;flex-shrink:0;">🎉</div>
           <div>
-            <strong>¡Gracias por votar!</strong> Has emitido tus votos en las {categorias.length} categorías.
-            <a href="/votacion/gracias" style="display:block;margin-top:0.25rem;font-size:0.85rem;">Ver confirmación →</a>
+            <div style="font-weight:800;color:var(--clr-primary);font-size:1.15rem;margin-bottom:0.25rem;">
+              ¡Muchas gracias por votar, {nombreDisplay}!
+            </div>
+            <div style="color:var(--clr-text-muted);font-size:0.95rem;line-height:1.5;">
+              Has registrado exitosamente tus votos en las <strong>{categorias.length} categorías oficiales</strong> del evento. Tu participación ha sido guardada en el sistema.
+            </div>
+            <div style="margin-top:0.85rem;">
+              <a href="/votacion/gracias" class="btn btn--sm btn--primary" style="padding:0.55rem 1.25rem;border-radius:100px;font-weight:700;">
+                <span>Ver confirmación oficial →</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
 
       {categorias.length === 0 && (
-        <div class="alert alert--info" style="margin-bottom:2rem;">
-          <span>ℹ️</span> Aún no hay categorías ni proyectos configurados. El administrador debe configurarlos primero.
+        <div class="alert alert--info" style="margin-bottom:2rem;padding:1.5rem;border-radius:16px;">
+          <span style="font-size:1.3rem;">ℹ️</span>
+          <div>
+            <strong>Categorías en preparación:</strong> Aún no hay categorías ni proyectos activos. Por favor, consulta con el administrador del evento o regresa en unos minutos.
+          </div>
         </div>
       )}
 
       <!-- Categorías y proyectos -->
-      <div style="display:grid;gap:1.5rem;" id="categorias-container">
+      <div style="display:grid;gap:2rem;" id="categorias-container">
         {proyectosPorCategoria.map((cat, catIdx) => (
           <div
             class={`category-section ${cat.votado ? 'category-section--done' : ''}`}
             id={`cat-${cat.id}`}
             data-categoria-id={cat.id}
             data-votado={cat.votado ? 'true' : 'false'}
+            style="border-radius:20px;border:1.5px solid var(--clr-border);background:var(--clr-surface);box-shadow:var(--shadow-md);overflow:hidden;transition:all 0.3s ease;"
           >
-            <div class="category-header">
+            <div class="category-header" style="padding:1.4rem 1.8rem;background:linear-gradient(90deg, rgba(0, 89, 78, 0.06) 0%, rgba(181, 161, 96, 0.05) 100%);border-bottom:1px solid var(--clr-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
               <div>
-                <div style="display:flex;align-items:center;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:1rem;">
                   <span style={`
-                    width:32px;height:32px;border-radius:8px;
-                    background:${catIdx === 0 ? 'rgba(108,99,255,0.2)' : catIdx === 1 ? 'rgba(245,197,24,0.15)' : 'rgba(255,107,107,0.15)'};
-                    display:flex;align-items:center;justify-content:center;font-size:1rem;
-                    border:1px solid ${catIdx === 0 ? 'rgba(108,99,255,0.3)' : catIdx === 1 ? 'rgba(245,197,24,0.3)' : 'rgba(255,107,107,0.3)'};
+                    width:44px;height:44px;border-radius:12px;
+                    background:${catIdx === 0 ? 'rgba(108,99,255,0.18)' : catIdx === 1 ? 'rgba(245,197,24,0.18)' : 'rgba(16,185,129,0.18)'};
+                    display:flex;align-items:center;justify-content:center;font-size:1.35rem;
+                    border:1px solid ${catIdx === 0 ? 'rgba(108,99,255,0.35)' : catIdx === 1 ? 'rgba(245,197,24,0.35)' : 'rgba(16,185,129,0.35)'};
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
                   `}>
                     {catIdx === 0 ? '💡' : catIdx === 1 ? '🌿' : '🌍'}
                   </span>
                   <div>
-                    <h3 style="font-size:1rem;margin:0;">{cat.nombre}</h3>
+                    <h3 style="font-size:1.15rem;margin:0;color:var(--clr-text);font-weight:800;">{cat.nombre}</h3>
                     {cat.descripcion && (
-                      <p style="font-size:0.8rem;margin:0;color:var(--clr-text-muted);">{cat.descripcion}</p>
+                      <p style="font-size:0.86rem;margin:0.2rem 0 0;color:var(--clr-text-muted);line-height:1.4;">{cat.descripcion}</p>
                     )}
                   </div>
                 </div>
               </div>
               <div>
                 {cat.votado
-                  ? <span class="badge badge--green">✓ Votado</span>
-                  : <span class="badge badge--purple">Pendiente</span>
+                  ? <span class="badge badge--green" style="padding:0.45rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;box-shadow:0 2px 8px rgba(16,185,129,0.2);">✓ Votado</span>
+                  : <span class="badge badge--purple" style="padding:0.45rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;">Pendiente</span>
                 }
               </div>
             </div>
 
-            <div class="category-body">
+            <div class="category-body" style="padding:1.6rem 1.8rem;display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1.25rem;">
               {cat.proyectos.length === 0 && (
-                <p style="color:var(--clr-text-dim);font-size:0.85rem;grid-column:1/-1;">Sin proyectos en esta categoría aún.</p>
+                <p style="color:var(--clr-text-dim);font-size:0.9rem;grid-column:1/-1;padding:1.5rem 0;text-align:center;">
+                  No hay proyectos registrados aún en esta categoría.
+                </p>
               )}
               {cat.proyectos.map(proyecto => (
                 <div
@@ -123,17 +155,20 @@ const proyectosPorCategoria = categorias.map(cat => ({
                   onclick={!cat.votado ? `selectProyecto(this)` : undefined}
                   role={!cat.votado ? 'button' : undefined}
                   tabindex={!cat.votado ? 0 : undefined}
+                  style="border-radius:16px;padding:1.4rem;position:relative;"
                 >
-                  <div class="vote-card__check">
+                  <div class="vote-card__check" style="width:26px;height:26px;border-radius:50%;font-size:0.8rem;">
                     {(cat.votado && cat.votoProyectoId === proyecto.id) ? '✓' : ''}
                   </div>
-                  <div style="padding-right:2rem;">
-                    <h4 style="font-size:0.95rem;margin:0 0 0.4rem;">{proyecto.nombre}</h4>
+                  <div style="padding-right:2.2rem;">
+                    <h4 style="font-size:1.05rem;margin:0 0 0.5rem;color:var(--clr-text);font-weight:700;">{proyecto.nombre}</h4>
                     {proyecto.descripcion && (
-                      <p style="font-size:0.8rem;margin:0 0 0.5rem;line-height:1.5;">{proyecto.descripcion}</p>
+                      <p style="font-size:0.85rem;margin:0 0 0.75rem;color:var(--clr-text-muted);line-height:1.5;">{proyecto.descripcion}</p>
                     )}
                     {proyecto.autores && (
-                      <span style="font-size:0.75rem;color:var(--clr-text-dim);">👤 {proyecto.autores}</span>
+                      <div style="font-size:0.78rem;color:var(--clr-primary-light);font-weight:600;display:flex;align-items:center;gap:0.35rem;padding-top:0.4rem;border-top:1px solid rgba(0,0,0,0.06);">
+                        <span>👤</span> <span>{proyecto.autores}</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -141,17 +176,18 @@ const proyectosPorCategoria = categorias.map(cat => ({
             </div>
 
             {!cat.votado && cat.proyectos.length > 0 && (
-              <div style="padding:1rem 1.5rem;border-top:1px solid var(--clr-border);display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                <p style="font-size:0.85rem;color:var(--clr-text-muted);margin:0;">
-                  Selecciona un proyecto y confirma tu voto
+              <div style="padding:1.1rem 1.8rem;border-top:1px solid var(--clr-border);background:rgba(0, 89, 78, 0.02);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                <p style="font-size:0.88rem;color:var(--clr-text-muted);margin:0;font-weight:500;">
+                  💡 Selecciona tu proyecto favorito arriba y haz clic en votar para confirmar.
                 </p>
                 <button
                   id={`btn-votar-${cat.id}`}
                   class="btn btn--primary"
                   disabled
                   onclick={`confirmarVoto(${cat.id})`}
+                  style="padding:0.7rem 1.6rem;border-radius:12px;font-weight:700;box-shadow:0 4px 14px rgba(0, 89, 78, 0.2);"
                 >
-                  Votar →
+                  <span>Votar →</span>
                 </button>
               </div>
             )}
@@ -159,34 +195,37 @@ const proyectosPorCategoria = categorias.map(cat => ({
         ))}
       </div>
 
-      <div style="margin-top:2rem;text-align:center;">
-        <a href="/votacion" style="font-size:0.85rem;color:var(--clr-text-dim);">← Salir de la votación</a>
+      <div style="margin-top:2.5rem;text-align:center;">
+        <a href="/votacion" class="btn btn--outline" style="font-size:0.9rem;padding:0.6rem 1.4rem;border-radius:100px;">
+          ← Salir del panel de votación
+        </a>
       </div>
     </div>
   </div>
 
   <!-- Modal de confirmación -->
   <div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
+    <div class="modal" style="border-radius:24px;padding:2rem;max-width:480px;box-shadow:var(--shadow-lg);border:1.5px solid var(--clr-border);">
       <div style="text-align:center;margin-bottom:1.5rem;">
-        <div style="font-size:2.5rem;margin-bottom:0.75rem;">🗳️</div>
-        <h3 style="margin-bottom:0.5rem;">¿Confirmas tu voto?</h3>
-        <p style="font-size:0.9rem;">
-          Estás votando por <strong id="modal-proyecto-nombre" style="color:var(--clr-primary-light);">—</strong>
-          en la categoría <strong id="modal-categoria-nombre" style="color:var(--clr-accent);">—</strong>.
+        <div style="font-size:3rem;margin-bottom:0.75rem;">🗳️</div>
+        <h3 style="margin-bottom:0.6rem;color:var(--clr-text);font-weight:800;font-size:1.4rem;">¿Confirmar tu elección?</h3>
+        <p style="font-size:0.95rem;color:var(--clr-text-muted);line-height:1.6;">
+          Vas a registrar tu voto por <strong id="modal-proyecto-nombre" style="color:var(--clr-primary);font-weight:800;background:rgba(0, 89, 78, 0.1);padding:0.15rem 0.5rem;border-radius:6px;">—</strong> en la categoría <strong id="modal-categoria-nombre" style="color:var(--clr-accent2);font-weight:800;">—</strong>.
         </p>
       </div>
 
-      <div class="alert alert--info" style="margin-bottom:1.5rem;font-size:0.88rem;align-items:flex-start;line-height:1.5;">
-        <span style="font-size:1.15rem;flex-shrink:0;">⚠️</span>
+      <div class="alert alert--info" style="margin-bottom:1.75rem;font-size:0.88rem;align-items:flex-start;line-height:1.5;padding:1rem 1.2rem;border-radius:14px;border:1px solid rgba(181, 161, 96, 0.4);">
+        <span style="font-size:1.25rem;flex-shrink:0;margin-top:0.05rem;">⚠️</span>
         <div>
-          Esta acción es <strong>irreversible</strong>. Una vez confirmado, no podrás cambiar tu voto en esta categoría.
+          <strong>Elección definitiva:</strong> Una vez confirmado tu voto, será registrado de manera oficial y <strong>no podrás cambiarlo</strong> en esta categoría.
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-        <button class="btn btn--outline" onclick="cerrarModal()">Cancelar</button>
-        <button id="confirmar-btn" class="btn btn--primary" onclick="enviarVoto()">
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:0.85rem;">
+        <button class="btn btn--outline" onclick="cerrarModal()" style="border-radius:12px;font-weight:600;padding:0.8rem;">
+          Cancelar
+        </button>
+        <button id="confirmar-btn" class="btn btn--primary" onclick="enviarVoto()" style="border-radius:12px;font-weight:700;padding:0.8rem;box-shadow:0 6px 18px rgba(0, 89, 78, 0.25);">
           ✓ Confirmar voto
         </button>
       </div>

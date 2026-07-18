@@ -8,7 +8,9 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   }
 
   const formData = await request.formData();
-  const identificador = (formData.get('identificador') as string || '').trim();
+  const documento = (formData.get('documento') as string || '').trim();
+  const correo = (formData.get('correo') as string || '').trim();
+  const identificador = documento || correo || (formData.get('identificador') as string || '').trim();
 
   if (!identificador) {
     return redirect('/votacion?error=empty');
@@ -20,13 +22,19 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     return redirect('/votacion?error=notfound');
   }
 
+  // Limpiar y capitalizar adecuadamente el nombre antes de guardarlo
+  let nombreLimpio = asistente.nombre.trim();
+  if (nombreLimpio.toLowerCase().startsWith('has ') || nombreLimpio.toLowerCase() === 'has') {
+    nombreLimpio = 'Participante';
+  }
+
   // Guardar en cookie de sesión (temporal, dura la sesión del navegador)
   cookies.set('votacion_session', String(asistente.id), {
     path: '/',
     httpOnly: true,
     sameSite: 'lax',
   });
-  cookies.set('votacion_nombre', asistente.nombre, {
+  cookies.set('votacion_nombre', nombreLimpio, {
     path: '/',
     httpOnly: false,
     sameSite: 'lax',
