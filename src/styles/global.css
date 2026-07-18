@@ -1039,14 +1039,42 @@ tr:hover td {
   color: #FFFFFF;
 }
 
-.site-header .btn--outline {
-  border-color: var(--clr-accent);
-  color: #FFFFFF;
+.site-header nav .btn,
+.site-header nav .admin-nav-btn {
+  padding: 0.42rem 0.95rem !important;
+  border-radius: 100px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid var(--clr-accent) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
 }
 
-.site-header .btn--outline:hover {
-  background: var(--clr-accent);
-  color: #041815;
+.site-header nav .btn--outline {
+  background: transparent !important;
+}
+
+.site-header nav .btn--primary {
+  background: var(--clr-primary) !important;
+}
+
+.site-header nav .admin-nav-btn {
+  background: rgba(181, 161, 96, 0.18) !important;
+}
+
+.site-header nav .btn:hover,
+.site-header nav .admin-nav-btn:hover {
+  color: #041815 !important;
+  background: var(--clr-accent) !important;
+  border-color: #d4bf7a !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(181, 161, 96, 0.45) !important;
 }
 
 /* ─── PAGE SECTIONS ──────────────────────────────────────── */
@@ -1531,9 +1559,10 @@ tbody tr:hover td {
     width: 100%;
     justify-content: flex-end;
   }
-  .site-header nav .btn {
-    padding: 0.45rem 0.85rem;
-    font-size: 0.82rem;
+  .site-header nav .btn,
+  .site-header nav .admin-nav-btn {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
   }
 
   /* Admin Topbar y Contenido */
