@@ -29,7 +29,6 @@ const { title, description = 'Sistema Institucional de Registro y Votación — 
             <span class="site-logo__text">EventoVota</span>
           </a>
           <nav style="display:flex;gap:0.75rem;align-items:center;">
-            <ThemeToggle />
             <a href="/" class="btn btn--outline btn--sm">Registro</a>
             <a href="/votacion" class="btn btn--primary btn--sm">Votar</a>
             <a
@@ -44,6 +43,8 @@ const { title, description = 'Sistema Institucional de Registro y Votación — 
               </svg>
               <span class="admin-nav-btn__label">Admin</span>
             </a>
+            <div style="width:1px;height:24px;background:rgba(255, 255, 255, 0.25);margin:0 0.15rem;" class="hide-mobile" aria-hidden="true"></div>
+            <ThemeToggle />
           </nav>
         </div>
       </div>
