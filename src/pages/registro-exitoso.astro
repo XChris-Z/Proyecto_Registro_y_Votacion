@@ -27,8 +27,7 @@ const dependencia = Astro.url.searchParams.get('dependencia') || '';
       ">¡Registro exitoso!</h1>
 
       <p class="animate-fade-up" style="animation-delay:0.2s;font-size:1.1rem;margin:1rem 0 2rem;">
-        Gracias <strong style="color:var(--clr-text);">{nombre}</strong>, tu asistencia al evento ha sido confirmada.
-        {dependencia && <span> Representando a <strong style="color:var(--clr-primary-light);">{dependencia}</strong>.</span>}
+        Gracias, <strong style="color:var(--clr-text);">{nombre}</strong>. Tu asistencia al evento ha sido confirmada.{dependencia && <span> Representas a <strong style="color:var(--clr-primary-light);">{dependencia}</strong>.</span>}
       </p>
 
       <div class="glass animate-fade-up" style="animation-delay:0.3s;padding:1.5rem;margin-bottom:2rem;text-align:left;">
@@ -37,7 +36,7 @@ const dependencia = Astro.url.searchParams.get('dependencia') || '';
           <strong>¿Sabías que puedes votar?</strong>
         </div>
         <p style="font-size:0.9rem;margin:0;">
-          Con tu correo o documento puedes acceder al sistema de votación y votar por tus proyectos favoritos en las 3 categorías del evento.
+          Con tu correo institucional o número de documento puedes acceder al sistema y elegir tus proyectos favoritos en las categorías oficiales del evento.
         </p>
       </div>
 
@@ -46,7 +45,7 @@ const dependencia = Astro.url.searchParams.get('dependencia') || '';
           🗳️ Ir a Votar
         </a>
         <a href="/" class="btn btn--outline btn--lg">
-          Registrar otro
+          Registrar otro participante
         </a>
       </div>
 
