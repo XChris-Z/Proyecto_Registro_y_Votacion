@@ -34,6 +34,11 @@ database/*.db-wal
 .vercel
 .env*
 
-# Agents
+# Agents & AI Assistants
+.agents/
 .Agents/
+AGENTS.md
+CLAUDE.md
 .claude/
+.gemini/
+.cursor/
