@@ -33,3 +33,7 @@ database/*.db-wal
 
 .vercel
 .env*
+
+# Agents
+.Agents/
+.claude/
