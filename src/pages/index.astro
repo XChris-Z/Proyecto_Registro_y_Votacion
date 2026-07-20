@@ -1,9 +1,12 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import { obtenerJornadaActual } from '@lib/db';
+import { obtenerJornadaActual, obtenerEstadisticasEnVivo } from '@lib/db';
 
 const error = Astro.url.searchParams.get('error');
-const jornadaActual = await obtenerJornadaActual();
+const [jornadaActual, stats] = await Promise.all([
+  obtenerJornadaActual(),
+  obtenerEstadisticasEnVivo()
+]);
 const estaCerrada = jornadaActual.estado === 'CERRADA';
 ---
 
@@ -177,33 +180,41 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
         )}
       </div>
 
-      <!-- Guía visual del proceso (no interactiva) -->
-      <div class="process-steps animate-fade-up" style="animation-delay:0.4s;">
-        <div class="process-steps__header">
-          <span>⚡</span> Guía rápida del proceso
+      <!-- Sección de Estadísticas en Tiempo Real -->
+      <div class="live-stats-section animate-fade-up" style="animation-delay:0.4s;">
+        <div class="live-stats-header">
+          <div class="live-badge">
+            <span class="live-badge__dot"></span>
+            <span>⚡ En Vivo — Participación</span>
+          </div>
+          <span class="live-stats-header__title">Actualización automática al instante</span>
         </div>
-        <div class="process-steps__grid">
-          {[
-            { num: 'PASO 1', icon: '✍️', title: 'Completa', desc: '5 campos simples' },
-            { num: 'PASO 2', icon: '✅', title: 'Confirma', desc: 'Un solo clic' },
-            { num: 'PASO 3', icon: '🗳️', title: 'Vota', desc: 'En los proyectos' },
-          ].map((step, idx) => (
-            <>
-              <div class="process-step">
-                <span class="process-step__number">{step.num}</span>
-                <div class="process-step__icon">{step.icon}</div>
-                <div class="process-step__content">
-                  <div class="process-step__title">{step.title}</div>
-                  <div class="process-step__desc">{step.desc}</div>
-                </div>
-              </div>
-              {idx < 2 && (
-                <div class="process-connector" aria-hidden="true">
-                  ➔
-                </div>
-              )}
-            </>
-          ))}
+
+        <div class="live-stats-grid">
+          <!-- Personas Registradas -->
+          <div class="live-stat-box">
+            <div class="live-stat-box__icon">👥</div>
+            <div class="live-stat-box__content">
+              <div id="live-asistentes" class="live-stat-box__value">{stats.asistentes}</div>
+              <div class="live-stat-box__label">Personas Registradas</div>
+              <div class="live-stat-box__sub">Estudiantes, docentes y personal institucional</div>
+            </div>
+          </div>
+
+          <!-- Total Votos Emitidos -->
+          <div class="live-stat-box">
+            <div class="live-stat-box__icon">🗳️</div>
+            <div class="live-stat-box__content">
+              <div id="live-votos" class="live-stat-box__value">{stats.votos}</div>
+              <div class="live-stat-box__label">Votos Emitidos</div>
+              <div class="live-stat-box__sub">Participación activa en prototipos y proyectos</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="live-stats-footer">
+          <span class="live-stats-footer__spinner"></span>
+          <span>Sincronizando con el servidor institucional en tiempo real</span>
         </div>
       </div>
     </div>
@@ -267,4 +278,31 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
     btnSpinner.classList.remove('hidden');
     submitBtn.disabled = true;
   });
+
+  // Sincronización en tiempo real con /api/stats
+  function updateLiveStats() {
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success) {
+          animateCountChange('live-asistentes', data.asistentes);
+          animateCountChange('live-votos', data.votos);
+        }
+      })
+      .catch(() => { /* Falla silenciosa si no hay red */ });
+  }
+
+  function animateCountChange(elementId: string, newValue: number) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const currentValue = parseInt(el.textContent || '0', 10);
+    if (currentValue !== newValue) {
+      el.classList.add('updated');
+      el.textContent = newValue.toString();
+      setTimeout(() => el.classList.remove('updated'), 300);
+    }
+  }
+
+  // Polling cada 4 segundos
+  setInterval(updateLiveStats, 4000);
 </script>

@@ -580,3 +580,24 @@ export async function reiniciarJornada(
   }
 }
 
+export async function obtenerEstadisticasEnVivo(): Promise<{ asistentes: number; votos: number }> {
+  try {
+    const [resAsistentes, resVotos] = await Promise.all([
+      supabase.from('asistentes').select('*', { count: 'exact', head: true }),
+      supabase.from('votos').select('*', { count: 'exact', head: true })
+    ]);
+    if (resAsistentes.error || resVotos.error || resAsistentes.count === null || resVotos.count === null) {
+      const asistentes = await obtenerAsistentes();
+      const resultados = await obtenerResultados();
+      const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
+      return { asistentes: asistentes.length, votos: totalVotos };
+    }
+    return {
+      asistentes: resAsistentes.count,
+      votos: resVotos.count,
+    };
+  } catch {
+    return { asistentes: 0, votos: 0 };
+  }
+}
+
