@@ -33,6 +33,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 
+  // Verificar que el proyecto pertenece a la categoría
+  const proyecto = await import('@lib/db').then(db => db.obtenerProyectoPorId(proyecto_id));
+  
+  if (!proyecto || proyecto.categoria_id !== categoria_id) {
+    return new Response(JSON.stringify({ error: 'El proyecto no pertenece a la categoría seleccionada o no existe' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const result = await emitirVoto({ asistente_id, proyecto_id, categoria_id });
 
   if (!result.success) {
