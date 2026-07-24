@@ -980,6 +980,46 @@ tr:hover td {
   animation: floatY 3s ease-in-out infinite;
 }
 
+/* ─── SCROLL ANIMATIONS ──────────────────────────────────── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-on-scroll.reveal-left {
+  transform: translateX(-40px);
+}
+.reveal-on-scroll.reveal-left.is-revealed {
+  transform: translateX(0);
+}
+
+.reveal-on-scroll.reveal-right {
+  transform: translateX(40px);
+}
+.reveal-on-scroll.reveal-right.is-revealed {
+  transform: translateX(0);
+}
+
+.reveal-on-scroll.reveal-scale {
+  transform: scale(0.93);
+}
+.reveal-on-scroll.reveal-scale.is-revealed {
+  transform: scale(1);
+}
+
+/* Delays for staggered elements */
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+
 /* Shimmer sobre un elemento (texto o borde) */
 .shimmer-text {
   background: linear-gradient(90deg,

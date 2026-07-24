@@ -264,6 +264,36 @@ const navItems = [
       <div class="spinner" style="width:32px;height:32px;"></div>
       <p style="color:var(--clr-text-muted);font-size:0.9rem;">Verificando sesión...</p>
     </div>
+
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        const elementsToAnimate = document.querySelectorAll('.card, .stats-grid > div, .table-wrapper, .admin-page-enter');
+        elementsToAnimate.forEach(el => {
+          if (!el.classList.contains('reveal-on-scroll')) {
+            el.classList.add('reveal-on-scroll');
+          }
+        });
+
+        const observerOptions = {
+          root: null,
+          rootMargin: '0px 0px -50px 0px',
+          threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+          observer.observe(el);
+        });
+      });
+    </script>
   </body>
 </html>
 

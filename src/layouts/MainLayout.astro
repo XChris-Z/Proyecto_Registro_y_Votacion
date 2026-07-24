@@ -97,5 +97,36 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
         padding-left: 0.1rem;
       }
     </style>
+
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Automatically add reveal classes to certain elements if they don't have it
+        const elementsToAnimate = document.querySelectorAll('.card, .vote-card, .category-section, .live-stat-box');
+        elementsToAnimate.forEach(el => {
+          if (!el.classList.contains('reveal-on-scroll')) {
+            el.classList.add('reveal-on-scroll');
+          }
+        });
+
+        const observerOptions = {
+          root: null,
+          rootMargin: '0px 0px -50px 0px',
+          threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+          observer.observe(el);
+        });
+      });
+    </script>
   </body>
 </html>
