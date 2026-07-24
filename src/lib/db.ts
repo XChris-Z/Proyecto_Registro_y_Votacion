@@ -462,7 +462,7 @@ export async function obtenerJornadaActual(): Promise<JornadaActual> {
     if (error || !data) {
       return {
         id: 1,
-        nombre: 'Jornada Institucional de Votación 2026',
+        nombre: 'Votación EXIS 9.ª edición',
         descripcion: 'Elección Oficial de Proyectos y Prototipos — Unitrópico',
         fecha_inicio: new Date().toISOString(),
         estado: 'ACTIVA'
@@ -475,7 +475,7 @@ export async function obtenerJornadaActual(): Promise<JornadaActual> {
   } catch {
     return {
       id: 1,
-      nombre: 'Jornada Institucional de Votación 2026',
+      nombre: 'Votación EXIS 9.ª edición',
       descripcion: 'Elección Oficial de Proyectos y Prototipos — Unitrópico',
       fecha_inicio: new Date().toISOString(),
       estado: 'ACTIVA'
@@ -494,7 +494,7 @@ export async function guardarJornadaActual(
       .from('jornada_actual')
       .upsert({
         id: 1,
-        nombre: nombre || 'Jornada Institucional de Votación',
+        nombre: nombre || 'Votación EXIS 9.ª edición',
         descripcion: descripcion || '',
         fecha_inicio: new Date().toISOString(),
         estado,
@@ -507,7 +507,7 @@ export async function guardarJornadaActual(
           .from('jornada_actual')
           .upsert({
             id: 1,
-            nombre: nombre || 'Jornada Institucional de Votación',
+            nombre: nombre || 'Votación EXIS 9.ª edición',
             descripcion: descripcion || '',
             fecha_inicio: new Date().toISOString(),
           });

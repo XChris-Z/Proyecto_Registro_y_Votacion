@@ -8,7 +8,12 @@ interface Props {
   activePage?: string;
 }
 
+import { obtenerJornadaActual } from '../lib/db';
+
 const { title, activePage = '' } = Astro.props;
+const jornadaActual = await obtenerJornadaActual();
+const siteName = jornadaActual.nombre || 'Votación EXIS 9.ª edición';
+const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlight-exis">EXIS</span>');
 
 const exitoParam = Astro.url.searchParams.get('exito');
 const errorParam = Astro.url.searchParams.get('error');
@@ -30,7 +35,7 @@ const navItems = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
-    <title>{title} — Admin EventoVota</title>
+    <title>{title} — Admin {siteName}</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -50,7 +55,7 @@ const navItems = [
           <a href="/" class="site-logo" style="color:var(--clr-text);display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
             <img src="/logo.png" alt="Logo Unitrópico" style="height:2.1rem;width:auto;" />
             <div>
-              <span class="admin-sidebar__logo-text" style="font-weight:800;font-size:1.2rem;display:block;">EventoVota</span>
+              <span class="admin-sidebar__logo-text" style="font-weight:800;font-size:1.2rem;display:block;" set:html={highlightedSiteName}></span>
               <p class="admin-sidebar__logo-text" style="font-size:0.75rem;color:var(--clr-text-muted);margin:0;">Panel Admin Unitrópico</p>
             </div>
           </a>
@@ -535,6 +540,17 @@ const navItems = [
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+:global(.text-highlight-exis) {
+  background: linear-gradient(135deg, #FFD700 0%, #F39C12 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  font-size: 1.15em;
+  text-shadow: 0px 3px 12px rgba(243, 156, 18, 0.4);
+  display: inline-block;
+  padding-left: 0.1rem;
 }
 </style>
 
