@@ -233,5 +233,5 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
     });
   }
 
-  document.addEventListener('DOMContentLoaded', animateCounters);
+  document.addEventListener('astro:page-load', animateCounters);
 </script>

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -28,6 +29,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <ViewTransitions />
   </head>
   <body>
     <header class="site-header">
@@ -99,7 +101,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
     </style>
 
     <script is:inline>
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('astro:page-load', () => {
         // Automatically add reveal classes to certain elements if they don't have it
         const elementsToAnimate = document.querySelectorAll('.card, .vote-card, .category-section, .live-stat-box');
         elementsToAnimate.forEach(el => {
@@ -115,8 +117,17 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
+          let delayCounter = 0;
+          let delayTimeout = null;
           entries.forEach(entry => {
             if (entry.isIntersecting) {
+              entry.target.style.transitionDelay = `${delayCounter * 0.1}s`;
+              delayCounter++;
+              clearTimeout(delayTimeout);
+              delayTimeout = setTimeout(() => {
+                delayCounter = 0;
+              }, 150);
+
               entry.target.classList.add('is-revealed');
               observer.unobserve(entry.target);
             }
@@ -126,6 +137,26 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
         document.querySelectorAll('.reveal-on-scroll').forEach(el => {
           observer.observe(el);
         });
+
+        // 3D Tilt Effect
+        const tiltCards = document.querySelectorAll('.vote-card');
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+              const rect = card.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              const centerX = rect.width / 2;
+              const centerY = rect.height / 2;
+              const rotateX = ((y - centerY) / centerY) * -4;
+              const rotateY = ((x - centerX) / centerX) * 4;
+              card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+              card.style.transform = '';
+            });
+          });
+        }
       });
     </script>
   </body>

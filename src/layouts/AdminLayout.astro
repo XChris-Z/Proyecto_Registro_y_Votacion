@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 import Footer from '../components/Footer.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 
@@ -40,6 +41,7 @@ const navItems = [
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <ViewTransitions />
   </head>
   <body class="admin-body" style="display:flex;flex-direction:column;min-height:100vh;">
     <!-- Orbes de fondo animados -->
@@ -266,7 +268,7 @@ const navItems = [
     </div>
 
     <script is:inline>
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('astro:page-load', () => {
         const elementsToAnimate = document.querySelectorAll('.card, .stats-grid > div, .table-wrapper, .admin-page-enter');
         elementsToAnimate.forEach(el => {
           if (!el.classList.contains('reveal-on-scroll')) {
@@ -281,8 +283,17 @@ const navItems = [
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
+          let delayCounter = 0;
+          let delayTimeout = null;
           entries.forEach(entry => {
             if (entry.isIntersecting) {
+              entry.target.style.transitionDelay = `${delayCounter * 0.1}s`;
+              delayCounter++;
+              clearTimeout(delayTimeout);
+              delayTimeout = setTimeout(() => {
+                delayCounter = 0;
+              }, 150);
+
               entry.target.classList.add('is-revealed');
               observer.unobserve(entry.target);
             }
@@ -645,7 +656,7 @@ const navItems = [
   };
 
   // Cargar estado guardado de colapsar en escritorio al cargar el DOM
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('astro:page-load', () => {
     try {
       if (localStorage.getItem('admin_sidebar_collapsed') === 'true' && window.innerWidth > 900) {
         const layout = document.querySelector('.admin-layout');
