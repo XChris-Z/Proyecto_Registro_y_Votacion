@@ -1443,7 +1443,7 @@ tr:hover td {
 /* ─── ADMIN SIDEBAR & COLAPSABLE / DESPLEGABLE SYSTEM ───── */
 .admin-layout {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 270px 1fr;
   min-height: 100vh;
   transition: grid-template-columns 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   background: #00594E !important;
