@@ -2,6 +2,10 @@ import type { APIRoute } from 'astro';
 import { crearAdmin, registrarLog } from '@lib/db';
 import bcrypt from 'bcryptjs';
 
+export const GET: APIRoute = async ({ redirect }) => {
+  return redirect('/admin/usuarios');
+};
+
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   const session = cookies.get('admin_session')?.value;
   const adminNombre = cookies.get('admin_nombre')?.value || 'Admin Desconocido';

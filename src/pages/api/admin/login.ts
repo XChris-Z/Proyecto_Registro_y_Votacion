@@ -6,6 +6,10 @@ function verifyPassword(plain: string, hash: string): boolean {
   return bcrypt.compareSync(plain, hash);
 }
 
+export const GET: APIRoute = async ({ redirect }) => {
+  return redirect('/admin');
+};
+
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   const formData = await request.formData();
   const usuario = (formData.get('usuario') as string || '').trim();

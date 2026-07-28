@@ -18,6 +18,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
 
 const exitoParam = Astro.url.searchParams.get('exito');
 const errorParam = Astro.url.searchParams.get('error');
+const adminNombre = Astro.cookies.get('admin_nombre')?.value || 'Admin';
 
 const navItems = [
   { href: '/admin/dashboard', icon: '📊', label: 'Dashboard', id: 'dashboard' },
@@ -129,6 +130,10 @@ const navItems = [
             <h2 class="admin-topbar__title">{title}</h2>
           </div>
           <div class="admin-topbar__right">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-right:1rem;background:rgba(0,0,0,0.15);padding:0.4rem 0.8rem;border-radius:100px;border:1px solid rgba(255,255,255,0.1);">
+              <span style="font-size:1.1rem;">👤</span>
+              <span style="font-size:0.85rem;font-weight:700;color:#FFF;">{adminNombre}</span>
+            </div>
             <button
               type="button"
               class="admin-nav-btn"
