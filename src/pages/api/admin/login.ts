@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { buscarAdmin } from '@lib/db';
+import { buscarAdmin, registrarLog } from '@lib/db';
 import bcrypt from 'bcryptjs';
 
 function verifyPassword(plain: string, hash: string): boolean {
@@ -38,6 +38,9 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     sameSite: 'lax',
     maxAge: 60 * 60 * 8,
   });
+
+  // Registrar inicio de sesión
+  await registrarLog(admin.nombre || admin.usuario, 'Inicio de Sesión', `El administrador ingresó al sistema.`);
 
   return redirect('/admin/dashboard');
 };
