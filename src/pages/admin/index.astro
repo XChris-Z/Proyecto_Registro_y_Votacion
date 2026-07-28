@@ -117,6 +117,19 @@ if (session) {
               </div>
             )
           }
+          {
+            error === "inactive" && (
+              <div
+                class="alert alert--error mb-3"
+                style="animation:fadeIn 0.3s ease;"
+              >
+                <span>🚫</span>
+                <span>
+                  Tu cuenta ha sido desactivada por el administrador.
+                </span>
+              </div>
+            )
+          }
 
           <form
             method="POST"

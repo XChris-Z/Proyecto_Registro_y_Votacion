@@ -308,12 +308,11 @@ export async function obtenerResultados(): Promise<ResultadoVoto[]> {
 
 export async function buscarAdmin(
   usuario: string
-): Promise<{ id: number; usuario: string; password_hash: string; nombre: string } | null> {
+): Promise<{ id: number; usuario: string; password_hash: string; nombre: string; activo: boolean } | null> {
   const { data, error } = await supabase
     .from('administradores')
     .select('*')
     .eq('usuario', usuario)
-    .eq('activo', true)
     .maybeSingle();
 
   if (error || !data) return null;
@@ -322,7 +321,7 @@ export async function buscarAdmin(
 
 export async function obtenerAdminPorId(
   id: number
-): Promise<{ id: number; usuario: string; password_hash: string; nombre: string } | null> {
+): Promise<{ id: number; usuario: string; password_hash: string; nombre: string; activo: boolean } | null> {
   const { data, error } = await supabase
     .from('administradores')
     .select('*')
