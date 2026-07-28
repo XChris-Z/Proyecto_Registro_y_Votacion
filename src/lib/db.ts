@@ -353,6 +353,15 @@ export async function crearAdmin(usuario: string, passwordHash: string, nombre: 
   return { success: true };
 }
 
+export async function cambiarEstadoAdmin(id: number, activo: boolean): Promise<boolean> {
+  const { error } = await supabase
+    .from('administradores')
+    .update({ activo })
+    .eq('id', id);
+
+  return !error;
+}
+
 export async function obtenerAdministradores(): Promise<{ id: number; usuario: string; nombre: string; activo: boolean }[]> {
   const { data, error } = await supabase
     .from('administradores')

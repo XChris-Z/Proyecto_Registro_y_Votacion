@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { crearAdmin, registrarLog } from '@lib/db';
+import { crearAdmin, registrarLog, obtenerAdminPorId } from '@lib/db';
 import bcrypt from 'bcryptjs';
 
 export const GET: APIRoute = async ({ redirect }) => {
@@ -12,6 +12,11 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   
   if (!session) {
     return redirect('/admin');
+  }
+
+  const requester = await obtenerAdminPorId(Number(session));
+  if (!requester || requester.usuario !== 'admin') {
+    return redirect('/admin/usuarios?error=unauthorized');
   }
 
   const formData = await request.formData();

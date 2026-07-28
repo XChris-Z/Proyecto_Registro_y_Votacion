@@ -25,6 +25,10 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     return redirect('/admin?error=credentials');
   }
 
+  if (admin.activo === false) {
+    return redirect('/admin?error=inactive');
+  }
+
   // Crear sesión
   cookies.set('admin_session', String(admin.id), {
     path: '/',
