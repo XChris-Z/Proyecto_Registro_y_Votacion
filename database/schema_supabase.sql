@@ -114,4 +114,17 @@ INSERT INTO jornada_actual (id, nombre, descripcion, estado)
 VALUES (1, 'Jornada Institucional de Votación 2026', 'Elección Oficial de Proyectos y Prototipos — Unitrópico', 'ACTIVA')
 ON CONFLICT (id) DO NOTHING;
 
+-- ============================================================
+-- TABLA DE LOGS DE AUDITORÍA
+-- ============================================================
+CREATE TABLE IF NOT EXISTS logs (
+    id SERIAL PRIMARY KEY,
+    admin_nombre TEXT NOT NULL,
+    accion TEXT NOT NULL,
+    detalle TEXT,
+    fecha TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE logs DISABLE ROW LEVEL SECURITY;
+
 

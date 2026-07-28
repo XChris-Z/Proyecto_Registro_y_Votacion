@@ -342,6 +342,52 @@ export async function actualizarPasswordAdmin(id: number, passwordHash: string):
   return !error;
 }
 
+export async function crearAdmin(usuario: string, passwordHash: string, nombre: string): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('administradores')
+    .insert([{ usuario, password_hash: passwordHash, nombre }]);
+  if (error) {
+    if (error.code === '23505') return { success: false, error: 'El usuario ya existe.' };
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+}
+
+export async function obtenerAdministradores(): Promise<{ id: number; usuario: string; nombre: string; activo: boolean }[]> {
+  const { data, error } = await supabase
+    .from('administradores')
+    .select('id, usuario, nombre, activo')
+    .order('id', { ascending: true });
+  if (error || !data) return [];
+  return data as any;
+}
+
+// ─── LOGS ─────────────────────────────────────────────────────────────────────
+
+export interface LogSistema {
+  id: number;
+  admin_nombre: string;
+  accion: string;
+  detalle: string | null;
+  fecha: string;
+}
+
+export async function registrarLog(admin_nombre: string, accion: string, detalle?: string): Promise<void> {
+  await supabase
+    .from('logs')
+    .insert([{ admin_nombre, accion, detalle: detalle || null }]);
+}
+
+export async function obtenerLogs(limite: number = 50): Promise<LogSistema[]> {
+  const { data, error } = await supabase
+    .from('logs')
+    .select('*')
+    .order('fecha', { ascending: false })
+    .limit(limite);
+  if (error || !data) return [];
+  return data as LogSistema[];
+}
+
 // ─── HISTORIAL DE JORNADAS (CIERRE DE EVENTO) ─────────────────────────────────
 
 export interface JornadaHistorial {
