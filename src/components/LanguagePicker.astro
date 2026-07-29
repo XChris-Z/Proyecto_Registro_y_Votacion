@@ -49,8 +49,8 @@ const flags: Record<string, string> = {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--clr-border);
+    background: transparent;
+    border: 1.5px solid var(--clr-accent);
     color: var(--clr-text);
     padding: 0.4rem 0.6rem 0.4rem 0.75rem;
     border-radius: 99px;
@@ -61,8 +61,8 @@ const flags: Record<string, string> = {
   }
   
   .lang-picker-btn:hover, .lang-picker-btn:focus-visible {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--clr-primary-light);
+    background: var(--clr-surface-hover);
+    border-color: var(--clr-primary);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(108, 99, 255, 0.15);
   }
