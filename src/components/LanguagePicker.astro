@@ -5,58 +5,195 @@ import { getLangFromCookie } from '../i18n/utils';
 const currentLang = getLangFromCookie(Astro.cookies.get('lang')?.value);
 ---
 
-<div class="lang-picker">
-  <select id="lang-select" aria-label="Seleccionar idioma / Select language">
-    {Object.entries(languages).map(([lang, label]) => (
-      <option value={lang} selected={lang === currentLang}>
-        {label}
-      </option>
-    ))}
-  </select>
-  <div class="lang-picker-icon">🌐</div>
+<div class="lang-picker-wrapper" id="lang-picker-wrapper">
+  <button type="button" class="lang-picker-btn" id="lang-picker-btn" aria-expanded="false" aria-label="Seleccionar idioma / Select language">
+    <span class="lang-picker-icon">🌐</span>
+    <span class="lang-picker-text">{languages[currentLang]}</span>
+    <svg class="lang-picker-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+  
+  <div class="lang-dropdown glass" id="lang-dropdown">
+    <ul class="lang-options">
+      {Object.entries(languages).map(([lang, label]) => (
+        <li>
+          <button type="button" class={`lang-option ${lang === currentLang ? 'active' : ''}`} data-value={lang}>
+            <span class="lang-option-indicator">
+              {lang === currentLang && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              )}
+            </span>
+            {label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
 </div>
 
 <style>
-  .lang-picker {
+  .lang-picker-wrapper {
     position: relative;
+    display: inline-block;
+  }
+  
+  .lang-picker-btn {
     display: inline-flex;
     align-items: center;
-  }
-  .lang-picker-icon {
-    position: absolute;
-    left: 0.75rem;
-    pointer-events: none;
-    font-size: 1rem;
-  }
-  #lang-select {
-    appearance: none;
+    gap: 0.5rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--clr-border);
     color: var(--clr-text);
-    padding: 0.4rem 1rem 0.4rem 2.2rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.75rem;
     border-radius: 99px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     outline: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
-  #lang-select:hover, #lang-select:focus {
+  
+  .lang-picker-btn:hover, .lang-picker-btn:focus-visible {
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--clr-primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.15);
+  }
+  
+  .lang-picker-icon {
+    font-size: 1.05rem;
+  }
+  
+  .lang-picker-caret {
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+    margin-left: 0.25rem;
+  }
+  
+  .lang-picker-btn[aria-expanded="true"] {
+    background: rgba(108, 99, 255, 0.1);
+    border-color: var(--clr-primary);
+  }
+  
+  .lang-picker-btn[aria-expanded="true"] .lang-picker-caret {
+    transform: rotate(180deg);
+  }
+  
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 150px;
+    padding: 0.4rem;
+    border-radius: 16px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: top right;
+    z-index: 100;
+  }
+  
+  .lang-picker-wrapper.open .lang-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+  }
+  
+  .lang-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: transparent;
+    border: none;
+    color: var(--clr-text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .lang-option-indicator {
+    width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-primary);
+  }
+  
+  .lang-option:hover, .lang-option:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--clr-text);
+  }
+  
+  .lang-option.active {
+    background: rgba(108, 99, 255, 0.12);
+    color: var(--clr-primary-light);
+    font-weight: 700;
   }
 </style>
 
 <script>
-  const langSelect = document.getElementById('lang-select') as HTMLSelectElement;
-  if (langSelect) {
-    langSelect.addEventListener('change', (e) => {
-      const target = e.target as HTMLSelectElement;
-      const newLang = target.value;
-      // Set cookie for 1 year
-      document.cookie = `lang=${newLang};path=/;max-age=${60*60*24*365};SameSite=Lax`;
-      // Reload page to apply changes from server
-      window.location.reload();
+  document.addEventListener('astro:page-load', () => {
+    const wrapper = document.getElementById('lang-picker-wrapper');
+    const btn = document.getElementById('lang-picker-btn');
+    const options = document.querySelectorAll('.lang-option');
+    
+    if (!wrapper || !btn) return;
+    
+    const toggleDropdown = () => {
+      const isOpen = wrapper.classList.contains('open');
+      if (isOpen) {
+        wrapper.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        wrapper.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    };
+    
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown();
     });
-  }
+    
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (wrapper.classList.contains('open') && !wrapper.contains(e.target as Node)) {
+        wrapper.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    
+    // Handle option click
+    options.forEach(option => {
+      option.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const newLang = target.getAttribute('data-value');
+        if (!newLang) return;
+        
+        // Set cookie for 1 year
+        document.cookie = `lang=${newLang};path=/;max-age=${60*60*24*365};SameSite=Lax`;
+        // Reload page to apply changes
+        window.location.reload();
+      });
+    });
+  });
 </script>
