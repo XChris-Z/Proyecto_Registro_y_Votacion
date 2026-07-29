@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { crearCategoria } from '@lib/db';
+import { crearCategoria, registrarLog } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   if (!cookies.get('admin_session')?.value) return redirect('/admin');
@@ -12,5 +12,9 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   if (!nombre) return redirect('/admin/categorias?msg=error');
 
   await crearCategoria({ nombre, descripcion, orden });
+
+  const adminNombre = cookies.get('admin_nombre')?.value || 'Admin Desconocido';
+  await registrarLog(adminNombre, 'Creación de Categoría', `Se creó la categoría "${nombre}".`);
+
   return redirect('/admin/categorias?msg=created');
 };

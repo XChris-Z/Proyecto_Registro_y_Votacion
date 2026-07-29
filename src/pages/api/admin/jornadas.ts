@@ -6,10 +6,12 @@ import {
   reiniciarJornada,
   guardarJornadaActual,
   obtenerJornadaActual,
-  actualizarEstadoJornadaActual
+  actualizarEstadoJornadaActual,
+  registrarLog
 } from '@lib/db';
 
-export const POST: APIRoute = async ({ request, redirect }) => {
+export const POST: APIRoute = async ({ request, redirect, cookies }) => {
+  const adminNombre = cookies.get('admin_nombre')?.value || 'Admin Desconocido';
   const formData = await request.formData();
   const accion = formData.get('accion') as string;
 
@@ -22,6 +24,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     if (!res.success) {
       return redirect(`/admin/historial?error=${encodeURIComponent(res.error || 'Error al actualizar jornada actual')}`);
     }
+    await registrarLog(adminNombre, 'Modificación de Jornada', `Se modificó la jornada actual. Nuevo nombre: "${nombre}"`);
     return redirect('/admin/historial?exito=actual_modificada');
   }
 
@@ -35,6 +38,8 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 
     // Cambiar estado a CERRADA
     await actualizarEstadoJornadaActual('CERRADA');
+
+    await registrarLog(adminNombre, 'Cierre de Jornada', `Se cerró y archivó la jornada "${actual.nombre}"`);
 
     return redirect('/admin/historial?exito=jornada_cerrada');
   }
@@ -54,12 +59,15 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     // 3b. Configurar la NUEVA jornada y activar
     await guardarJornadaActual(nombreNuevo, notasNuevo, 'ACTIVA');
 
+    await registrarLog(adminNombre, 'Nueva Jornada', `Se inició una nueva jornada: "${nombreNuevo}". Reinició asistentes: ${reiniciarAsistentes ? 'Sí' : 'No'}.`);
+
     return redirect('/admin/historial?exito=nueva_jornada');
   }
 
   // 4. Reabrir Jornada actual si se cerró por error
   if (accion === 'reabrir_jornada') {
     await actualizarEstadoJornadaActual('ACTIVA');
+    await registrarLog(adminNombre, 'Reapertura de Jornada', `Se reabrió la jornada actual.`);
     return redirect('/admin/historial?exito=jornada_reabierta');
   }
 
@@ -72,6 +80,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     if (!res.success) {
       return redirect(`/admin/historial?error=${encodeURIComponent(res.error || 'Error al editar histórico')}`);
     }
+    await registrarLog(adminNombre, 'Edición de Histórico', `Se editó el registro histórico de jornada (ID: ${id}). Nuevo nombre: "${nombre}"`);
     return redirect('/admin/historial?exito=editado');
   }
 
@@ -82,6 +91,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     if (!res.success) {
       return redirect(`/admin/historial?error=${encodeURIComponent(res.error || 'Error al eliminar histórico')}`);
     }
+    await registrarLog(adminNombre, 'Eliminación de Histórico', `Se eliminó el registro histórico de jornada (ID: ${id}).`);
     return redirect('/admin/historial?exito=eliminado');
   }
 

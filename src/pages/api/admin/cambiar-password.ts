@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { obtenerAdminPorId, actualizarPasswordAdmin } from '@lib/db';
+import { obtenerAdminPorId, actualizarPasswordAdmin, registrarLog } from '@lib/db';
 import bcrypt from 'bcryptjs';
 
 function verifyPassword(plain: string, hash: string): boolean {
@@ -41,6 +41,9 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   if (!exito) {
     return redirect(`${redirectUrl}?error=pass_error`);
   }
+
+  const adminNombre = cookies.get('admin_nombre')?.value || admin.nombre || admin.usuario;
+  await registrarLog(adminNombre, 'Cambio de Contraseña', `El administrador "${admin.usuario}" cambió su contraseña.`);
 
   return redirect(`${redirectUrl}?exito=password_changed`);
 };
