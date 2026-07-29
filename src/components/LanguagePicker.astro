@@ -3,13 +3,17 @@ import { languages } from '../i18n/ui';
 import { getLangFromCookie } from '../i18n/utils';
 
 const currentLang = getLangFromCookie(Astro.cookies.get('lang')?.value);
+
+const flags: Record<string, string> = {
+  es: '🇨🇴',
+  en: '🇺🇸'
+};
 ---
 
 <div class="lang-picker-wrapper" id="lang-picker-wrapper">
   <button type="button" class="lang-picker-btn" id="lang-picker-btn" aria-expanded="false" aria-label="Seleccionar idioma / Select language">
-    <span class="lang-picker-icon">🌐</span>
-    <span class="lang-picker-text">{languages[currentLang]}</span>
-    <svg class="lang-picker-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <span class="lang-picker-icon">{flags[currentLang as keyof typeof flags]}</span>
+    <svg class="lang-picker-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
   </button>
@@ -26,7 +30,8 @@ const currentLang = getLangFromCookie(Astro.cookies.get('lang')?.value);
                 </svg>
               )}
             </span>
-            {label}
+            <span style="font-size: 1.15rem;">{flags[lang]}</span>
+            <span>{label}</span>
           </button>
         </li>
       ))}
@@ -43,14 +48,12 @@ const currentLang = getLangFromCookie(Astro.cookies.get('lang')?.value);
   .lang-picker-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--clr-border);
     color: var(--clr-text);
-    padding: 0.45rem 0.85rem 0.45rem 0.75rem;
+    padding: 0.4rem 0.6rem 0.4rem 0.75rem;
     border-radius: 99px;
-    font-size: 0.85rem;
-    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     outline: none;
@@ -65,7 +68,11 @@ const currentLang = getLangFromCookie(Astro.cookies.get('lang')?.value);
   }
   
   .lang-picker-icon {
-    font-size: 1.05rem;
+    font-size: 1.35rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .lang-picker-caret {
