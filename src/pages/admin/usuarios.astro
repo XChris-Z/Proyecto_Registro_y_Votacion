@@ -59,6 +59,21 @@ const errorParam = Astro.url.searchParams.get('error');
         <span style="font-size:1.3rem;">✅</span> El estado del usuario se ha actualizado correctamente.
       </div>
     )}
+    {exitoParam === 'user_deleted' && (
+      <div class="alert alert--success mb-4" style="padding: 1rem;">
+        <span style="font-size:1.3rem;">✅</span> Usuario administrador eliminado exitosamente.
+      </div>
+    )}
+    {exitoParam === 'user_updated' && (
+      <div class="alert alert--success mb-4" style="padding: 1rem;">
+        <span style="font-size:1.3rem;">✅</span> Usuario administrador actualizado exitosamente.
+      </div>
+    )}
+    {errorParam === 'cannot_modify_superadmin' && (
+      <div class="alert alert--error mb-4" style="padding: 1rem;">
+        <span style="font-size:1.3rem;">⚠️</span> No se puede modificar ni eliminar al super administrador.
+      </div>
+    )}
 
     <div class="card table-wrapper animate-fade-up" style="border: 1px solid var(--clr-border);">
       <table>
@@ -68,6 +83,7 @@ const errorParam = Astro.url.searchParams.get('error');
             <th>Usuario</th>
             <th>Nombre</th>
             <th>Estado</th>
+            {isSuperAdmin && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -81,18 +97,42 @@ const errorParam = Astro.url.searchParams.get('error');
                   <form method="POST" action="/api/admin/toggle-estado" style="display:inline-block; margin:0;">
                     <input type="hidden" name="id" value={admin.id} />
                     <input type="hidden" name="estado" value={admin.activo ? 'false' : 'true'} />
-                    <button type="submit" class="toggle-btn" style={`border:none; cursor:pointer; padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.8rem; font-weight: 700; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background: rgba(239, 68, 68, 0.15); color: #ef4444;'}`}>
-                      {admin.activo ? 'Activo (Desactivar)' : 'Inactivo (Activar)'}
+                    <button type="submit" class="toggle-btn" title={admin.activo ? 'Desactivar usuario' : 'Activar usuario'} style={`border:none; cursor:pointer; padding: 0.35rem 0.85rem; border-radius: 100px; font-size: 0.85rem; font-weight: 700; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.4rem; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #059669;' : 'background: rgba(239, 68, 68, 0.15); color: #dc2626;'}`}>
+                      {admin.activo ? (
+                        <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span> Activo</>
+                      ) : (
+                        <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span> Inactivo</>
+                      )}
                     </button>
                   </form>
                 ) : (
-                  admin.activo ? (
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.8rem; font-weight: 700;">Activo</span>
-                  ) : (
-                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.8rem; font-weight: 700;">Inactivo</span>
-                  )
+                  <span style={`padding: 0.35rem 0.85rem; border-radius: 100px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #059669;' : 'background: rgba(239, 68, 68, 0.15); color: #dc2626;'}`}>
+                    {admin.activo ? (
+                      <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span> Activo</>
+                    ) : (
+                      <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span> Inactivo</>
+                    )}
+                  </span>
                 )}
               </td>
+              {isSuperAdmin && (
+                <td>
+                  {admin.usuario !== 'admin' ? (
+                    <div style="display:flex; gap:0.5rem;">
+                      <button type="button" class="btn btn--outline" onclick={`abrirModalEditarUsuario(${admin.id}, '${admin.usuario}', '${admin.nombre}')`} style="padding:0.3rem 0.7rem; font-size:0.8rem; border-radius:6px;" title="Editar">
+                        ✏️ Editar
+                      </button>
+                      <form method="POST" action={`/api/admin/usuarios/${admin.id}?_method=DELETE`} style="margin:0;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario permanentemente?');">
+                        <button type="submit" class="btn btn--outline" style="padding:0.3rem 0.7rem; font-size:0.8rem; border-radius:6px; color:var(--clr-error); border-color:var(--clr-error);" title="Eliminar">
+                          🗑️ Eliminar
+                        </button>
+                      </form>
+                    </div>
+                  ) : (
+                    <span style="color:var(--clr-text-muted); font-size:0.85rem; font-style:italic;">Super Admin</span>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -159,6 +199,62 @@ const errorParam = Astro.url.searchParams.get('error');
     </div>
   </div>
 
+  <!-- Modal Editar Usuario -->
+  <div class="modal-overlay" id="modal-editar-usuario" onclick="cerrarModalEditarUsuario(event)">
+    <div class="modal card" style="max-width: 460px; width: 95%; border: 2px solid #B5A160; background: var(--clr-surface); padding: 2rem;" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--clr-border);padding-bottom:1rem;">
+        <h3 style="font-size:1.2rem;font-weight:800;color:var(--clr-text);margin:0;display:flex;align-items:center;gap:0.5rem;">
+          <span>✏️</span> Editar Administrador
+        </h3>
+        <button type="button" onclick="cerrarModalEditarUsuario()" style="background:none;border:none;font-size:1.5rem;color:var(--clr-text-muted);cursor:pointer;">✕</button>
+      </div>
+
+      <form method="POST" id="form-editar-usuario" action="">
+        <div class="form-group mb-3">
+          <label class="form-label" for="edit_nombre">Nombre Completo <span style="color:var(--clr-error);">*</span></label>
+          <input
+            id="edit_nombre"
+            name="nombre"
+            class="form-input"
+            type="text"
+            required
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="edit_usuario">Nombre de Usuario <span style="color:var(--clr-error);">*</span></label>
+          <input
+            id="edit_usuario"
+            name="usuario"
+            class="form-input"
+            type="text"
+            required
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label" for="edit_password">Nueva Contraseña <span style="color:var(--clr-text-muted); font-weight: normal; font-size: 0.85rem;">(Opcional)</span></label>
+          <input
+            id="edit_password"
+            name="password"
+            class="form-input"
+            type="password"
+            placeholder="Dejar en blanco para no cambiar"
+            minlength="6"
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div style="display:flex;gap:0.85rem;justify-content:flex-end;">
+          <button type="button" class="btn btn--outline" onclick="cerrarModalEditarUsuario()" style="border-radius:100px;padding:0.65rem 1.3rem;font-weight:700;">Cancelar</button>
+          <button type="submit" class="btn btn--primary" style="border-radius:100px;padding:0.65rem 1.5rem;font-weight:800;background:var(--clr-primary);border-color:var(--clr-accent);">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script is:inline>
     window.abrirModalCrearUsuario = function() {
       const modal = document.getElementById('modal-crear-usuario');
@@ -173,5 +269,31 @@ const errorParam = Astro.url.searchParams.get('error');
         }
       }
     };
+
+    window.abrirModalEditarUsuario = function(id, usuario, nombre) {
+      const modal = document.getElementById('modal-editar-usuario');
+      const form = document.getElementById('form-editar-usuario');
+      document.getElementById('edit_usuario').value = usuario;
+      document.getElementById('edit_nombre').value = nombre;
+      document.getElementById('edit_password').value = '';
+      form.action = `/api/admin/usuarios/${id}?_method=PUT`;
+      if (modal) modal.classList.add('active');
+    };
+
+    window.cerrarModalEditarUsuario = function(e) {
+      const modal = document.getElementById('modal-editar-usuario');
+      if (modal) {
+        if (!e || e.target === modal || e.type === 'click' && !e.target.closest('.modal')) {
+          modal.classList.remove('active');
+        }
+      }
+    };
   </script>
 </AdminLayout>
+
+<style>
+  .toggle-btn:hover {
+    filter: brightness(0.95);
+    transform: scale(1.02);
+  }
+</style>

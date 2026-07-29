@@ -361,6 +361,27 @@ export async function cambiarEstadoAdmin(id: number, activo: boolean): Promise<b
   return !error;
 }
 
+export async function actualizarAdmin(id: number, data: { usuario: string; nombre: string; password_hash?: string }): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('administradores')
+    .update(data)
+    .eq('id', id);
+  if (error) {
+    if (error.code === '23505') return { success: false, error: 'El usuario ya existe.' };
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+}
+
+export async function eliminarAdmin(id: number): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('administradores')
+    .delete()
+    .eq('id', id);
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
 export async function obtenerAdministradores(): Promise<{ id: number; usuario: string; nombre: string; activo: boolean }[]> {
   const { data, error } = await supabase
     .from('administradores')
