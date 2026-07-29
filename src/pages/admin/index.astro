@@ -28,13 +28,15 @@ if (session) {
       style="
     position:fixed;inset:0;
     background:radial-gradient(ellipse at 30% 20%, rgba(0, 89, 78, 0.15) 0%, transparent 55%),
-               radial-gradient(ellipse at 75% 80%, rgba(181, 161, 96, 0.12) 0%, transparent 55%);
+              radial-gradient(ellipse at 75% 80%, rgba(181, 161, 96, 0.12) 0%, transparent 55%);
     pointer-events:none;z-index:0;
   "
     >
     </div>
 
-    <div style="display:flex;justify-content:flex-end;padding:1rem 2rem 0;position:relative;z-index:2;">
+    <div
+      style="display:flex;justify-content:flex-end;padding:1rem 2rem 0;position:relative;z-index:2;"
+    >
       <ThemeToggle />
     </div>
 
@@ -102,7 +104,10 @@ if (session) {
         overflow:hidden;
       "
         >
-          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);"></div>
+          <div
+            style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);"
+          >
+          </div>
 
           {
             error === "credentials" && (
@@ -124,9 +129,7 @@ if (session) {
                 style="animation:fadeIn 0.3s ease;"
               >
                 <span>🚫</span>
-                <span>
-                  Tu cuenta ha sido desactivada por el administrador.
-                </span>
+                <span>Tu cuenta ha sido desactivada por el administrador.</span>
               </div>
             )
           }
@@ -235,7 +238,11 @@ if (session) {
                 style="margin-top:0.5rem;font-size:1.02rem;padding:1rem;border-radius:100px;font-weight:800;box-shadow:0 6px 20px rgba(0, 89, 78, 0.28);letter-spacing:0.02em;"
               >
                 <span id="btn-text">Ingresar al Sistema</span>
-                <span id="btn-arrow" style="font-size:1.15rem;transition:transform 0.25s ease;">→</span>
+                <span
+                  id="btn-arrow"
+                  style="font-size:1.15rem;transition:transform 0.25s ease;"
+                  >→</span
+                >
                 <span id="btn-spinner" class="spinner hidden"></span>
               </button>
             </div>
@@ -256,8 +263,17 @@ if (session) {
           <p
             style="font-size:0.84rem;color:var(--clr-text-muted);margin:0;text-align:center;line-height:1.6;font-weight:500;"
           >
-            🔐 Acceso restringido a administradores acreditados de Unitrópico.<br />
-            ¿Eres asistente? <a href="/" style="color:var(--clr-primary);font-weight:700;">Regístrate aquí</a> o <a href="/votacion" style="color:var(--clr-primary);font-weight:700;">dirígete a votar</a>.
+            🔐 Acceso restringido a administradores acreditados de Unitrópico.<br
+            />
+            ¿Eres asistente? <a
+              href="/"
+              style="color:var(--clr-primary);font-weight:700;"
+              >Regístrate aquí</a
+            > o <a
+              href="/votacion"
+              style="color:var(--clr-primary);font-weight:700;"
+              >dirígete a votar</a
+            >.
           </p>
         </div>
       </div>

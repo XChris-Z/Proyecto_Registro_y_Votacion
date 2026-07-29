@@ -38,7 +38,7 @@ const logsIniciales = await obtenerLogs(50);
           {logsIniciales.map(log => (
             <tr data-log-id={log.id}>
               <td style="white-space: nowrap; font-size: 0.85rem; color: var(--clr-text-muted);">
-                {new Date(log.fecha).toLocaleString('es-CO')}
+                {new Date(log.fecha).toLocaleString('es-CO', { timeZone: 'America/Bogota' })}
               </td>
               <td style="font-weight: 700; color: var(--clr-text);">{log.admin_nombre}</td>
               <td>
@@ -98,7 +98,7 @@ const logsIniciales = await obtenerLogs(50);
                 setTimeout(() => tr.style.transition = '', 2000);
               }, 2500);
 
-              const dateStr = new Date(log.fecha).toLocaleString('es-CO');
+              const dateStr = new Date(log.fecha).toLocaleString('es-CO', { timeZone: 'America/Bogota' });
               
               tr.innerHTML = `
                 <td style="white-space: nowrap; font-size: 0.85rem; color: var(--clr-text-muted);">${dateStr}</td>
