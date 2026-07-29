@@ -2,7 +2,11 @@
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import LanguagePicker from '../components/LanguagePicker.astro';
+import { getLangFromCookie } from '../i18n/utils';
 import { ClientRouter } from 'astro:transitions';
+
+const lang = getLangFromCookie(Astro.cookies.get('lang')?.value);
 
 interface Props {
   title: string;
@@ -19,7 +23,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -55,6 +59,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
               <span class="admin-nav-btn__label">Admin</span>
             </a>
             <div style="width:1px;height:24px;background:rgba(255, 255, 255, 0.25);margin:0 0.15rem;" class="hide-mobile" aria-hidden="true"></div>
+            <LanguagePicker />
             <ThemeToggle />
           </nav>
         </div>

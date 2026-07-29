@@ -1,15 +1,19 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import { obtenerJornadaActual } from '@lib/db';
+import { getLangFromCookie, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromCookie(Astro.cookies.get('lang')?.value);
+const t = useTranslations(lang);
 
 const error = Astro.url.searchParams.get('error');
 const jornadaActual = await obtenerJornadaActual();
 const estaCerrada = jornadaActual.estado === 'CERRADA';
 
 const errorMessages: Record<string, string> = {
-  notfound: 'No encontramos un registro con ese documento o correo. ¿Ya te registraste?',
-  empty: 'Por favor ingresa tu documento o correo.',
-  closed: 'La jornada de votación se encuentra oficialmente cerrada.'
+  notfound: t('voting.alert.notfound'),
+  empty: t('voting.alert.empty'),
+  closed: t('voting.alert.closed')
 };
 ---
 
@@ -18,7 +22,7 @@ const errorMessages: Record<string, string> = {
     <div class="container--narrow">
       <div style="text-align:center;margin-bottom:2.5rem;">
         <div class="page-hero__eyebrow animate-fade-up" style="justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
-          <span>🗳️</span> Sistema de Votación Oficial
+          {t('voting.hero.eyebrow')}
         </div>
         <h1 class="animate-fade-up" style="
           animation-delay:0.1s;
@@ -27,11 +31,11 @@ const errorMessages: Record<string, string> = {
           font-weight: 800;
           font-size: clamp(2rem, 4.5vw, 2.8rem);
           letter-spacing: -0.02em;
-        ">{estaCerrada ? 'Votación Cerrada' : 'Ingresa para votar'}</h1>
+        ">{estaCerrada ? t('voting.hero.title.closed') : t('voting.hero.title.open')}</h1>
         <p class="animate-fade-up" style="animation-delay:0.2s;margin-top:0.6rem;font-size:1.05rem;color:var(--clr-text-muted);max-width:480px;margin-left:auto;margin-right:auto;">
           {estaCerrada
-            ? 'La jornada electoral ha finalizado oficialmente.'
-            : 'Identifícate de forma rápida y segura para acceder a tu boleta electrónica.'}
+            ? t('voting.hero.sub.closed')
+            : t('voting.hero.sub.open')}
         </p>
       </div>
 
@@ -41,7 +45,7 @@ const errorMessages: Record<string, string> = {
           <div class="alert alert--error mb-4" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;border-radius:14px;padding:1.1rem 1.4rem;">
             <span style="font-size:1.3rem;">⚠️</span> <span style="font-weight:600;">{errorMessages[error]}</span>
             {error === 'notfound' && (
-              <a href="/" style="margin-left:auto;font-size:0.88rem;white-space:nowrap;color:var(--clr-primary-light);font-weight:800;text-decoration:underline;">Ir a registrarme →</a>
+              <a href="/" style="margin-left:auto;font-size:0.88rem;white-space:nowrap;color:var(--clr-primary-light);font-weight:800;text-decoration:underline;">{t('voting.link.register')}</a>
             )}
           </div>
         )}
@@ -49,19 +53,24 @@ const errorMessages: Record<string, string> = {
         {estaCerrada ? (
           <div style="text-align:center;padding:2rem 0;">
             <div style="font-size:4rem;margin-bottom:1.2rem;">🔒</div>
-            <span style="background:var(--clr-accent);color:#041815;font-weight:800;font-size:0.82rem;padding:0.5rem 1.25rem;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,0.15);">
-              JORNADA OFICIALMENTE CERRADA
+            <span style="background:var(--clr-accent);color:#041815;font-weight:800;font-size:0.78rem;padding:0.4rem 1rem;border-radius:999px;">
+              {t('index.closed.badge')}
             </span>
-            <p style="font-size:0.98rem;color:var(--clr-text-muted);margin-top:1.4rem;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto;">
-              La votación aún no ha comenzado o ya finalizó. Puedes consultar el cronograma oficial del evento o los resultados.
+            <h2 style="font-size:1.8rem;margin-top:1.2rem;color:var(--clr-text);font-weight:800;">
+              {jornadaActual.nombre}
+            </h2>
+            <p style="color:var(--clr-text-muted);font-size:1.02rem;max-width:520px;margin:1rem auto 2rem;line-height:1.6;">
+              {t('index.closed.msg')}
             </p>
+            <div style="border-top:1px solid var(--clr-border);padding-top:1.5rem;color:var(--clr-text-dim);font-size:0.85rem;">
+              {t('index.closed.footer')}
+            </div>
           </div>
         ) : (
         <form method="POST" action="/api/votar/login" id="acceso-form">
-          <!-- Pestañas del Switcher de Ingreso (Implícito) -->
           <div style="margin-bottom:1.8rem;">
             <div style="font-size:0.82rem;font-weight:700;color:var(--clr-text-dim);text-align:center;margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.05em;">
-              Selecciona cómo prefieres identificarte:
+              {t('voting.mode.select')}
             </div>
             <div style="background:rgba(0,0,0,0.06);padding:0.35rem;border-radius:100px;display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;border:1.5px solid var(--clr-border);">
               <button
@@ -70,7 +79,7 @@ const errorMessages: Record<string, string> = {
                 class="login-tab login-tab--active"
                 onclick="setMode('documento')"
               >
-                <span>🪪</span> <span>Número de Documento</span>
+                <span>🪪</span> <span>{t('voting.mode.document')}</span>
               </button>
               <button
                 type="button"
@@ -78,15 +87,14 @@ const errorMessages: Record<string, string> = {
                 class="login-tab"
                 onclick="setMode('correo')"
               >
-                <span>✉️</span> <span>Correo Electrónico</span>
+                <span>✉️</span> <span>{t('voting.mode.email')}</span>
               </button>
             </div>
           </div>
 
-          <!-- Campo Único Dinámico -->
           <div class="form-group mb-4">
             <label id="input-label" class="form-label" for="identificador" style="font-weight:800;color:var(--clr-text);font-size:0.95rem;display:flex;align-items:center;gap:0.45rem;">
-              <span id="input-icon" style="font-size:1.15rem;">🪪</span> <span id="label-text">Ingresa tu número de documento</span>
+              <span id="input-icon" style="font-size:1.15rem;">🪪</span> <span id="label-text">{t('voting.form.label')}</span>
             </label>
             <div style="position:relative;">
               <input
@@ -94,7 +102,7 @@ const errorMessages: Record<string, string> = {
                 class="form-input"
                 type="text"
                 name="identificador"
-                placeholder="Ej: 1023456789"
+                placeholder={t('voting.form.placeholder')}
                 required
                 autocomplete="username"
                 inputmode="numeric"
@@ -103,38 +111,40 @@ const errorMessages: Record<string, string> = {
             </div>
           </div>
 
-          <!-- Banner explicativo ultra-implícito y natural -->
           <div style="background:linear-gradient(135deg, rgba(0, 89, 78, 0.08) 0%, rgba(181, 161, 96, 0.09) 100%);border:1.5px solid rgba(181, 161, 96, 0.35);border-radius:16px;padding:1.1rem 1.4rem;margin-bottom:1.8rem;display:flex;align-items:center;gap:0.85rem;box-shadow:0 4px 15px rgba(0,0,0,0.03);">
             <span style="font-size:1.35rem;flex-shrink:0;">💡</span>
             <div style="font-size:0.88rem;color:var(--clr-text-muted);line-height:1.5;">
-              <strong style="color:var(--clr-text);font-weight:800;">Acceso flexible:</strong> Ingresa con tu <strong>número de documento</strong> o tu <strong>correo electrónico</strong> registrado. El sistema verificará tus datos automáticamente.
+              {t('voting.form.hint')}
             </div>
           </div>
 
-          <!-- Botón -->
           <div>
             <button id="acceder-btn" type="submit" class="btn btn--primary btn--lg btn--full" style="padding:1.1rem;border-radius:14px;font-weight:800;font-size:1.05rem;box-shadow:0 8px 24px rgba(0, 89, 78, 0.28);letter-spacing:0.01em;">
-              <span>Acceder al Panel de Votación →</span>
+              <span id="btn-text" data-loading-text={t('voting.form.submitting')}>{t('voting.form.submit')}</span>
+              <span id="btn-spinner" class="spinner hidden"></span>
             </button>
           </div>
+          
+          <p class="text-center" style="font-size:0.85rem;color:var(--clr-text-dim);margin-top:1.5rem;">
+            {t('voting.form.privacy')}
+          </p>
         </form>
         )}
 
         <div style="margin-top:2rem;padding-top:1.6rem;border-top:1px solid var(--clr-border);text-align:center;">
           <p style="font-size:0.92rem;color:var(--clr-text-dim);display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;margin:0;">
-            <span>¿Aún no estás registrado en el evento?</span>
-            <a href="/" style="color:var(--clr-primary-light);font-weight:800;text-decoration:underline;">Regístrate aquí →</a>
+            <span>{t('voting.footer.register.text')}</span>
+            <a href="/" style="color:var(--clr-primary-light);font-weight:800;text-decoration:underline;">{t('voting.footer.register.link')} →</a>
           </p>
         </div>
 
       </div>
 
-      <!-- Info de votación -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2.5rem;">
         {[
-          { icon: '🏷️', title: 'Categorías oficiales', desc: 'Un voto por cada una de las categorías del evento' },
-          { icon: '🔒', title: 'Elección definitiva', desc: 'Tu voto es seguro, único e irreversible' },
-          { icon: '🏆', title: 'Conteo en vivo', desc: 'Resultados y estadísticas actualizados en tiempo real' },
+          { icon: '🏷️', title: t('voting.info.categories.title'), desc: t('voting.info.categories.desc') },
+          { icon: '🔒', title: t('voting.info.secure.title'), desc: t('voting.info.secure.desc') },
+          { icon: '🏆', title: t('voting.info.live.title'), desc: t('voting.info.live.desc') },
         ].map(item => (
           <div class="card text-center glass--hover" style="padding:1.6rem 1.1rem;border-radius:18px;border:1.5px solid var(--clr-border);background:var(--clr-surface);box-shadow:var(--shadow-sm);">
             <div style="font-size:2.3rem;margin-bottom:0.65rem;">{item.icon}</div>
@@ -178,11 +188,14 @@ const errorMessages: Record<string, string> = {
       border-color: var(--clr-primary) !important;
       box-shadow: 0 0 0 4px rgba(0, 89, 78, 0.15) !important;
     }
+    .hidden { display: none; }
   </style>
 
   <script>
     const form = document.getElementById('acceso-form') as HTMLFormElement | null;
     const btn = document.getElementById('acceder-btn') as HTMLButtonElement | null;
+    const btnText = document.getElementById('btn-text') as HTMLElement | null;
+    const btnSpinner = document.getElementById('btn-spinner') as HTMLElement | null;
     const input = document.getElementById('identificador') as HTMLInputElement | null;
     const icon = document.getElementById('input-icon') as HTMLElement | null;
     const labelText = document.getElementById('label-text') as HTMLElement | null;
@@ -212,10 +225,21 @@ const errorMessages: Record<string, string> = {
       }
     };
 
-    if (form && btn) {
-      form.addEventListener('submit', () => {
+    if (btn) {
+      const originalHTML = btn.innerHTML;
+      
+      form?.addEventListener('submit', () => {
+        if (!input?.value.trim()) return;
+        
+        if (btnText && btnSpinner) {
+          btnText.textContent = btnText.getAttribute('data-loading-text') || 'Validando...';
+          btnSpinner.classList.remove('hidden');
+        } else {
+          btn.innerHTML = `<span class="spinner" style="border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; width: 1.2rem; height: 1.2rem; animation: spin 1s linear infinite; display: inline-block;"></span>`;
+        }
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Verificando acceso...';
+        btn.style.opacity = '0.85';
+        btn.style.cursor = 'wait';
       });
     }
   </script>

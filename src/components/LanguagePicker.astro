@@ -1,0 +1,62 @@
+---
+import { languages } from '../i18n/ui';
+import { getLangFromCookie } from '../i18n/utils';
+
+const currentLang = getLangFromCookie(Astro.cookies.get('lang')?.value);
+---
+
+<div class="lang-picker">
+  <select id="lang-select" aria-label="Seleccionar idioma / Select language">
+    {Object.entries(languages).map(([lang, label]) => (
+      <option value={lang} selected={lang === currentLang}>
+        {label}
+      </option>
+    ))}
+  </select>
+  <div class="lang-picker-icon">🌐</div>
+</div>
+
+<style>
+  .lang-picker {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .lang-picker-icon {
+    position: absolute;
+    left: 0.75rem;
+    pointer-events: none;
+    font-size: 1rem;
+  }
+  #lang-select {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    padding: 0.4rem 1rem 0.4rem 2.2rem;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  #lang-select:hover, #lang-select:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--clr-primary-light);
+  }
+</style>
+
+<script>
+  const langSelect = document.getElementById('lang-select') as HTMLSelectElement;
+  if (langSelect) {
+    langSelect.addEventListener('change', (e) => {
+      const target = e.target as HTMLSelectElement;
+      const newLang = target.value;
+      // Set cookie for 1 year
+      document.cookie = `lang=${newLang};path=/;max-age=${60*60*24*365};SameSite=Lax`;
+      // Reload page to apply changes from server
+      window.location.reload();
+    });
+  }
+</script>

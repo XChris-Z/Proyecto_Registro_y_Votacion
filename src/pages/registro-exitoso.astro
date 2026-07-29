@@ -1,11 +1,15 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import { getLangFromCookie, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromCookie(Astro.cookies.get('lang')?.value);
+const t = useTranslations(lang);
 
 const nombre = Astro.url.searchParams.get('nombre') || 'Participante';
 const dependencia = Astro.url.searchParams.get('dependencia') || '';
 ---
 
-<MainLayout title="¡Registro Exitoso!">
+<MainLayout title={t('success.title')}>
   <section style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:2rem 0;">
     <div class="container--narrow" style="text-align:center;">
 
@@ -24,28 +28,28 @@ const dependencia = Astro.url.searchParams.get('dependencia') || '';
       <h1 class="animate-fade-up" style="
         animation-delay:0.1s;
         color: var(--clr-primary);
-      ">¡Registro exitoso!</h1>
+      ">{t('success.title')}</h1>
 
       <p class="animate-fade-up" style="animation-delay:0.2s;font-size:1.1rem;margin:1rem 0 2rem;">
-        Gracias, <strong style="color:var(--clr-text);">{nombre}</strong>. Tu asistencia al evento ha sido confirmada.{dependencia && <span> Representas a <strong style="color:var(--clr-primary-light);">{dependencia}</strong>.</span>}
+        {t('success.thanks')}, <strong style="color:var(--clr-text);">{nombre}</strong>. {t('success.confirmed')}{dependencia && <span> {t('success.represent')} <strong style="color:var(--clr-primary-light);">{dependencia}</strong>.</span>}
       </p>
 
       <div class="glass animate-fade-up" style="animation-delay:0.3s;padding:1.5rem;margin-bottom:2rem;text-align:left;">
         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
           <span style="font-size:1.2rem;">🗳️</span>
-          <strong>¿Sabías que puedes votar?</strong>
+          <strong>{t('success.vote.title')}</strong>
         </div>
         <p style="font-size:0.9rem;margin:0;">
-          Con tu correo institucional o número de documento puedes acceder al sistema y elegir tus proyectos favoritos en las categorías oficiales del evento.
+          {t('success.vote.desc')}
         </p>
       </div>
 
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;" class="animate-fade-up" style="animation-delay:0.4s;">
         <a href="/votacion" class="btn btn--primary btn--lg">
-          🗳️ Ir a Votar
+          {t('success.btn.vote')}
         </a>
         <a href="/" class="btn btn--outline btn--lg">
-          Registrar otro participante
+          {t('success.btn.register')}
         </a>
       </div>
 

@@ -1,6 +1,10 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import { obtenerJornadaActual, obtenerEstadisticasEnVivo } from '@lib/db';
+import { getLangFromCookie, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromCookie(Astro.cookies.get('lang')?.value);
+const t = useTranslations(lang);
 
 const error = Astro.url.searchParams.get('error');
 const [jornadaActual, stats] = await Promise.all([
@@ -14,15 +18,15 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
   <section class="page-hero">
     <div class="container--narrow">
       <div class="page-hero__eyebrow animate-fade-up" style="animation-delay:0s;">
-        <span>📋</span> Registro de Asistencia
+        {t('index.hero.eyebrow')}
       </div>
       <h1 class="page-hero__title animate-fade-up" style="animation-delay:0.1s;">
-        {estaCerrada ? 'Jornada Finalizada' : '¡Únete al evento!'}
+        {estaCerrada ? t('index.hero.title.closed') : t('index.hero.title.open')}
       </h1>
       <p class="page-hero__sub animate-fade-up" style="animation-delay:0.2s;">
         {estaCerrada
-          ? 'El proceso de registro y votación se encuentra cerrado.'
-          : 'Completa tu registro en menos de un minuto y asegura tu participación.'}
+          ? t('index.hero.sub.closed')
+          : t('index.hero.sub.open')}
       </p>
     </div>
   </section>
@@ -33,37 +37,37 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
 
         {error === 'closed' && (
           <div class="alert alert--error mb-3">
-            <span>🔒</span> La jornada electoral se encuentra cerrada en este momento.
+            {t('index.alert.closed')}
           </div>
         )}
         {error === 'fields' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span> Todos los campos son obligatorios. Por favor, complétalos.
+            {t('index.alert.fields')}
           </div>
         )}
         {error === 'documento' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span> El número de documento solo debe contener dígitos.
+            {t('index.alert.documento')}
           </div>
         )}
         {error === 'correo' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span> El correo electrónico no tiene un formato válido.
+            {t('index.alert.correo')}
           </div>
         )}
         {error === 'telefono' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span> El número de teléfono debe tener entre 7 y 15 dígitos.
+            {t('index.alert.telefono')}
           </div>
         )}
         {error === 'duplicate' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span> Ya existe un registro con ese documento y correo. ¿Ya te registraste antes?
+            {t('index.alert.duplicate')}
           </div>
         )}
         {error === 'server' && (
           <div class="alert alert--error mb-3">
-            <span>⚠️</span> Error al guardar. Verifica tu conexión o intenta de nuevo.
+            {t('index.alert.server')}
           </div>
         )}
 
@@ -71,16 +75,16 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
           <div style="text-align:center;padding:1.5rem 0;">
             <div style="font-size:3.5rem;margin-bottom:1rem;">🔒</div>
             <span style="background:var(--clr-accent);color:#041815;font-weight:800;font-size:0.78rem;padding:0.4rem 1rem;border-radius:999px;">
-              JORNADA OFICIALMENTE CERRADA
+              {t('index.closed.badge')}
             </span>
             <h2 style="font-size:1.8rem;margin-top:1.2rem;color:var(--clr-text);font-weight:800;">
               {jornadaActual.nombre}
             </h2>
             <p style="color:var(--clr-text-muted);font-size:1.02rem;max-width:520px;margin:1rem auto 2rem;line-height:1.6;">
-              El proceso de registro de asistencia y votación para esta jornada ha concluido oficialmente. Agradecemos tu interés y participación.
+              {t('index.closed.msg')}
             </p>
             <div style="border-top:1px solid var(--clr-border);padding-top:1.5rem;color:var(--clr-text-dim);font-size:0.85rem;">
-              Unitrópico — Institución Universitaria del Trópico Colombiano
+              {t('index.closed.footer')}
             </div>
           </div>
         ) : (
@@ -89,13 +93,13 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
 
               <!-- Nombre -->
               <div class="form-group">
-                <label class="form-label" for="nombre">Nombre completo</label>
+                <label class="form-label" for="nombre">{t('index.form.nombre.label')}</label>
                 <input
                   id="nombre"
                   class="form-input"
                   type="text"
                   name="nombre"
-                  placeholder="Ej: María García López"
+                  placeholder={t('index.form.nombre.placeholder')}
                   required
                   minlength="3"
                   autocomplete="name"
@@ -104,29 +108,29 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
 
               <!-- Documento -->
               <div class="form-group">
-                <label class="form-label" for="documento">Número de documento</label>
+                <label class="form-label" for="documento">{t('index.form.documento.label')}</label>
                 <input
                   id="documento"
                   class="form-input"
                   type="text"
                   name="documento"
-                  placeholder="Ej: 1234567890"
+                  placeholder={t('index.form.documento.placeholder')}
                   required
                   pattern="[0-9]+"
                   inputmode="numeric"
                 />
-                <span class="form-hint">Solo números, sin puntos ni guiones</span>
+                <span class="form-hint">{t('index.form.documento.hint')}</span>
               </div>
 
               <!-- Dependencia -->
               <div class="form-group">
-                <label class="form-label" for="dependencia">Dependencia / Institución</label>
+                <label class="form-label" for="dependencia">{t('index.form.dependencia.label')}</label>
                 <input
                   id="dependencia"
                   class="form-input"
                   type="text"
                   name="dependencia"
-                  placeholder="Ej: Universidad Nacional, Facultad de Ingeniería..."
+                  placeholder={t('index.form.dependencia.placeholder')}
                   required
                   minlength="2"
                 />
@@ -134,13 +138,13 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
 
               <!-- Correo -->
               <div class="form-group">
-                <label class="form-label" for="correo">Correo electrónico</label>
+                <label class="form-label" for="correo">{t('index.form.correo.label')}</label>
                 <input
                   id="correo"
                   class="form-input"
                   type="email"
                   name="correo"
-                  placeholder="Ej: maria@universidad.edu.co"
+                  placeholder={t('index.form.correo.placeholder')}
                   required
                   autocomplete="email"
                 />
@@ -148,31 +152,31 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
 
               <!-- Teléfono -->
               <div class="form-group">
-                <label class="form-label" for="telefono">Número de teléfono</label>
+                <label class="form-label" for="telefono">{t('index.form.telefono.label')}</label>
                 <input
                   id="telefono"
                   class="form-input"
                   type="tel"
                   name="telefono"
-                  placeholder="Ej: 3001234567"
+                  placeholder={t('index.form.telefono.placeholder')}
                   required
                   pattern="[0-9]{7,15}"
                   inputmode="numeric"
                   autocomplete="tel"
                 />
-                <span class="form-hint">Solo números, sin espacios ni guiones (7 a 15 dígitos)</span>
+                <span class="form-hint">{t('index.form.telefono.hint')}</span>
               </div>
 
               <!-- Botón -->
               <div style="margin-top:0.5rem;">
                 <button id="submit-btn" type="submit" class="btn btn--primary btn--lg btn--full">
-                  <span id="btn-text">Registrarme ahora</span>
+                  <span id="btn-text" data-loading-text={t('index.form.submitting')}>{t('index.form.submit')}</span>
                   <span id="btn-spinner" class="spinner hidden"></span>
                 </button>
               </div>
 
               <p class="text-center" style="font-size:0.8rem;color:var(--clr-text-dim);">
-                🔒 Tu información es confidencial y solo se usa para el evento
+                {t('index.form.privacy')}
               </p>
 
             </div>
@@ -185,9 +189,9 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
         <div class="live-stats-header">
           <div class="live-badge">
             <span class="live-badge__dot"></span>
-            <span>⚡ En Vivo — Participación</span>
+            <span>{t('index.stats.badge')}</span>
           </div>
-          <span class="live-stats-header__title">Actualización automática al instante</span>
+          <span class="live-stats-header__title">{t('index.stats.title')}</span>
         </div>
 
         <div class="live-stats-grid">
@@ -196,8 +200,8 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
             <div class="live-stat-box__icon">👥</div>
             <div class="live-stat-box__content">
               <div id="live-asistentes" class="live-stat-box__value">{stats.asistentes}</div>
-              <div class="live-stat-box__label">Personas Registradas</div>
-              <div class="live-stat-box__sub">Estudiantes, docentes y personal institucional</div>
+              <div class="live-stat-box__label">{t('index.stats.registered.val')}</div>
+              <div class="live-stat-box__sub">{t('index.stats.registered.sub')}</div>
             </div>
           </div>
 
@@ -206,15 +210,15 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
             <div class="live-stat-box__icon">🗳️</div>
             <div class="live-stat-box__content">
               <div id="live-votos" class="live-stat-box__value">{stats.votos}</div>
-              <div class="live-stat-box__label">Votos Emitidos</div>
-              <div class="live-stat-box__sub">Participación activa en prototipos y proyectos</div>
+              <div class="live-stat-box__label">{t('index.stats.votes.val')}</div>
+              <div class="live-stat-box__sub">{t('index.stats.votes.sub')}</div>
             </div>
           </div>
         </div>
 
         <div class="live-stats-footer">
           <span class="live-stats-footer__spinner"></span>
-          <span>Sincronizando con el servidor institucional en tiempo real</span>
+          <span>{t('index.stats.sync')}</span>
         </div>
       </div>
     </div>
@@ -274,7 +278,7 @@ const estaCerrada = jornadaActual.estado === 'CERRADA';
       e.preventDefault();
       return;
     }
-    btnText.textContent = 'Registrando...';
+    btnText.textContent = btnText.getAttribute('data-loading-text') || 'Registrando...';
     btnSpinner.classList.remove('hidden');
     submitBtn.disabled = true;
   });
