@@ -11,8 +11,9 @@ const flags: Record<string, string> = {
 ---
 
 <div class="lang-picker-wrapper" id="lang-picker-wrapper">
-  <button type="button" class="lang-picker-btn" id="lang-picker-btn" aria-expanded="false" aria-label="Seleccionar idioma / Select language">
-    <span class="lang-picker-icon">{flags[currentLang as keyof typeof flags]}</span>
+  <button type="button" class="btn btn--primary btn--sm lang-picker-btn" id="lang-picker-btn" aria-expanded="false" aria-label="Seleccionar idioma / Select language" style="border-radius: 99px;">
+    <span class="lang-picker-icon" style="font-size:1.1rem; line-height: 1; display:flex;">🌐</span>
+    <span style="font-weight: 800; font-size: 0.9rem;">{currentLang.toUpperCase()}</span>
     <svg class="lang-picker-caret" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
@@ -48,42 +49,22 @@ const flags: Record<string, string> = {
   .lang-picker-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    background: transparent;
-    border: 1.5px solid var(--clr-accent);
-    color: var(--clr-text);
-    padding: 0.4rem 0.6rem 0.4rem 0.75rem;
-    border-radius: 99px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem 0.4rem 0.75rem !important;
     outline: none;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
   
-  .lang-picker-btn:hover, .lang-picker-btn:focus-visible {
-    background: var(--clr-surface-hover);
-    border-color: var(--clr-primary);
+  .lang-picker-btn[aria-expanded="true"] {
+    background: var(--clr-primary-light);
+    border-color: #d4bf7a;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.15);
-  }
-  
-  .lang-picker-icon {
-    font-size: 1.35rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: 0 6px 20px rgba(0, 89, 78, 0.35);
   }
   
   .lang-picker-caret {
     transition: transform 0.3s ease;
-    opacity: 0.7;
-    margin-left: 0.25rem;
-  }
-  
-  .lang-picker-btn[aria-expanded="true"] {
-    background: rgba(108, 99, 255, 0.1);
-    border-color: var(--clr-primary);
+    opacity: 0.8;
   }
   
   .lang-picker-btn[aria-expanded="true"] .lang-picker-caret {
