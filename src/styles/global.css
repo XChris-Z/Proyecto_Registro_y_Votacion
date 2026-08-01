@@ -774,15 +774,17 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
   padding: 1rem;
+  z-index: 9999;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transition: var(--transition);
 }
 
 .modal-overlay.active {
   opacity: 1;
+  visibility: visible;
   pointer-events: all;
 }
 
@@ -793,11 +795,12 @@ tr:hover td {
   padding: 2.25rem;
   max-width: 500px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: var(--shadow-lg), 0 0 35px rgba(0, 89, 78, 0.15);
   transform: scale(0.92) translateY(20px);
   transition: var(--transition-slow);
   position: relative;
-  overflow: hidden;
 }
 
 /* Línea superior dorada y verde en modal */
