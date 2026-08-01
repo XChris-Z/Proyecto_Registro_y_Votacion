@@ -92,6 +92,7 @@ export interface Perfil {
   id: string;
   rol: string;
   nombre_completo: string | null;
+  email?: string;
   creado_en: string;
 }
 
