@@ -129,8 +129,13 @@ const msg = Astro.url.searchParams.get('msg');
             ></textarea>
           </div>
           <div class="form-group">
-            <label class="form-label" for="campo-autores">Autores / Equipo</label>
-            <input id="campo-autores" class="form-input" type="text" name="autores" placeholder="Ej: Juan, María, Carlos" />
+            <label class="form-label">Integrantes del Equipo (De 1 a 3 personas)</label>
+            <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.25rem;">
+              <input id="campo-autor-1" class="form-input" type="text" placeholder="Integrante 1 (Principal) *" required />
+              <input id="campo-autor-2" class="form-input" type="text" placeholder="Integrante 2 (Opcional)" />
+              <input id="campo-autor-3" class="form-input" type="text" placeholder="Integrante 3 (Opcional)" />
+            </div>
+            <input id="campo-autores" type="hidden" name="autores" />
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
             <button type="button" class="btn btn--outline" style="border-radius:100px;font-weight:700;" onclick="cerrarModal()">Cancelar</button>
@@ -147,6 +152,10 @@ const msg = Astro.url.searchParams.get('msg');
     const form = document.getElementById('proyecto-form') as HTMLFormElement;
     const title = document.getElementById('modal-title')!;
     const submitBtn = document.getElementById('modal-submit-btn')!;
+    const autoresInput = (document.getElementById('campo-autores') as HTMLInputElement);
+    const autor1 = document.getElementById('campo-autor-1') as HTMLInputElement;
+    const autor2 = document.getElementById('campo-autor-2') as HTMLInputElement;
+    const autor3 = document.getElementById('campo-autor-3') as HTMLInputElement;
 
     if (proyecto) {
       title.textContent = 'Editar Proyecto';
@@ -154,14 +163,21 @@ const msg = Astro.url.searchParams.get('msg');
       form.action = `/api/admin/proyectos/${proyecto.id}?_method=PUT`;
       (document.getElementById('campo-id') as HTMLInputElement).value = proyecto.id;
       (document.getElementById('campo-nombre') as HTMLInputElement).value = proyecto.nombre;
-      (document.getElementById('campo-categoria') as HTMLSelectElement).value = proyecto.categoria_id;
+      (document.getElementById('campo-categoria') as HTMLSelectElement).value = String(proyecto.categoria_id);
       (document.getElementById('campo-descripcion') as HTMLTextAreaElement).value = proyecto.descripcion || '';
-      (document.getElementById('campo-autores') as HTMLInputElement).value = proyecto.autores || '';
+      
+      const autores = (proyecto.autores || '').split(',').map((a: string) => a.trim());
+      autor1.value = autores[0] || '';
+      autor2.value = autores[1] || '';
+      autor3.value = autores[2] || '';
+      autoresInput.value = proyecto.autores || '';
     } else {
-      title.textContent = 'Agregar Proyecto';
-      submitBtn.textContent = 'Agregar proyecto';
+      title.textContent = 'Nuevo Proyecto';
+      submitBtn.textContent = 'Crear proyecto';
       form.action = '/api/admin/proyectos';
       form.reset();
+      autor1.value = ''; autor2.value = ''; autor3.value = '';
+      autoresInput.value = '';
       if (categoriaId) {
         (document.getElementById('campo-categoria') as HTMLSelectElement).value = String(categoriaId);
       }
@@ -189,6 +205,14 @@ const msg = Astro.url.searchParams.get('msg');
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') cerrarModal();
+  });
+
+  document.getElementById('proyecto-form')!.addEventListener('submit', function() {
+    const a1 = (document.getElementById('campo-autor-1') as HTMLInputElement).value.trim();
+    const a2 = (document.getElementById('campo-autor-2') as HTMLInputElement).value.trim();
+    const a3 = (document.getElementById('campo-autor-3') as HTMLInputElement).value.trim();
+    const arr = [a1, a2, a3].filter(x => x.length > 0);
+    (document.getElementById('campo-autores') as HTMLInputElement).value = arr.join(', ');
   });
 
   (window as any).abrirModal = abrirModal;

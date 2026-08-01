@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { supabase, obtenerPerfil } from '@lib/db';
+import { supabase, obtenerPerfil, cleanSupabaseUrl, cleanEnvVar } from '@lib/db';
+import { createClient } from '@supabase/supabase-js';
 
 export const GET: APIRoute = async ({ redirect }) => {
   return redirect('/jurado/login');
@@ -15,7 +16,15 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   }
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const rawUrl = (import.meta.env.PUBLIC_SUPABASE_URL as string) || (process.env.PUBLIC_SUPABASE_URL as string);
+    const rawKey = (import.meta.env.SUPABASE_SERVICE_ROLE_KEY as string) || (process.env.SUPABASE_SERVICE_ROLE_KEY as string);
+    
+    // Crear un cliente temporal SOLO para autenticar sin afectar al global
+    const tempAuthClient = createClient(cleanSupabaseUrl(rawUrl), cleanEnvVar(rawKey), {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
+
+    const { data, error } = await tempAuthClient.auth.signInWithPassword({
       email,
       password,
     });
@@ -24,12 +33,10 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
       return redirect('/jurado/login?error=credentials');
     }
 
-    // Verificar que tenga el rol jurado en la tabla perfiles
+    // Verificar que tenga el rol jurado en la tabla perfiles usando el cliente global (service_role puro)
     const perfil = await obtenerPerfil(data.user.id);
     
     if (!perfil || perfil.rol !== 'jurado') {
-      // Si no es jurado, cerrar su sesión
-      await supabase.auth.signOut();
       return redirect('/jurado/login?error=credentials');
     }
 

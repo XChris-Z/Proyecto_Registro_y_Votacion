@@ -35,7 +35,7 @@ CREATE TABLE public.votos_jurado (
   jurado_id UUID REFERENCES public.perfiles(id) ON DELETE CASCADE NOT NULL,
   proyecto_id BIGINT REFERENCES public.proyectos(id) ON DELETE CASCADE NOT NULL,
   criterio_id BIGINT REFERENCES public.criterios_evaluacion(id) ON DELETE CASCADE NOT NULL,
-  calificacion NUMERIC NOT NULL CHECK (calificacion >= 1 AND calificacion <= 10),
+  calificacion NUMERIC NOT NULL CHECK (calificacion >= 0 AND calificacion <= 10),
   fecha_voto TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   
   -- Restricción UNIQUE para evitar doble voto por criterio en un proyecto

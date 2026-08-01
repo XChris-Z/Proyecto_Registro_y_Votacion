@@ -730,6 +730,35 @@ export async function obtenerCriteriosEvaluacion(): Promise<CriterioEvaluacion[]
   return data as CriterioEvaluacion[];
 }
 
+export async function crearCriterioEvaluacion(data: { nombre: string; descripcion?: string; peso_porcentual?: number }): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('criterios_evaluacion')
+    .insert([data]);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+export async function actualizarCriterioEvaluacion(id: number, data: { nombre?: string; descripcion?: string; peso_porcentual?: number }): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('criterios_evaluacion')
+    .update(data)
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+export async function eliminarCriterioEvaluacion(id: number): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('criterios_evaluacion')
+    .delete()
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
 export async function emitirVotosJurado(votos: VotoJurado[]): Promise<{ success: boolean; error?: string }> {
   const { error } = await supabase
     .from('votos_jurado')
