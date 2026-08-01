@@ -337,6 +337,11 @@ a:hover {
   padding-right: 2.5rem;
 }
 
+option {
+  color: var(--clr-text);
+  background-color: var(--clr-bg);
+}
+
 .form-error {
   font-size: 0.8rem;
   color: var(--clr-error);
