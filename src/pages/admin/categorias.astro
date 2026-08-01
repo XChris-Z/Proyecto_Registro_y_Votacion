@@ -116,7 +116,7 @@ const msg = Astro.url.searchParams.get('msg');
       (document.getElementById('campo-nombre') as HTMLInputElement).value = cat.nombre;
       (document.getElementById('campo-desc') as HTMLInputElement).value = cat.descripcion || '';
       (document.getElementById('campo-orden') as HTMLInputElement).value = cat.orden;
-      (document.getElementById('campo-activa') as HTMLSelectElement).value = String(cat.activa);
+      (document.getElementById('campo-activa') as HTMLSelectElement).value = cat.activa ? '1' : '0';
     } else {
       title.textContent = 'Nueva Categoría';
       submitBtn.textContent = 'Crear categoría';
