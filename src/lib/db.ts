@@ -797,6 +797,56 @@ export async function obtenerJurados(): Promise<Perfil[]> {
     .order('creado_en', { ascending: false });
 
   if (error || !data) return [];
+  if (error || !data) return [];
   return data as Perfil[];
+}
+
+export async function eliminarJurado(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Esto debería eliminar el perfil también por ON DELETE CASCADE
+    const { error } = await supabase.auth.admin.deleteUser(id);
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function actualizarJurado(id: string, data: { nombre_completo?: string; password?: string; email?: string }): Promise<{ success: boolean; error?: string }> {
+  try {
+    // 1. Actualizar credenciales en Auth si fueron provistas
+    if (data.password || data.email) {
+      const authUpdates: any = {};
+      if (data.password) authUpdates.password = data.password;
+      if (data.email) authUpdates.email = data.email;
+      
+      const { error: authError } = await supabase.auth.admin.updateUserById(id, authUpdates);
+      if (authError) {
+        return { success: false, error: authError.message };
+      }
+    }
+
+    // 2. Actualizar perfil
+    const profileUpdates: any = {};
+    if (data.nombre_completo !== undefined) profileUpdates.nombre_completo = data.nombre_completo;
+    if (data.email !== undefined) profileUpdates.email = data.email;
+
+    if (Object.keys(profileUpdates).length > 0) {
+      const { error: profileError } = await supabase
+        .from('perfiles')
+        .update(profileUpdates)
+        .eq('id', id);
+
+      if (profileError) {
+        return { success: false, error: profileError.message };
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 }
 

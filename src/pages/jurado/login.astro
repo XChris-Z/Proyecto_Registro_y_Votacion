@@ -134,10 +134,11 @@ const errorMessages: Record<string, string> = {
           btnText.textContent = btnText.getAttribute('data-loading-text') || 'Autenticando...';
           btnSpinner.classList.remove('hidden');
         }
-        btn.disabled = true;
-        btn.style.opacity = '0.85';
-        btn.style.cursor = 'wait';
-        form.submit();
+        setTimeout(() => {
+          btn.disabled = true;
+          btn.style.opacity = '0.85';
+          btn.style.cursor = 'wait';
+        }, 10);
       });
     }
   </script>

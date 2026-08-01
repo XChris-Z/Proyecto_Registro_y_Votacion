@@ -127,7 +127,16 @@ const errorParam = Astro.url.searchParams.get('error');
               </td>
               {isSuperAdmin && (
                 <td>
-                  <span style="color:var(--clr-text-muted); font-size:0.85rem; font-style:italic;">Gesti&oacute;n limit.</span>
+                  <div style="display:flex; gap:0.5rem;">
+                    <button type="button" class="btn btn--outline" onclick={`abrirModalEditarJurado('${jurado.id}', '${jurado.email}', '${jurado.nombre_completo}')`} style="padding:0.3rem 0.7rem; font-size:0.8rem; border-radius:6px;" title="Editar">
+                      ✏️ Editar
+                    </button>
+                    <form method="POST" action={`/api/admin/jurados/${jurado.id}?_method=DELETE`} style="margin:0;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este jurado permanentemente?');">
+                      <button type="submit" class="btn btn--outline" style="padding:0.3rem 0.7rem; font-size:0.8rem; border-radius:6px; color:var(--clr-error); border-color:var(--clr-error);" title="Eliminar">
+                        🗑️ Eliminar
+                      </button>
+                    </form>
+                  </div>
                 </td>
               )}
             </tr>
@@ -271,6 +280,62 @@ const errorParam = Astro.url.searchParams.get('error');
     </div>
   </div>
 
+  <!-- Modal Editar Jurado (Solo para Admins) -->
+  <div class="modal-overlay" id="modal-editar-jurado" onclick="cerrarModalEditarJurado(event)">
+    <div class="modal card" style="max-width: 460px; width: 95%; border: 2px solid #B5A160; background: var(--clr-surface); padding: 2rem;" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--clr-border);padding-bottom:1rem;">
+        <h3 style="font-size:1.2rem;font-weight:800;color:var(--clr-text);margin:0;display:flex;align-items:center;gap:0.5rem;">
+          <span>✏️</span> Editar Jurado
+        </h3>
+        <button type="button" onclick="cerrarModalEditarJurado()" style="background:none;border:none;font-size:1.5rem;color:var(--clr-text-muted);cursor:pointer;">✕</button>
+      </div>
+
+      <form method="POST" id="form-editar-jurado" action="">
+        <div class="form-group mb-3">
+          <label class="form-label" for="edit_jurado_nombre">Nombre Completo <span style="color:var(--clr-error);">*</span></label>
+          <input
+            id="edit_jurado_nombre"
+            name="nombre"
+            class="form-input"
+            type="text"
+            required
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="edit_jurado_email">Correo Electrónico <span style="color:var(--clr-error);">*</span></label>
+          <input
+            id="edit_jurado_email"
+            name="email"
+            class="form-input"
+            type="email"
+            required
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label" for="edit_jurado_password">Nueva Contraseña <span style="color:var(--clr-text-muted); font-weight: normal; font-size: 0.85rem;">(Opcional)</span></label>
+          <input
+            id="edit_jurado_password"
+            name="password"
+            class="form-input"
+            type="password"
+            placeholder="Dejar en blanco para no cambiar"
+            minlength="6"
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div style="display:flex;gap:0.85rem;justify-content:flex-end;">
+          <button type="button" class="btn btn--outline" onclick="cerrarModalEditarJurado()" style="border-radius:100px;padding:0.65rem 1.3rem;font-weight:700;">Cancelar</button>
+          <button type="submit" class="btn btn--primary" style="border-radius:100px;padding:0.65rem 1.5rem;font-weight:800;background:var(--clr-primary);border-color:var(--clr-accent);">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script is:inline>
     function toggleRolFields() {
       const rol = document.getElementById('rol')?.value;
@@ -323,6 +388,25 @@ const errorParam = Astro.url.searchParams.get('error');
 
     window.cerrarModalEditarUsuario = function(e) {
       const modal = document.getElementById('modal-editar-usuario');
+      if (modal) {
+        if (!e || e.target === modal || e.type === 'click' && !e.target.closest('.modal')) {
+          modal.classList.remove('active');
+        }
+      }
+    };
+
+    window.abrirModalEditarJurado = function(id, email, nombre) {
+      const modal = document.getElementById('modal-editar-jurado');
+      const form = document.getElementById('form-editar-jurado');
+      document.getElementById('edit_jurado_email').value = email;
+      document.getElementById('edit_jurado_nombre').value = nombre;
+      document.getElementById('edit_jurado_password').value = '';
+      form.action = `/api/admin/jurados/${id}?_method=PUT`;
+      if (modal) modal.classList.add('active');
+    };
+
+    window.cerrarModalEditarJurado = function(e) {
+      const modal = document.getElementById('modal-editar-jurado');
       if (modal) {
         if (!e || e.target === modal || e.type === 'click' && !e.target.closest('.modal')) {
           modal.classList.remove('active');
