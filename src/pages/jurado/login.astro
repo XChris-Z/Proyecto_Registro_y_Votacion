@@ -73,6 +73,14 @@ const errorMessages: Record<string, string> = {
                 autocomplete="current-password"
                 style="padding:1rem 1.25rem;font-size:1.05rem;border-radius:14px;border:2px solid var(--clr-border);width:100%;transition:all 0.25s ease;background:var(--clr-surface);font-weight:600;"
               />
+              <button
+                type="button"
+                id="toggle-password"
+                title="Mostrar/Ocultar contraseña"
+                style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.2rem; opacity:0.7; transition:opacity 0.2s; padding:0; display:flex; align-items:center; justify-content:center;"
+              >
+                👁️
+              </button>
             </div>
           </div>
 
@@ -127,6 +135,20 @@ const errorMessages: Record<string, string> = {
     const btn = document.getElementById('acceder-btn') as HTMLButtonElement | null;
     const btnText = document.getElementById('btn-text') as HTMLElement | null;
     const btnSpinner = document.getElementById('btn-spinner') as HTMLElement | null;
+    const toggleBtn = document.getElementById('toggle-password');
+    const pwdInput = document.getElementById('password') as HTMLInputElement | null;
+
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener('click', () => {
+        if (pwdInput.type === 'password') {
+          pwdInput.type = 'text';
+          toggleBtn.textContent = '🙈';
+        } else {
+          pwdInput.type = 'password';
+          toggleBtn.textContent = '👁️';
+        }
+      });
+    }
 
     if (btn) {
       form?.addEventListener('submit', () => {

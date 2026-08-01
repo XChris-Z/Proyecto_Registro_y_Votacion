@@ -79,7 +79,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
   </div>
 
   <!-- Modal de Evaluación -->
-  <div id="evaluacion-modal" class="modal-overlay hidden">
+  <div id="evaluacion-modal" class="modal-overlay">
     <div class="modal-content card fade-in" style="max-width: 500px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
         <h3 id="modal-proyecto-nombre" style="margin: 0; line-height: 1.3;">Evaluando...</h3>
@@ -141,8 +141,9 @@ const nombreJurado = perfil.nombre_completo || user.email;
       padding: 2rem;
       position: relative;
     }
-    .hidden {
-      display: none !important;
+    .modal-content {
+      padding: 2rem;
+      position: relative;
     }
   </style>
 
@@ -168,20 +169,20 @@ const nombreJurado = perfil.nombre_completo || user.email;
           proyectoIdInput.value = id;
           form.reset();
           if(evalError) evalError.style.display = 'none';
-          modal.classList.remove('hidden');
+          modal.classList.add('active');
         }
       });
     });
 
     // Cerrar modal
     closeBtn?.addEventListener('click', () => {
-      modal?.classList.add('hidden');
+      modal?.classList.remove('active');
     });
 
     // Cerrar clickeando afuera
     modal?.addEventListener('click', (e) => {
       if (e.target === modal) {
-        modal.classList.add('hidden');
+        modal.classList.remove('active');
       }
     });
 
