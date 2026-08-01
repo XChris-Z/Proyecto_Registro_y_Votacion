@@ -47,6 +47,18 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
             <a href="/" class="btn btn--outline btn--sm">Registro</a>
             <a href="/votacion" class="btn btn--primary btn--sm">Votar</a>
             <a
+              href="/jurado/login"
+              class="admin-nav-btn"
+              title="Panel de Jurados"
+              aria-label="Iniciar sesión como jurado"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span class="admin-nav-btn__label">Jurados</span>
+            </a>
+            <a
               href="/admin"
               class="admin-nav-btn"
               title="Panel de Administración"
