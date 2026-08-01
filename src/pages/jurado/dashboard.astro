@@ -39,12 +39,12 @@ const nombreJurado = perfil.nombre_completo || user.email;
           Explora los proyectos, analízalos y emite tu calificación con criterio.
         </p>
       </div>
-      <div style="display: flex; align-items: center; gap: 1.25rem; background: rgba(0,0,0,0.2); padding: 0.75rem 1.25rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.05);">
+      <div style="display: flex; align-items: center; gap: 1.25rem; background: var(--clr-surface-hover); padding: 0.75rem 1.25rem; border-radius: 100px; border: 1px solid var(--clr-border);">
         <div style="display: flex; flex-direction: column; text-align: right;">
           <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--clr-text-dim); font-weight: 700;">Sesión activa</span>
           <span style="font-size: 0.95rem; font-weight: 700; color: var(--clr-text);">{nombreJurado}</span>
         </div>
-        <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
+        <div style="width: 1px; height: 30px; background: var(--clr-border);"></div>
         <a href="/api/jurado/logout" class="btn btn--danger btn--sm" style="border-radius: 100px; padding: 0.4rem 1rem; font-weight: 700;">Salir</a>
       </div>
     </div>
@@ -56,7 +56,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
       </h3>
 
       {proyectos.length === 0 ? (
-        <div style="text-align: center; padding: 4rem 2rem; background: var(--clr-surface); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);">
+        <div style="text-align: center; padding: 4rem 2rem; background: var(--clr-surface); border-radius: 16px; border: 1px dashed var(--clr-border);">
           <span style="font-size: 3rem; opacity: 0.5; display: block; margin-bottom: 1rem;">📭</span>
           <p style="color: var(--clr-text-muted); font-size: 1.1rem; margin: 0;">No hay proyectos activos en este momento.</p>
         </div>
@@ -105,7 +105,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
           <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--clr-accent); font-weight: 800; display: block; margin-bottom: 0.25rem;">Evaluando Proyecto</span>
           <h3 id="modal-proyecto-nombre" style="margin: 0; line-height: 1.3; font-size: 1.4rem; color: var(--clr-text);">Nombre del Proyecto</h3>
         </div>
-        <button id="close-modal-btn" style="background: rgba(255,255,255,0.05); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--clr-text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
+        <button id="close-modal-btn" style="background: var(--clr-surface); border: 1px solid var(--clr-border); width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--clr-text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
       </div>
 
       <form id="evaluacion-form" style="display: flex; flex-direction: column; overflow: hidden; flex: 1;">
@@ -120,7 +120,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
           </div>
 
           {criterios.map((criterio) => (
-            <div class="form-group" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div class="form-group" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--clr-border);">
               <label class="form-label" style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--clr-text);">
                 <span>{criterio.nombre}</span>
                 {criterio.peso_porcentual && (
@@ -137,7 +137,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
                   min="0" max="10" step="0.1" 
                   placeholder="0.0" 
                   required 
-                  style="width: 100px; padding: 0.85rem; font-size: 1.2rem; font-weight: 800; text-align: center; border-radius: 12px; border: 2px solid var(--clr-border); background: rgba(0,0,0,0.2);"
+                  style="width: 100px; padding: 0.85rem; font-size: 1.2rem; font-weight: 800; text-align: center; border-radius: 12px; border: 2px solid var(--clr-border); background: var(--clr-bg); color: var(--clr-text);"
                 />
                 <span style="font-weight: 800; color: var(--clr-text-dim); font-size: 1.2rem;">/ 10</span>
               </div>
@@ -158,8 +158,8 @@ const nombreJurado = perfil.nombre_completo || user.email;
   <style>
     /* Estilos del Header */
     .dashboard-header {
-      background: linear-gradient(135deg, rgba(0, 24, 21, 0.8) 0%, rgba(0, 89, 78, 0.15) 100%);
-      border: 1px solid rgba(181, 161, 96, 0.15);
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
       border-radius: 20px;
       padding: 2.5rem;
       margin-bottom: 3rem;
@@ -168,8 +168,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
       align-items: center;
       flex-wrap: wrap;
       gap: 1.5rem;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
       position: relative;
       overflow: hidden;
     }
@@ -181,42 +180,43 @@ const nombreJurado = perfil.nombre_completo || user.email;
       right: -10%;
       width: 300px;
       height: 300px;
-      background: radial-gradient(circle, rgba(181, 161, 96, 0.1) 0%, transparent 70%);
+      background: radial-gradient(circle, var(--clr-primary-light) 0%, transparent 70%);
+      opacity: 0.15;
       border-radius: 50%;
       pointer-events: none;
     }
 
     /* Tarjetas de Proyectos */
     .project-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
       border-radius: 20px;
       padding: 1.75rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       position: relative;
     }
     
     .project-card:not(.voted):hover {
       transform: translateY(-6px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-      border-color: rgba(181, 161, 96, 0.4);
-      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      border-color: var(--clr-accent);
+      background: var(--clr-surface-hover);
     }
 
     .project-card.voted {
       opacity: 0.8;
-      border-color: rgba(0, 89, 78, 0.3);
-      background: rgba(0, 89, 78, 0.05);
+      border-color: var(--clr-primary);
+      background: var(--clr-surface-hover);
     }
 
     .badge-category {
-      background: rgba(181, 161, 96, 0.15);
+      background: var(--clr-surface-hover);
       color: var(--clr-accent);
-      border: 1px solid rgba(181, 161, 96, 0.25);
+      border: 1px solid var(--clr-border);
       font-size: 0.72rem;
       font-weight: 800;
       padding: 0.35rem 0.75rem;
@@ -244,7 +244,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
       display: flex;
       align-items: flex-start;
       gap: 0.5rem;
-      background: rgba(0,0,0,0.15);
+      background: var(--clr-surface-hover);
       padding: 0.75rem 1rem;
       border-radius: 12px;
     }
@@ -271,29 +271,30 @@ const nombreJurado = perfil.nombre_completo || user.email;
 
     /* Elementos del Modal */
     #close-modal-btn:hover {
-      background: rgba(255,255,255,0.1) !important;
+      background: var(--clr-primary) !important;
       color: white !important;
+      border-color: var(--clr-primary) !important;
     }
 
     .criteria-input:focus {
       border-color: var(--clr-accent) !important;
       box-shadow: 0 0 0 4px rgba(181, 161, 96, 0.15) !important;
-      background: rgba(0,0,0,0.4) !important;
+      background: var(--clr-surface) !important;
     }
 
     .custom-scrollbar::-webkit-scrollbar {
       width: 8px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.1);
+      background: var(--clr-surface-hover);
       border-radius: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.1);
+      background: var(--clr-border);
       border-radius: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(255,255,255,0.2);
+      background: var(--clr-text-muted);
     }
 
     @media (max-width: 600px) {
