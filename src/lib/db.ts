@@ -81,6 +81,31 @@ export interface ResultadoVoto {
   total_votos: number;
 }
 
+// Interfaces Jurado
+export interface Perfil {
+  id: string;
+  rol: string;
+  nombre_completo: string | null;
+  creado_en: string;
+}
+
+export interface CriterioEvaluacion {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  peso_porcentual: number | null;
+  creado_en: string;
+}
+
+export interface VotoJurado {
+  id?: number;
+  jurado_id: string;
+  proyecto_id: number;
+  criterio_id: number;
+  calificacion: number;
+  fecha_voto?: string;
+}
+
 // ─── ASISTENTES ───────────────────────────────────────────────────────────────
 
 export async function registrarAsistente(data: {
@@ -674,5 +699,55 @@ export async function obtenerEstadisticasEnVivo(): Promise<{ asistentes: number;
   } catch {
     return { asistentes: 0, votos: 0 };
   }
+}
+
+// ─── JURADOS ──────────────────────────────────────────────────────────────────
+
+export async function obtenerPerfil(user_id: string): Promise<Perfil | null> {
+  const { data, error } = await supabase
+    .from('perfiles')
+    .select('*')
+    .eq('id', user_id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as Perfil;
+}
+
+export async function obtenerCriteriosEvaluacion(): Promise<CriterioEvaluacion[]> {
+  const { data, error } = await supabase
+    .from('criterios_evaluacion')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) return [];
+  return data as CriterioEvaluacion[];
+}
+
+export async function emitirVotosJurado(votos: VotoJurado[]): Promise<{ success: boolean; error?: string }> {
+  const { error } = await supabase
+    .from('votos_jurado')
+    .insert(votos);
+
+  if (error) {
+    if (error.code === '23505') {
+      return { success: false, error: 'Ya has calificado uno o más criterios de este proyecto.' };
+    }
+    return { success: false, error: error.message || 'Error al guardar las calificaciones.' };
+  }
+
+  return { success: true };
+}
+
+export async function obtenerProyectosVotadosPorJurado(jurado_id: string): Promise<number[]> {
+  const { data, error } = await supabase
+    .from('votos_jurado')
+    .select('proyecto_id')
+    .eq('jurado_id', jurado_id);
+
+  if (error || !data) return [];
+  // Retornar lista de IDs únicos de proyectos votados
+  const ids = data.map(v => v.proyecto_id);
+  return [...new Set(ids)];
 }
 
