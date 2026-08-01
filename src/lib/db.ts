@@ -751,3 +751,52 @@ export async function obtenerProyectosVotadosPorJurado(jurado_id: string): Promi
   return [...new Set(ids)];
 }
 
+export async function crearJurado(email: string, passwordHash: string, nombre: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    // 1. Crear usuario en Auth de Supabase
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email,
+      password: passwordHash,
+      email_confirm: true
+    });
+
+    if (authError || !authData.user) {
+      if (authError?.message?.includes('already registered')) {
+        return { success: false, error: 'El correo electrónico ya está registrado.' };
+      }
+      return { success: false, error: authError?.message || 'Error al crear usuario en Auth' };
+    }
+
+    // 2. Insertar en tabla perfiles
+    const { error: profileError } = await supabase
+      .from('perfiles')
+      .insert([{
+        id: authData.user.id,
+        rol: 'jurado',
+        nombre_completo: nombre,
+        email: email
+      }]);
+
+    if (profileError) {
+      // Intento de limpieza si falla
+      await supabase.auth.admin.deleteUser(authData.user.id);
+      return { success: false, error: profileError.message };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function obtenerJurados(): Promise<Perfil[]> {
+  const { data, error } = await supabase
+    .from('perfiles')
+    .select('*')
+    .eq('rol', 'jurado')
+    .order('creado_en', { ascending: false });
+
+  if (error || !data) return [];
+  return data as Perfil[];
+}
+

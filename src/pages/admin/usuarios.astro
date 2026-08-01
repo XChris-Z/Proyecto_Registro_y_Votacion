@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerAdministradores, obtenerAdminPorId } from '@lib/db';
+import { obtenerAdministradores, obtenerAdminPorId, obtenerJurados } from '@lib/db';
 
 const session = Astro.cookies.get('admin_session')?.value;
 if (!session) {
@@ -11,6 +11,7 @@ const currentAdmin = await obtenerAdminPorId(Number(session));
 const isSuperAdmin = currentAdmin?.usuario === 'admin';
 
 const administradores = await obtenerAdministradores();
+const jurados = await obtenerJurados();
 const exitoParam = Astro.url.searchParams.get('exito');
 const errorParam = Astro.url.searchParams.get('error');
 ---
@@ -19,8 +20,8 @@ const errorParam = Astro.url.searchParams.get('error');
   <div style="max-width: 900px; margin: 0 auto;">
     <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <div>
-        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; color: var(--clr-text);">Usuarios Administradores</h1>
-        <p style="color: var(--clr-text-muted);">Gestiona quién tiene acceso al panel de administración.</p>
+        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; color: var(--clr-text);">Usuarios del Sistema</h1>
+        <p style="color: var(--clr-text-muted);">Gestiona los administradores y los jurados de evaluación.</p>
       </div>
       {isSuperAdmin && (
         <button class="btn btn--primary" onclick="abrirModalCrearUsuario()" style="padding: 0.65rem 1.4rem; font-weight: 800; border-radius: 100px; display: flex; align-items: center; gap: 0.5rem; background: var(--clr-primary); border: 2px solid var(--clr-accent);">
@@ -31,7 +32,7 @@ const errorParam = Astro.url.searchParams.get('error');
 
     {exitoParam === 'user_created' && (
       <div class="alert alert--success mb-4" style="padding: 1rem;">
-        <span style="font-size:1.3rem;">✅</span> Usuario administrador creado exitosamente.
+        <span style="font-size:1.3rem;">✅</span> Usuario creado exitosamente.
       </div>
     )}
     {errorParam === 'missing_fields' && (
@@ -46,7 +47,7 @@ const errorParam = Astro.url.searchParams.get('error');
     )}
     {errorParam === 'user_exists' && (
       <div class="alert alert--error mb-4" style="padding: 1rem;">
-        <span style="font-size:1.3rem;">⚠️</span> El nombre de usuario ya está en uso.
+        <span style="font-size:1.3rem;">⚠️</span> El nombre de usuario o correo ya está en uso.
       </div>
     )}
     {errorParam === 'unauthorized' && (
@@ -54,24 +55,9 @@ const errorParam = Astro.url.searchParams.get('error');
         <span style="font-size:1.3rem;">⚠️</span> No tienes permisos de administrador principal.
       </div>
     )}
-    {exitoParam === 'status_changed' && (
-      <div class="alert alert--success mb-4" style="padding: 1rem;">
-        <span style="font-size:1.3rem;">✅</span> El estado del usuario se ha actualizado correctamente.
-      </div>
-    )}
-    {exitoParam === 'user_deleted' && (
-      <div class="alert alert--success mb-4" style="padding: 1rem;">
-        <span style="font-size:1.3rem;">✅</span> Usuario administrador eliminado exitosamente.
-      </div>
-    )}
-    {exitoParam === 'user_updated' && (
-      <div class="alert alert--success mb-4" style="padding: 1rem;">
-        <span style="font-size:1.3rem;">✅</span> Usuario administrador actualizado exitosamente.
-      </div>
-    )}
-    {errorParam === 'cannot_modify_superadmin' && (
+    {errorParam === 'unknown' && (
       <div class="alert alert--error mb-4" style="padding: 1rem;">
-        <span style="font-size:1.3rem;">⚠️</span> No se puede modificar ni eliminar al super administrador.
+        <span style="font-size:1.3rem;">⚠️</span> Ocurrió un error inesperado.
       </div>
     )}
 
@@ -80,9 +66,9 @@ const errorParam = Astro.url.searchParams.get('error');
         <thead>
           <tr>
             <th>ID</th>
-            <th>Usuario</th>
-            <th>Nombre</th>
-            <th>Estado</th>
+            <th>Identificador</th>
+            <th>Nombre Completo</th>
+            <th>Rol / Estado</th>
             {isSuperAdmin && <th>Acciones</th>}
           </tr>
         </thead>
@@ -93,27 +79,22 @@ const errorParam = Astro.url.searchParams.get('error');
               <td style="font-weight: 700; color: var(--clr-text);">{admin.usuario}</td>
               <td>{admin.nombre || 'N/A'}</td>
               <td>
-                {isSuperAdmin && admin.usuario !== 'admin' ? (
-                  <form method="POST" action="/api/admin/toggle-estado" style="display:inline-block; margin:0;">
-                    <input type="hidden" name="id" value={admin.id} />
-                    <input type="hidden" name="estado" value={admin.activo ? 'false' : 'true'} />
-                    <button type="submit" class="toggle-btn" title={admin.activo ? 'Desactivar usuario' : 'Activar usuario'} style={`border:none; cursor:pointer; padding: 0.35rem 0.85rem; border-radius: 100px; font-size: 0.85rem; font-weight: 700; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.4rem; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #059669;' : 'background: rgba(239, 68, 68, 0.15); color: #dc2626;'}`}>
-                      {admin.activo ? (
-                        <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span> Activo</>
-                      ) : (
-                        <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span> Inactivo</>
-                      )}
-                    </button>
-                  </form>
-                ) : (
-                  <span style={`padding: 0.35rem 0.85rem; border-radius: 100px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #059669;' : 'background: rgba(239, 68, 68, 0.15); color: #dc2626;'}`}>
-                    {admin.activo ? (
-                      <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span> Activo</>
-                    ) : (
-                      <><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444;"></span> Inactivo</>
-                    )}
-                  </span>
-                )}
+                <div style="display:flex; flex-direction:column; gap:0.25rem; align-items:flex-start;">
+                  <span class="badge" style="background: var(--clr-primary-light); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">Admin</span>
+                  {isSuperAdmin && admin.usuario !== 'admin' ? (
+                    <form method="POST" action="/api/admin/toggle-estado" style="display:inline-block; margin:0;">
+                      <input type="hidden" name="id" value={admin.id} />
+                      <input type="hidden" name="estado" value={admin.activo ? 'false' : 'true'} />
+                      <button type="submit" class="toggle-btn" title={admin.activo ? 'Desactivar usuario' : 'Activar usuario'} style={`border:none; cursor:pointer; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.2rem; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #059669;' : 'background: rgba(239, 68, 68, 0.15); color: #dc2626;'}`}>
+                        {admin.activo ? 'Activo' : 'Inactivo'}
+                      </button>
+                    </form>
+                  ) : (
+                    <span style={`padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.2rem; ${admin.activo ? 'background: rgba(16, 185, 129, 0.15); color: #059669;' : 'background: rgba(239, 68, 68, 0.15); color: #dc2626;'}`}>
+                      {admin.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                  )}
+                </div>
               </td>
               {isSuperAdmin && (
                 <td>
@@ -135,6 +116,22 @@ const errorParam = Astro.url.searchParams.get('error');
               )}
             </tr>
           ))}
+
+          {jurados.map(jurado => (
+            <tr>
+              <td style="color: var(--clr-text-muted); font-size:0.75rem;" title={jurado.id}>...{jurado.id.slice(-6)}</td>
+              <td style="font-weight: 700; color: var(--clr-text);">{jurado.email || 'N/A'}</td>
+              <td>{jurado.nombre_completo || 'N/A'}</td>
+              <td>
+                <span class="badge" style="background: var(--clr-accent); color: #1a1a1a; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight:700;">Jurado</span>
+              </td>
+              {isSuperAdmin && (
+                <td>
+                  <span style="color:var(--clr-text-muted); font-size:0.85rem; font-style:italic;">Gesti&oacute;n limit.</span>
+                </td>
+              )}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -145,12 +142,20 @@ const errorParam = Astro.url.searchParams.get('error');
     <div class="modal card" style="max-width: 460px; width: 95%; border: 2px solid #B5A160; background: var(--clr-surface); padding: 2rem;" onclick="event.stopPropagation()">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--clr-border);padding-bottom:1rem;">
         <h3 style="font-size:1.2rem;font-weight:800;color:var(--clr-text);margin:0;display:flex;align-items:center;gap:0.5rem;">
-          <span>👤</span> Nuevo Administrador
+          <span>👤</span> Nuevo Usuario
         </h3>
         <button type="button" onclick="cerrarModalCrearUsuario()" style="background:none;border:none;font-size:1.5rem;color:var(--clr-text-muted);cursor:pointer;">✕</button>
       </div>
 
       <form method="POST" action="/api/admin/crear-usuario">
+        <div class="form-group mb-3">
+          <label class="form-label" for="rol">Rol del Usuario <span style="color:var(--clr-error);">*</span></label>
+          <select id="rol" name="rol" class="form-input" style="width:100%;border-radius:100px;padding:0.75rem 1.25rem; cursor:pointer;" onchange="toggleRolFields()">
+            <option value="admin">Administrador</option>
+            <option value="jurado">Jurado de Votación</option>
+          </select>
+        </div>
+
         <div class="form-group mb-3">
           <label class="form-label" for="nombre">Nombre Completo <span style="color:var(--clr-error);">*</span></label>
           <input
@@ -164,7 +169,7 @@ const errorParam = Astro.url.searchParams.get('error');
           />
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group mb-3" id="campo-usuario">
           <label class="form-label" for="usuario">Nombre de Usuario <span style="color:var(--clr-error);">*</span></label>
           <input
             id="usuario"
@@ -172,7 +177,18 @@ const errorParam = Astro.url.searchParams.get('error');
             class="form-input"
             type="text"
             placeholder="Ej. juanp"
-            required
+            style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
+          />
+        </div>
+
+        <div class="form-group mb-3 hidden" id="campo-email">
+          <label class="form-label" for="email">Correo Electrónico <span style="color:var(--clr-error);">*</span></label>
+          <input
+            id="email"
+            name="email"
+            class="form-input"
+            type="email"
+            placeholder="ejemplo@correo.com"
             style="width:100%;border-radius:100px;padding:0.75rem 1.25rem;"
           />
         </div>
@@ -199,7 +215,7 @@ const errorParam = Astro.url.searchParams.get('error');
     </div>
   </div>
 
-  <!-- Modal Editar Usuario -->
+  <!-- Modal Editar Usuario (Solo para Admins) -->
   <div class="modal-overlay" id="modal-editar-usuario" onclick="cerrarModalEditarUsuario(event)">
     <div class="modal card" style="max-width: 460px; width: 95%; border: 2px solid #B5A160; background: var(--clr-surface); padding: 2rem;" onclick="event.stopPropagation()">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--clr-border);padding-bottom:1rem;">
@@ -256,6 +272,31 @@ const errorParam = Astro.url.searchParams.get('error');
   </div>
 
   <script is:inline>
+    function toggleRolFields() {
+      const rol = document.getElementById('rol')?.value;
+      const campoUsuario = document.getElementById('campo-usuario');
+      const campoEmail = document.getElementById('campo-email');
+      const inputUsuario = document.getElementById('usuario');
+      const inputEmail = document.getElementById('email');
+
+      if (!campoUsuario || !campoEmail) return;
+
+      if (rol === 'jurado') {
+        campoUsuario.classList.add('hidden');
+        inputUsuario?.removeAttribute('required');
+        campoEmail.classList.remove('hidden');
+        inputEmail?.setAttribute('required', 'true');
+      } else {
+        campoEmail.classList.add('hidden');
+        inputEmail?.removeAttribute('required');
+        campoUsuario.classList.remove('hidden');
+        inputUsuario?.setAttribute('required', 'true');
+      }
+    }
+    
+    // Llamar al cargar para establecer estado inicial
+    setTimeout(toggleRolFields, 50);
+
     window.abrirModalCrearUsuario = function() {
       const modal = document.getElementById('modal-crear-usuario');
       if (modal) modal.classList.add('active');
@@ -295,5 +336,8 @@ const errorParam = Astro.url.searchParams.get('error');
   .toggle-btn:hover {
     filter: brightness(0.95);
     transform: scale(1.02);
+  }
+  .hidden {
+    display: none !important;
   }
 </style>

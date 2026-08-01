@@ -3,6 +3,7 @@ CREATE TABLE public.perfiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   rol TEXT NOT NULL DEFAULT 'jurado',
   nombre_completo TEXT,
+  email TEXT,
   creado_en TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

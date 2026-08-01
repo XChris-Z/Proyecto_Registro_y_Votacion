@@ -1,46 +1,144 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-
-// Redirigir al dashboard si ya tiene sesión
-const accessToken = Astro.cookies.get('sb-access-token')?.value;
-if (accessToken) {
-  return Astro.redirect('/jurado/dashboard');
-}
+import { supabase } from '@lib/db';
 
 const error = Astro.url.searchParams.get('error');
+
+const errorMessages: Record<string, string> = {
+  invalid_credentials: 'Correo o contraseña incorrectos.',
+  unauthorized: 'No tienes permisos de jurado.',
+  unknown: 'Ocurrió un error al intentar iniciar sesión.'
+};
 ---
 
 <MainLayout title="Acceso Jurados">
-  <div class="container section text-center fade-in">
-    <div class="card" style="max-width:400px; margin:0 auto; padding:2rem;">
-      <h2 class="text-gradient" style="margin-bottom:0.5rem;">Acceso Jurados</h2>
-      <p class="text-sm" style="margin-bottom:1.5rem; color:var(--color-text-light);">
-        Inicia sesión con tu correo y contraseña para evaluar los proyectos.
-      </p>
-      
-      <form action="/api/jurado/login" method="POST" class="form" style="text-align:left;">
-        <div class="form-group">
-          <label for="email" class="form-label">Correo electrónico</label>
-          <input type="email" id="email" name="email" class="form-control" required placeholder="tu@correo.com" />
+  <section style="min-height:85vh;display:flex;align-items:center;justify-content:center;padding:3rem 0;">
+    <div class="container--narrow">
+      <div style="text-align:center;margin-bottom:2.5rem;">
+        <div class="page-hero__eyebrow animate-fade-up" style="justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.06); background:var(--clr-accent); color:#1a1a1a;">
+          Acceso Exclusivo
         </div>
-        <div class="form-group" style="margin-bottom: 1.5rem;">
-          <label for="password" class="form-label">Contraseña</label>
-          <input type="password" id="password" name="password" class="form-control" required placeholder="********" />
+        <h1 class="animate-fade-up" style="
+          animation-delay:0.1s;
+          color: var(--clr-primary);
+          margin-top:1rem;
+          font-weight: 800;
+          font-size: clamp(2rem, 4.5vw, 2.8rem);
+          letter-spacing: -0.02em;
+        ">Jurados de Votación</h1>
+        <p class="animate-fade-up" style="animation-delay:0.2s;margin-top:0.6rem;font-size:1.05rem;color:var(--clr-text-muted);max-width:480px;margin-left:auto;margin-right:auto;">
+          Ingresa con tus credenciales para acceder al panel de evaluación de proyectos.
+        </p>
+      </div>
+
+      <div class="glass animate-fade-up" style="padding:2.8rem;animation-delay:0.3s;border-radius:24px;border:1.5px solid var(--clr-border);box-shadow:var(--shadow-lg);">
+
+        {error && errorMessages[error] && (
+          <div class="alert alert--error mb-4" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;border-radius:14px;padding:1.1rem 1.4rem;">
+            <span style="font-size:1.3rem;">⚠️</span> <span style="font-weight:600;">{errorMessages[error]}</span>
+          </div>
+        )}
+
+        <form method="POST" action="/api/jurado/login" id="acceso-form">
+          <div class="form-group mb-4">
+            <label id="input-label" class="form-label" for="email" style="font-weight:800;color:var(--clr-text);font-size:0.95rem;display:flex;align-items:center;gap:0.45rem;">
+              <span style="font-size:1.15rem;">✉️</span> Correo Electrónico
+            </label>
+            <div style="position:relative;">
+              <input
+                id="email"
+                class="form-input"
+                type="email"
+                name="email"
+                placeholder="ejemplo@correo.com"
+                required
+                autocomplete="username"
+                style="padding:1rem 1.25rem;font-size:1.05rem;border-radius:14px;border:2px solid var(--clr-border);width:100%;transition:all 0.25s ease;background:var(--clr-surface);font-weight:600;"
+              />
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <label id="input-label" class="form-label" for="password" style="font-weight:800;color:var(--clr-text);font-size:0.95rem;display:flex;align-items:center;gap:0.45rem;">
+              <span style="font-size:1.15rem;">🔑</span> Contraseña
+            </label>
+            <div style="position:relative;">
+              <input
+                id="password"
+                class="form-input"
+                type="password"
+                name="password"
+                placeholder="Ingresa tu contraseña"
+                required
+                autocomplete="current-password"
+                style="padding:1rem 1.25rem;font-size:1.05rem;border-radius:14px;border:2px solid var(--clr-border);width:100%;transition:all 0.25s ease;background:var(--clr-surface);font-weight:600;"
+              />
+            </div>
+          </div>
+
+          <div style="background:linear-gradient(135deg, rgba(0, 89, 78, 0.08) 0%, rgba(181, 161, 96, 0.09) 100%);border:1.5px solid rgba(181, 161, 96, 0.35);border-radius:16px;padding:1.1rem 1.4rem;margin-bottom:1.8rem;display:flex;align-items:center;gap:0.85rem;box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+            <span style="font-size:1.35rem;flex-shrink:0;">💡</span>
+            <div style="font-size:0.88rem;color:var(--clr-text-muted);line-height:1.5;">
+              Si no tienes credenciales de jurado, contacta al <strong>administrador del sistema</strong> para que te cree una cuenta.
+            </div>
+          </div>
+
+          <div>
+            <button id="acceder-btn" type="submit" class="btn btn--primary btn--lg btn--full" style="padding:1.1rem;border-radius:14px;font-weight:800;font-size:1.05rem;box-shadow:0 8px 24px rgba(0, 89, 78, 0.28);letter-spacing:0.01em;">
+              <span id="btn-text" data-loading-text="Autenticando...">Ingresar al Panel</span>
+              <span id="btn-spinner" class="spinner hidden"></span>
+            </button>
+          </div>
+        </form>
+
+        <div style="margin-top:2rem;padding-top:1.6rem;border-top:1px solid var(--clr-border);text-align:center;">
+          <p style="font-size:0.92rem;color:var(--clr-text-dim);display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;margin:0;">
+            <a href="/" style="color:var(--clr-primary-light);font-weight:800;text-decoration:underline;">← Volver al inicio</a>
+          </p>
         </div>
-        <button type="submit" class="btn btn--primary" style="width:100%;">
-          Ingresar
-        </button>
-        {error === 'credentials' && (
-          <p class="text-sm" style="color:var(--color-danger); text-align:center; margin-top:1rem;">
-            Credenciales inválidas o no tienes rol de jurado.
-          </p>
-        )}
-        {error === 'server' && (
-          <p class="text-sm" style="color:var(--color-danger); text-align:center; margin-top:1rem;">
-            Error interno del servidor.
-          </p>
-        )}
-      </form>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <style>
+    .form-input:focus {
+      border-color: var(--clr-primary) !important;
+      box-shadow: 0 0 0 4px rgba(0, 89, 78, 0.15) !important;
+    }
+    .hidden { display: none; }
+    
+    .spinner {
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      width: 1.2rem;
+      height: 1.2rem;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <script>
+    const form = document.getElementById('acceso-form') as HTMLFormElement | null;
+    const btn = document.getElementById('acceder-btn') as HTMLButtonElement | null;
+    const btnText = document.getElementById('btn-text') as HTMLElement | null;
+    const btnSpinner = document.getElementById('btn-spinner') as HTMLElement | null;
+
+    if (btn) {
+      form?.addEventListener('submit', () => {
+        if (btnText && btnSpinner) {
+          btnText.textContent = btnText.getAttribute('data-loading-text') || 'Autenticando...';
+          btnSpinner.classList.remove('hidden');
+        }
+        btn.disabled = true;
+        btn.style.opacity = '0.85';
+        btn.style.cursor = 'wait';
+        form.submit();
+      });
+    }
+  </script>
 </MainLayout>
