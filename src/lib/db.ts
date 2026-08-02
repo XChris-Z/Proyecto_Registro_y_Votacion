@@ -368,7 +368,7 @@ export async function obtenerResultadosFinales(): Promise<ResultadoFinal[]> {
   const rawData = (data || []).map((p: any) => {
     const total_votos_publico = Array.isArray(p.votos) ? p.votos.length : 0;
     
-    // Promedio jurado (sobre 10)
+    // Promedio jurado (sobre 5)
     let promedio_jurado = 0;
     if (Array.isArray(p.votos_jurado) && p.votos_jurado.length > 0) {
       const sum = p.votos_jurado.reduce((acc: number, v: any) => acc + (v.calificacion || 0), 0);
@@ -387,7 +387,7 @@ export async function obtenerResultadosFinales(): Promise<ResultadoFinal[]> {
   });
 
   // 2. Agrupar para normalizar votos del público por categoría
-  // La normalización consiste en: el proyecto con más votos en la categoría obtiene 10 puntos.
+  // La normalización consiste en: el proyecto con más votos en la categoría obtiene 5 puntos.
   const maxVotosPorCategoria: Record<number, number> = {};
   rawData.forEach(p => {
     if (!maxVotosPorCategoria[p.categoria_id] || p.total_votos_publico > maxVotosPorCategoria[p.categoria_id]) {
@@ -398,8 +398,8 @@ export async function obtenerResultadosFinales(): Promise<ResultadoFinal[]> {
   // 3. Calcular porcentajes finales
   const resultados: ResultadoFinal[] = rawData.map(p => {
     const maxVotos = maxVotosPorCategoria[p.categoria_id] || 0;
-    // Puntaje público sobre 10
-    const puntaje_publico_normalizado = maxVotos > 0 ? (p.total_votos_publico / maxVotos) * 10 : 0;
+    // Puntaje público sobre 5
+    const puntaje_publico_normalizado = maxVotos > 0 ? (p.total_votos_publico / maxVotos) * 5 : 0;
     
     // Ponderación: Público 40% (x 0.40), Jurado 60% (x 0.60)
     const puntaje_publico_ponderado = puntaje_publico_normalizado * 0.40;

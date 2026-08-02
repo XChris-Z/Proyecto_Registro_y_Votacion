@@ -127,7 +127,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
           <div style="background: rgba(181, 161, 96, 0.08); border: 1px solid rgba(181, 161, 96, 0.2); border-radius: 12px; padding: 1rem; margin-bottom: 2rem; display: flex; gap: 0.75rem; align-items: flex-start;">
             <span style="font-size: 1.25rem;">💡</span>
             <p style="margin: 0; font-size: 0.85rem; color: var(--clr-text-muted); line-height: 1.5;">
-              Asigna una calificación del <strong>0 al 10</strong> para cada criterio. Puedes usar decimales (ej: 8.5) para mayor precisión. Todos los campos son obligatorios.
+              Asigna una calificación del <strong>1 al 5</strong> para cada criterio. Puedes usar decimales (ej: 4.5) para mayor precisión. Todos los campos son obligatorios.
             </p>
           </div>
 
@@ -146,12 +146,12 @@ const nombreJurado = perfil.nombre_completo || user.email;
                   type="number" 
                   name={`criterio_${criterio.id}`} 
                   class="form-input criteria-input" 
-                  min="0" max="10" step="0.1" 
-                  placeholder="0.0" 
+                  min="1" max="5" step="0.1" 
+                  placeholder="5.0" 
                   required 
                   style="width: 100px; padding: 0.85rem; font-size: 1.2rem; font-weight: 800; text-align: center; border-radius: 12px; border: 2px solid var(--clr-border); background: var(--clr-bg); color: var(--clr-text);"
                 />
-                <span style="font-weight: 800; color: var(--clr-text-dim); font-size: 1.2rem;">/ 10</span>
+                <span style="font-weight: 800; color: var(--clr-text-dim); font-size: 1.2rem;">/ 5</span>
               </div>
             </div>
           ))}

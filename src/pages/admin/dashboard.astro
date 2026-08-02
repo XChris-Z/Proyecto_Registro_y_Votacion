@@ -58,25 +58,37 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.votos_publico, 0);
         {categorias.filter(c => c.activa).map(cat => {
           const catResultados = resultados.filter(r => r.categoria_id === cat.id).slice(0, 3);
           return (
-            <div class="card" style="margin-bottom:1.25rem;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient-primary);"></div>
-              <h3 style="font-size:1rem;margin-bottom:1rem;font-weight:700;color:var(--clr-text);display:flex;align-items:center;gap:0.4rem;">
-                <span>🏷️</span> {cat.nombre}
+            <div class="card" style="margin-bottom:1.5rem;position:relative;overflow:hidden;padding:1.5rem;">
+              <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary);"></div>
+              <h3 style="font-size:1.1rem;margin-bottom:1.25rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:0.5rem;">
+                <span style="font-size:1.2rem;">🏷️</span> {cat.nombre}
               </h3>
-              {catResultados.length === 0 && <p style="font-size:0.82rem;color:var(--clr-text-dim);">Sin votos registrados aún</p>}
+              {catResultados.length === 0 && <p style="font-size:0.85rem;color:var(--clr-text-dim);">Sin votos registrados aún</p>}
               {catResultados.map((r, i) => (
-                <div style="margin-bottom:0.9rem;">
-                  <div style="display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:0.35rem;">
-                    <span style={i === 0 ? 'color:var(--clr-primary);font-weight:800;' : 'font-weight:600;color:var(--clr-text);'}>
-                      {i === 0 ? '🏆 ' : ''}{r.proyecto_nombre}
-                    </span>
-                    <strong style={i === 0 ? 'color:var(--clr-primary);' : 'color:var(--clr-text-muted);'}>{r.puntaje_final} pts</strong>
+                <div style="margin-bottom:1.25rem; background:rgba(0,0,0,0.15); padding:1rem; border-radius:12px; border:1px solid rgba(181,161,96,0.1);">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+                    <div style="flex:1;">
+                      <span style={i === 0 ? 'color:var(--clr-primary);font-weight:800;font-size:1.05rem;display:block;margin-bottom:0.25rem;' : 'font-weight:700;color:var(--clr-text);font-size:1rem;display:block;margin-bottom:0.25rem;'}>
+                        {i === 0 ? '🏆 ' : ''}{r.proyecto_nombre}
+                      </span>
+                      <div style="display:flex; gap:1rem; font-size:0.8rem; color:var(--clr-text-muted);">
+                        <span>👥 Púb: {r.puntaje_publico_ponderado.toFixed(2)} pts</span>
+                        <span>⚖️ Jur: {r.puntaje_jurado_ponderado.toFixed(2)} pts</span>
+                      </div>
+                    </div>
+                    <div style="text-align:right; background:rgba(0, 89, 78, 0.15); padding:0.3rem 0.75rem; border-radius:8px; border:1px solid rgba(0, 89, 78, 0.3);">
+                      <strong style={i === 0 ? 'color:var(--clr-primary);font-size:1.2rem;' : 'color:var(--clr-text);font-size:1.1rem;'}>{r.puntaje_final.toFixed(2)}</strong>
+                      <span style="font-size:0.75rem; color:var(--clr-text-dim);"> / 5</span>
+                    </div>
                   </div>
-                  <div class="progress-bar" style="height:8px;border-radius:100px;">
-                    <div class="progress-bar__fill" style={`width:${(r.puntaje_final / 10) * 100}%;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);`}></div>
+                  <div class="progress-bar" style="height:6px;border-radius:100px;background:rgba(255,255,255,0.05);">
+                    <div class="progress-bar__fill" style={`width:${(r.puntaje_final / 5) * 100}%;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);box-shadow: 0 0 10px rgba(181,161,96,0.3);`}></div>
                   </div>
                 </div>
               ))}
+              {catResultados.length > 0 && (
+                 <a href="/admin/resultados" style="display:block; text-align:center; font-size:0.85rem; font-weight:700; color:var(--clr-accent); text-decoration:none; margin-top:0.5rem; transition:opacity 0.2s;">Ver todos los resultados →</a>
+              )}
             </div>
           );
         })}
