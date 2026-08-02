@@ -1,13 +1,13 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerAsistentes, obtenerCategorias, obtenerProyectos, obtenerResultados } from '@lib/db';
+import { obtenerAsistentes, obtenerCategorias, obtenerProyectos, obtenerResultadosFinales } from '@lib/db';
 
 const asistentes = await obtenerAsistentes();
 const categorias = await obtenerCategorias();
 const proyectos = await obtenerProyectos();
-const resultados = await obtenerResultados();
+const resultados = await obtenerResultadosFinales();
 
-const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
+const totalVotos = resultados.reduce((sum, r) => sum + r.votos_publico, 0);
 ---
 
 <AdminLayout title="Dashboard" activePage="dashboard">
@@ -57,7 +57,6 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
         <h2 style="font-size:1.2rem;margin-bottom:1.1rem;font-weight:800;color:var(--clr-text);">Resultados por Categoría</h2>
         {categorias.filter(c => c.activa).map(cat => {
           const catResultados = resultados.filter(r => r.categoria_id === cat.id).slice(0, 3);
-          const maxVotos = Math.max(...catResultados.map(r => r.total_votos), 1);
           return (
             <div class="card" style="margin-bottom:1.25rem;position:relative;overflow:hidden;">
               <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient-primary);"></div>
@@ -71,10 +70,10 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
                     <span style={i === 0 ? 'color:var(--clr-primary);font-weight:800;' : 'font-weight:600;color:var(--clr-text);'}>
                       {i === 0 ? '🏆 ' : ''}{r.proyecto_nombre}
                     </span>
-                    <strong style={i === 0 ? 'color:var(--clr-primary);' : 'color:var(--clr-text-muted);'}>{r.total_votos} votos</strong>
+                    <strong style={i === 0 ? 'color:var(--clr-primary);' : 'color:var(--clr-text-muted);'}>{r.puntaje_final} pts</strong>
                   </div>
                   <div class="progress-bar" style="height:8px;border-radius:100px;">
-                    <div class="progress-bar__fill" style={`width:${(r.total_votos / maxVotos) * 100}%;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);`}></div>
+                    <div class="progress-bar__fill" style={`width:${(r.puntaje_final / 10) * 100}%;background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);`}></div>
                   </div>
                 </div>
               ))}

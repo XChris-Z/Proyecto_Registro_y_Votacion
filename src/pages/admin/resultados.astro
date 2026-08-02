@@ -1,16 +1,15 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { obtenerCategorias, obtenerResultados, obtenerAsistentes } from '@lib/db';
+import { obtenerCategorias, obtenerResultadosFinales, obtenerAsistentes } from '@lib/db';
 
 const categorias = (await obtenerCategorias()).filter(c => c.activa === true);
-const resultados = await obtenerResultados();
+const resultados = await obtenerResultadosFinales();
 const asistentes = await obtenerAsistentes();
 
 const resultadosPorCat = categorias.map(cat => {
   const res = resultados.filter(r => r.categoria_id === cat.id);
-  const totalVotosCat = res.reduce((s, r) => s + r.total_votos, 0);
-  const maxVotos = Math.max(...res.map(r => r.total_votos), 1);
-  return { ...cat, resultados: res, maxVotos, totalVotosCat };
+  const totalVotosCat = res.reduce((s, r) => s + r.votos_publico, 0);
+  return { ...cat, resultados: res, totalVotosCat };
 });
 ---
 
@@ -57,13 +56,12 @@ const resultadosPorCat = categorias.map(cat => {
             )}
 
             {cat.resultados.map((r, idx) => {
-              const pct = cat.totalVotosCat > 0 ? Math.round((r.total_votos / cat.totalVotosCat) * 100) : 0;
-              const isWinner = idx === 0 && r.total_votos > 0;
+              const isWinner = idx === 0 && r.puntaje_final > 0;
               return (
                 <div class={isWinner ? 'winner-card' : 'regular-card'} style="margin-bottom:1.4rem;">
                   {isWinner && (
                     <div class="winner-header">
-                      <span class="winner-badge">🏆 MÁS VOTADO / GANADOR DE LA CATEGORÍA</span>
+                      <span class="winner-badge">🏆 GANADOR DE LA CATEGORÍA</span>
                     </div>
                   )}
 
@@ -76,14 +74,15 @@ const resultadosPorCat = categorias.map(cat => {
                       </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:1.25rem;flex-shrink:0;">
-                      <span style="font-size:0.9rem;color:var(--clr-text-muted);font-weight:700;">
-                        {pct}% del total
-                      </span>
+                      <div style="display:flex; flex-direction:column; gap:0.25rem; text-align:right; margin-right: 0.5rem;">
+                         <span style="font-size:0.8rem;color:var(--clr-text-dim);">Público: {r.puntaje_publico_ponderado.toFixed(2)} pts ({r.votos_publico} votos)</span>
+                         <span style="font-size:0.8rem;color:var(--clr-text-dim);">Jurado: {r.puntaje_jurado_ponderado.toFixed(2)} pts (prom. {r.promedio_jurado.toFixed(2)})</span>
+                      </div>
                       <div style="background:rgba(0, 89, 78, 0.08);padding:0.4rem 0.9rem;border-radius:100px;border:1.5px solid var(--clr-border);">
                         <strong style={`font-size:1.35rem;color:${isWinner ? 'var(--clr-primary)' : 'var(--clr-text)'};`}>
-                          {r.total_votos}
+                          {r.puntaje_final.toFixed(2)}
                         </strong>
-                        <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:0.25rem;font-weight:600;">votos</span>
+                        <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:0.25rem;font-weight:600;">/ 10</span>
                       </div>
                     </div>
                   </div>
@@ -91,7 +90,7 @@ const resultadosPorCat = categorias.map(cat => {
                   <div class="progress-bar" style="height:12px;border-radius:100px;background:rgba(0, 89, 78, 0.1);">
                     <div
                       class="progress-bar__fill"
-                      style={`width:${pct}%;height:100%;border-radius:100px;${isWinner ? 'background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);box-shadow: 0 0 12px rgba(181, 161, 96, 0.5);' : 'background:var(--clr-primary-light);'}`}
+                      style={`width:${(r.puntaje_final / 10) * 100}%;height:100%;border-radius:100px;${isWinner ? 'background:linear-gradient(90deg, #00594E 0%, #B5A160 100%);box-shadow: 0 0 12px rgba(181, 161, 96, 0.5);' : 'background:var(--clr-primary-light);'}`}
                     ></div>
                   </div>
                 </div>
