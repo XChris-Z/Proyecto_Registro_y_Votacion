@@ -51,9 +51,21 @@ const nombreJurado = perfil.nombre_completo || user.email;
 
     <!-- TARJETAS DE PROYECTOS -->
     <div style="margin-bottom: 2rem;">
-      <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
-        <span style="font-size: 1.2rem;">📂</span> Proyectos Disponibles
-      </h3>
+      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.2rem;">📂</span> Proyectos Disponibles
+        </h3>
+        
+        <div style="position: relative; width: 100%; max-width: 400px;">
+          <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.5;">🔍</span>
+          <input 
+            type="text" 
+            id="buscador-proyectos" 
+            placeholder="Buscar proyecto por nombre..." 
+            style="width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; font-size: 1rem; border-radius: 12px; border: 1px solid var(--clr-border); background: var(--clr-surface); color: var(--clr-text); outline: none; transition: all 0.2s;"
+          />
+        </div>
+      </div>
 
       {proyectos.length === 0 ? (
         <div style="text-align: center; padding: 4rem 2rem; background: var(--clr-surface); border-radius: 16px; border: 1px dashed var(--clr-border);">
@@ -383,7 +395,7 @@ const nombreJurado = perfil.nombre_completo || user.email;
             throw new Error(result.error || 'Error desconocido al procesar la evaluación.');
           }
         } catch (err: any) {
-          if (evalError) {
+            if (evalError) {
             evalError.textContent = err.message;
             evalError.style.display = 'block';
           }
@@ -391,6 +403,34 @@ const nombreJurado = perfil.nombre_completo || user.email;
           submitBtn.textContent = originalText || 'Enviar Evaluación';
         }
       });
+
+      // Buscador de proyectos (Case Insensitive)
+      const buscador = document.getElementById('buscador-proyectos') as HTMLInputElement;
+      if (buscador) {
+        // Estilos para el focus
+        buscador.addEventListener('focus', () => {
+          buscador.style.borderColor = 'var(--clr-accent)';
+          buscador.style.boxShadow = '0 0 0 4px rgba(181, 161, 96, 0.15)';
+        });
+        buscador.addEventListener('blur', () => {
+          buscador.style.borderColor = 'var(--clr-border)';
+          buscador.style.boxShadow = 'none';
+        });
+
+        buscador.addEventListener('input', (e) => {
+          const text = (e.target as HTMLInputElement).value.toLowerCase();
+          const tarjetas = document.querySelectorAll('.project-card');
+          
+          tarjetas.forEach((tarjeta) => {
+            const titulo = tarjeta.querySelector('.card-title')?.textContent?.toLowerCase() || '';
+            if (titulo.includes(text)) {
+              (tarjeta as HTMLElement).style.display = 'flex';
+            } else {
+              (tarjeta as HTMLElement).style.display = 'none';
+            }
+          });
+        });
+      }
     });
   </script>
 </MainLayout>

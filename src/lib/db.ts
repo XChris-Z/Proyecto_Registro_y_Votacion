@@ -87,6 +87,19 @@ export interface ResultadoVoto {
   total_votos: number;
 }
 
+export interface ResultadoFinal {
+  proyecto_id: number;
+  proyecto_nombre: string;
+  categoria_id: number;
+  categoria_nombre: string;
+  votos_publico: number;
+  puntaje_publico_normalizado: number;
+  puntaje_publico_ponderado: number;
+  promedio_jurado: number;
+  puntaje_jurado_ponderado: number;
+  puntaje_final: number;
+}
+
 // Interfaces Jurado
 export interface Perfil {
   id: string;
@@ -333,6 +346,85 @@ export async function obtenerResultados(): Promise<ResultadoVoto[]> {
     const catB = (data as any[]).find(p => p.id === b.proyecto_id)?.categorias?.orden ?? 0;
     if (catA !== catB) return catA - catB;
     return b.total_votos - a.total_votos;
+  });
+}
+
+export async function obtenerResultadosFinales(): Promise<ResultadoFinal[]> {
+  const { data, error } = await supabase
+    .from('proyectos')
+    .select(`
+      id,
+      nombre,
+      categorias!inner(id, nombre, orden),
+      votos(id),
+      votos_jurado(calificacion)
+    `)
+    .eq('activo', true)
+    .order('nombre', { ascending: true });
+
+  if (error) return [];
+
+  // 1. Obtener datos brutos
+  const rawData = (data || []).map((p: any) => {
+    const total_votos_publico = Array.isArray(p.votos) ? p.votos.length : 0;
+    
+    // Promedio jurado (sobre 10)
+    let promedio_jurado = 0;
+    if (Array.isArray(p.votos_jurado) && p.votos_jurado.length > 0) {
+      const sum = p.votos_jurado.reduce((acc: number, v: any) => acc + (v.calificacion || 0), 0);
+      promedio_jurado = sum / p.votos_jurado.length;
+    }
+
+    return {
+      proyecto_id: p.id,
+      proyecto_nombre: p.nombre,
+      categoria_id: p.categorias.id,
+      categoria_nombre: p.categorias.nombre,
+      orden_categoria: p.categorias.orden,
+      total_votos_publico,
+      promedio_jurado
+    };
+  });
+
+  // 2. Agrupar para normalizar votos del público por categoría
+  // La normalización consiste en: el proyecto con más votos en la categoría obtiene 10 puntos.
+  const maxVotosPorCategoria: Record<number, number> = {};
+  rawData.forEach(p => {
+    if (!maxVotosPorCategoria[p.categoria_id] || p.total_votos_publico > maxVotosPorCategoria[p.categoria_id]) {
+      maxVotosPorCategoria[p.categoria_id] = p.total_votos_publico;
+    }
+  });
+
+  // 3. Calcular porcentajes finales
+  const resultados: ResultadoFinal[] = rawData.map(p => {
+    const maxVotos = maxVotosPorCategoria[p.categoria_id] || 0;
+    // Puntaje público sobre 10
+    const puntaje_publico_normalizado = maxVotos > 0 ? (p.total_votos_publico / maxVotos) * 10 : 0;
+    
+    // Ponderación: Público 40% (x 0.40), Jurado 60% (x 0.60)
+    const puntaje_publico_ponderado = puntaje_publico_normalizado * 0.40;
+    const puntaje_jurado_ponderado = p.promedio_jurado * 0.60;
+    
+    return {
+      proyecto_id: p.proyecto_id,
+      proyecto_nombre: p.proyecto_nombre,
+      categoria_id: p.categoria_id,
+      categoria_nombre: p.categoria_nombre,
+      votos_publico: p.total_votos_publico,
+      puntaje_publico_normalizado: Number(puntaje_publico_normalizado.toFixed(2)),
+      puntaje_publico_ponderado: Number(puntaje_publico_ponderado.toFixed(2)),
+      promedio_jurado: Number(p.promedio_jurado.toFixed(2)),
+      puntaje_jurado_ponderado: Number(puntaje_jurado_ponderado.toFixed(2)),
+      puntaje_final: Number((puntaje_publico_ponderado + puntaje_jurado_ponderado).toFixed(2))
+    };
+  });
+
+  // 4. Ordenar por categoría y luego por puntaje final descendente
+  return resultados.sort((a, b) => {
+    const catA = rawData.find(p => p.proyecto_id === a.proyecto_id)?.orden_categoria ?? 0;
+    const catB = rawData.find(p => p.proyecto_id === b.proyecto_id)?.orden_categoria ?? 0;
+    if (catA !== catB) return catA - catB;
+    return b.puntaje_final - a.puntaje_final;
   });
 }
 
