@@ -51,14 +51,21 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.votos_publico, 0);
       ))}
     </div>
 
-    <!-- Resultados rápidos -->
-    <div class="dashboard-results-grid">
+    <!-- Secciones Principales -->
+    <div style="display: flex; flex-direction: column; gap: 3rem; margin-top: 2rem;">
+      
+      <!-- SECCIÓN 1: Resultados por Categoría -->
       <div>
-        <h2 style="font-size:1.2rem;margin-bottom:1.1rem;font-weight:800;color:var(--clr-text);">Resultados por Categoría</h2>
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--clr-border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+          <h2 style="font-size:1.4rem;font-weight:900;color:var(--clr-text);margin:0;">🏆 Resultados por Categoría</h2>
+          <a href="/admin/resultados" style="font-size:0.9rem; font-weight:700; color:var(--clr-primary); text-decoration:none;">Ver detalle completo →</a>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
         {categorias.filter(c => c.activa).map(cat => {
           const catResultados = resultados.filter(r => r.categoria_id === cat.id).slice(0, 3);
           return (
-            <div class="card" style="margin-bottom:1.5rem;position:relative;overflow:hidden;padding:1.5rem;">
+            <div class="card" style="position:relative;overflow:hidden;padding:1.5rem;display:flex;flex-direction:column;">
               <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary);"></div>
               <h3 style="font-size:1.1rem;margin-bottom:1.25rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:0.5rem;">
                 <span style="font-size:1.2rem;">🏷️</span> {cat.nombre}
@@ -87,17 +94,20 @@ const totalVotos = resultados.reduce((sum, r) => sum + r.votos_publico, 0);
                 </div>
               ))}
               {catResultados.length > 0 && (
-                 <a href="/admin/resultados" style="display:block; text-align:center; font-size:0.85rem; font-weight:700; color:var(--clr-accent); text-decoration:none; margin-top:0.5rem; transition:opacity 0.2s;">Ver todos los resultados →</a>
+                 <a href="/admin/resultados" style="display:block; text-align:center; font-size:0.85rem; font-weight:700; color:var(--clr-accent); text-decoration:none; margin-top:auto; padding-top:1rem; transition:opacity 0.2s;">Ir a resultados completos →</a>
               )}
             </div>
           );
         })}
+        </div>
       </div>
 
-      <!-- Últimos registros -->
+      <!-- SECCIÓN 2: Últimos registros -->
       <div>
-        <h2 style="font-size:1.2rem;margin-bottom:1.1rem;font-weight:800;color:var(--clr-text);">Últimos Registros</h2>
-        <div class="table-wrapper">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--clr-border); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+          <h2 style="font-size:1.4rem;font-weight:900;color:var(--clr-text);margin:0;">👥 Últimos Participantes Registrados</h2>
+        </div>
+        <div class="table-wrapper" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: var(--radius-lg); overflow: hidden;">
           <table>
             <thead>
               <tr>
