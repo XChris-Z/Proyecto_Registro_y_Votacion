@@ -295,12 +295,13 @@ const navItems = [
           let delayTimeout = null;
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              entry.target.style.transitionDelay = `${delayCounter * 0.1}s`;
+              const delay = Math.min(delayCounter * 0.05, 0.3);
+              entry.target.style.transitionDelay = `${delay}s`;
               delayCounter++;
               clearTimeout(delayTimeout);
               delayTimeout = setTimeout(() => {
                 delayCounter = 0;
-              }, 150);
+              }, 100);
 
               entry.target.classList.add('is-revealed');
               observer.unobserve(entry.target);

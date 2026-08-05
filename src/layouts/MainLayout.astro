@@ -120,7 +120,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
     <script is:inline>
       document.addEventListener('astro:page-load', () => {
         // Automatically add reveal classes to certain elements if they don't have it
-        const elementsToAnimate = document.querySelectorAll('.card, .vote-card, .category-section, .live-stat-box');
+        const elementsToAnimate = document.querySelectorAll('.card, .vote-card, .live-stat-box');
         elementsToAnimate.forEach(el => {
           if (!el.classList.contains('reveal-on-scroll')) {
             el.classList.add('reveal-on-scroll');
@@ -138,12 +138,14 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
           let delayTimeout = null;
           entries.forEach(entry => {
             if (entry.isIntersecting) {
-              entry.target.style.transitionDelay = `${delayCounter * 0.1}s`;
+              // Cap the delay so large lists don't take seconds to appear
+              const delay = Math.min(delayCounter * 0.05, 0.3);
+              entry.target.style.transitionDelay = `${delay}s`;
               delayCounter++;
               clearTimeout(delayTimeout);
               delayTimeout = setTimeout(() => {
                 delayCounter = 0;
-              }, 150);
+              }, 100);
 
               entry.target.classList.add('is-revealed');
               observer.unobserve(entry.target);
