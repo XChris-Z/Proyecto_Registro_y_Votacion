@@ -73,7 +73,7 @@ const categoryColors = [
               <div class="project-admin-card" data-search={`${p.nombre} ${p.descripcion} ${p.autores}`.toLowerCase()} style={`background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-top:5px solid ${color.border};border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;gap:1.25rem;box-shadow:0 6px 16px rgba(0,0,0,0.04);transition:transform 0.2s ease, box-shadow 0.2s ease;`}>
                 <div>
                   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;gap:0.75rem;">
-                    <button type="button" class="btn-ver-detalle" data-proyecto={JSON.stringify(p)} style="background:none;border:none;padding:0;text-align:left;cursor:pointer;outline:none;" onmouseover="this.querySelector('h4').style.color='var(--clr-primary)'" onmouseout="this.querySelector('h4').style.color='var(--clr-text)'" title="Ver detalles completos">
+                    <button type="button" class="btn-ver-detalle" onclick="abrirModalDetalle(JSON.parse(this.getAttribute('data-proyecto')))" data-proyecto={JSON.stringify(p)} style="background:none;border:none;padding:0;text-align:left;cursor:pointer;outline:none;" onmouseover="this.querySelector('h4').style.color='var(--clr-primary)'" onmouseout="this.querySelector('h4').style.color='var(--clr-text)'" title="Ver detalles completos">
                       <h4 style="margin:0;font-size:1.25rem;font-weight:900;color:var(--clr-text);line-height:1.3;text-transform:uppercase;letter-spacing:0.5px;transition:color 0.2s;">{p.nombre}</h4>
                     </button>
                   </div>
@@ -88,7 +88,7 @@ const categoryColors = [
                   </div>
                 </div>
                 <div style="display:flex;gap:0.5rem;justify-content:flex-end;border-top:1px dashed rgba(0,0,0,0.1);padding-top:1.25rem;margin-top:0.25rem;">
-                  <button class="btn btn--outline btn--sm btn-editar-proyecto" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" data-proyecto={JSON.stringify(p)}>✏️ Editar Proyecto</button>
+                  <button class="btn btn--outline btn--sm btn-editar-proyecto" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" onclick="abrirModal(JSON.parse(this.getAttribute('data-proyecto')))" data-proyecto={JSON.stringify(p)}>✏️ Editar Proyecto</button>
                   <button class="btn btn--danger btn--sm" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" onclick={`eliminarProyecto(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')`}>🗑️ Eliminar</button>
                 </div>
               </div>
@@ -299,17 +299,4 @@ const categoryColors = [
   (window as any).cerrarModal = cerrarModal;
   (window as any).eliminarProyecto = eliminarProyecto;
 
-  document.querySelectorAll('.btn-editar-proyecto').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const p = JSON.parse(btn.getAttribute('data-proyecto') || '{}');
-      abrirModal(p);
-    });
-  });
-
-  document.querySelectorAll('.btn-ver-detalle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const p = JSON.parse(btn.getAttribute('data-proyecto') || '{}');
-      abrirModalDetalle(p);
-    });
-  });
 </script>
