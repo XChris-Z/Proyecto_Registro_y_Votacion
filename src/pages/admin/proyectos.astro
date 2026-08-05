@@ -107,15 +107,16 @@ const categoryColors = [
   </div>
 
   <style>
-    @keyframes modalFadeIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    @keyframes modalBubbleEnter {
+      0% { opacity: 0; transform: scale(0.7) translateY(20px); }
+      60% { opacity: 1; transform: scale(1.02) translateY(-5px); }
+      100% { opacity: 1; transform: none; }
     }
   </style>
 
   <!-- Modal Detalle Proyecto -->
   <div id="modal-detalle-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(10, 25, 23, 0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center; opacity:1;">
-    <div style="background:var(--clr-bg); border:2px solid var(--clr-accent); border-radius:12px; padding:2rem; max-width:600px; width:95%; max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.3); position:relative; z-index:100000; animation: modalFadeIn 0.3s ease;">
+    <div style="background:var(--clr-bg); border:2px solid var(--clr-accent); border-radius:12px; padding:2rem; max-width:600px; width:95%; max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.3); position:relative; z-index:100000; animation: modalBubbleEnter 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
         <h3 id="detalle-nombre" style="margin:0;font-size:1.5rem;font-weight:900;color:var(--clr-text);text-transform:uppercase;padding-right:1rem;line-height:1.2;"></h3>
         <button type="button" onclick="cerrarModalDetalle()" style="background:none;border:none;font-size:1.75rem;cursor:pointer;color:var(--clr-text-muted);line-height:1;">&times;</button>

@@ -277,7 +277,7 @@ const navItems = [
 
     <script is:inline>
       document.addEventListener('astro:page-load', () => {
-        const elementsToAnimate = document.querySelectorAll('.card, .stats-grid > div, .table-wrapper, .admin-page-enter');
+        const elementsToAnimate = document.querySelectorAll('.card, .stats-grid > div, .table-wrapper');
         elementsToAnimate.forEach(el => {
           if (!el.classList.contains('reveal-on-scroll')) {
             el.classList.add('reveal-on-scroll');
