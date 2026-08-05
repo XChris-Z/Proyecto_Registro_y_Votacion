@@ -73,7 +73,9 @@ const categoryColors = [
               <div class="project-admin-card" data-search={`${p.nombre} ${p.descripcion} ${p.autores}`.toLowerCase()} style={`background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-top:5px solid ${color.border};border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;gap:1.25rem;box-shadow:0 6px 16px rgba(0,0,0,0.04);transition:transform 0.2s ease, box-shadow 0.2s ease;`}>
                 <div>
                   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;gap:0.75rem;">
-                    <h4 style={`margin:0;font-size:1.25rem;font-weight:900;color:${color.text};line-height:1.3;text-transform:uppercase;letter-spacing:0.5px;`}>✨ {p.nombre}</h4>
+                    <button type="button" class="btn-ver-detalle" data-proyecto={JSON.stringify(p)} style="background:none;border:none;padding:0;text-align:left;cursor:pointer;outline:none;" onmouseover="this.querySelector('h4').style.color='var(--clr-primary)'" onmouseout="this.querySelector('h4').style.color='var(--clr-text)'" title="Ver detalles completos">
+                      <h4 style="margin:0;font-size:1.25rem;font-weight:900;color:var(--clr-text);line-height:1.3;text-transform:uppercase;letter-spacing:0.5px;transition:color 0.2s;">{p.nombre}</h4>
+                    </button>
                   </div>
                   <p style="margin:0;font-size:0.9rem;color:var(--clr-text);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;background:rgba(0,0,0,0.02);padding:0.85rem;border-radius:8px;border:1px solid rgba(0,0,0,0.04);">{p.descripcion || <span style="opacity:0.6;font-style:italic;">No se ha proporcionado una descripción para este proyecto.</span>}</p>
                   
@@ -102,6 +104,30 @@ const categoryColors = [
         <a href="/admin/categorias" style="margin-left:0.5rem;font-weight:600;">Ir a Categorías →</a>
       </div>
     )}
+  </div>
+
+  <!-- Modal Detalle Proyecto -->
+  <div class="modal-overlay" id="modal-detalle-overlay">
+    <div class="modal" style="max-width:600px;width:95%;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
+        <h3 id="detalle-nombre" style="margin:0;font-size:1.5rem;font-weight:900;color:var(--clr-text);text-transform:uppercase;padding-right:1rem;line-height:1.2;"></h3>
+        <button type="button" onclick="cerrarModalDetalle()" style="background:none;border:none;font-size:1.75rem;cursor:pointer;color:var(--clr-text-muted);line-height:1;">&times;</button>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <span id="detalle-categoria" class="badge" style="background:var(--clr-primary);color:#fff;font-size:0.85rem;padding:0.35rem 0.75rem;"></span>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="font-size:1rem;font-weight:800;color:var(--clr-text);margin-bottom:0.5rem;">Descripción</h4>
+        <p id="detalle-descripcion" style="font-size:0.95rem;color:var(--clr-text-muted);line-height:1.6;white-space:pre-wrap;margin:0;"></p>
+      </div>
+      <div style="margin-bottom:2rem;background:rgba(0,0,0,0.03);padding:1rem;border-radius:8px;">
+        <h4 style="font-size:1rem;font-weight:800;color:var(--clr-text);margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;"><span>👥</span> Integrantes</h4>
+        <p id="detalle-autores" style="font-size:0.95rem;font-weight:600;color:var(--clr-text);margin:0;"></p>
+      </div>
+      <div style="display:flex;justify-content:flex-end;">
+        <button type="button" class="btn btn--outline" style="border-radius:100px;font-weight:700;" onclick="cerrarModalDetalle()">Cerrar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Modal Proyecto -->
@@ -205,12 +231,36 @@ const categoryColors = [
     form.submit();
   }
 
+  function abrirModalDetalle(proyecto: any) {
+    document.getElementById('detalle-nombre')!.textContent = proyecto.nombre;
+    const categorySelect = document.getElementById('campo-categoria') as HTMLSelectElement;
+    const catOption = Array.from(categorySelect.options).find(opt => opt.value === String(proyecto.categoria_id));
+    document.getElementById('detalle-categoria')!.textContent = catOption ? catOption.text : 'Categoría ' + proyecto.categoria_id;
+    document.getElementById('detalle-descripcion')!.textContent = proyecto.descripcion || 'No se ha proporcionado una descripción para este proyecto.';
+    document.getElementById('detalle-autores')!.textContent = proyecto.autores || 'No asignados';
+    document.getElementById('modal-detalle-overlay')!.classList.add('active');
+  }
+
+  function cerrarModalDetalle() {
+    document.getElementById('modal-detalle-overlay')!.classList.remove('active');
+  }
+
+  (window as any).abrirModalDetalle = abrirModalDetalle;
+  (window as any).cerrarModalDetalle = cerrarModalDetalle;
+
   document.getElementById('modal-overlay')!.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) cerrarModal();
   });
 
+  document.getElementById('modal-detalle-overlay')!.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) cerrarModalDetalle();
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') cerrarModal();
+    if (e.key === 'Escape') {
+      cerrarModal();
+      cerrarModalDetalle();
+    }
   });
 
   document.getElementById('proyecto-form')!.addEventListener('submit', function() {
@@ -253,6 +303,13 @@ const categoryColors = [
     btn.addEventListener('click', () => {
       const p = JSON.parse(btn.getAttribute('data-proyecto') || '{}');
       abrirModal(p);
+    });
+  });
+
+  document.querySelectorAll('.btn-ver-detalle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = JSON.parse(btn.getAttribute('data-proyecto') || '{}');
+      abrirModalDetalle(p);
     });
   });
 </script>
