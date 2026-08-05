@@ -106,9 +106,16 @@ const categoryColors = [
     )}
   </div>
 
+  <style>
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+
   <!-- Modal Detalle Proyecto -->
-  <div class="modal-overlay" id="modal-detalle-overlay">
-    <div class="modal" style="max-width:600px;width:95%;">
+  <div id="modal-detalle-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(10, 25, 23, 0.6); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center; opacity:1;">
+    <div style="background:var(--clr-bg); border:2px solid var(--clr-accent); border-radius:12px; padding:2rem; max-width:600px; width:95%; max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.3); position:relative; z-index:100000; animation: modalFadeIn 0.3s ease;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
         <h3 id="detalle-nombre" style="margin:0;font-size:1.5rem;font-weight:900;color:var(--clr-text);text-transform:uppercase;padding-right:1rem;line-height:1.2;"></h3>
         <button type="button" onclick="cerrarModalDetalle()" style="background:none;border:none;font-size:1.75rem;cursor:pointer;color:var(--clr-text-muted);line-height:1;">&times;</button>
@@ -238,11 +245,11 @@ const categoryColors = [
     document.getElementById('detalle-categoria')!.textContent = catOption ? catOption.text : 'Categoría ' + proyecto.categoria_id;
     document.getElementById('detalle-descripcion')!.textContent = proyecto.descripcion || 'No se ha proporcionado una descripción para este proyecto.';
     document.getElementById('detalle-autores')!.textContent = proyecto.autores || 'No asignados';
-    document.getElementById('modal-detalle-overlay')!.classList.add('active');
+    document.getElementById('modal-detalle-overlay')!.style.display = 'flex';
   }
 
   function cerrarModalDetalle() {
-    document.getElementById('modal-detalle-overlay')!.classList.remove('active');
+    document.getElementById('modal-detalle-overlay')!.style.display = 'none';
   }
 
   (window as any).abrirModalDetalle = abrirModalDetalle;
@@ -310,6 +317,7 @@ const categoryColors = [
       } catch (err) {
         console.error("Error abriendo detalle:", err);
       }
+      return;
     }
 
     const btnEditar = target.closest('.btn-editar-proyecto');
@@ -320,6 +328,15 @@ const categoryColors = [
       } catch (err) {
         console.error("Error abriendo editor:", err);
       }
+      return;
+    }
+    
+    // Cerrar modales si se hace clic fuera del contenido
+    if (target.id === 'modal-detalle-overlay') {
+      cerrarModalDetalle();
+    }
+    if (target.id === 'modal-overlay' || target.classList.contains('modal-overlay')) {
+      cerrarModal();
     }
   });
 
