@@ -193,7 +193,7 @@ export async function crearCategoria(data: {
 }): Promise<number> {
   const { data: result, error } = await supabase
     .from('categorias')
-    .insert([{ nombre: data.nombre, descripcion: data.descripcion || null, orden: data.orden || 0 }])
+    .insert([{ nombre: data.nombre, descripcion: data.descripcion || null, orden: data.orden || 0, activa: true }])
     .select('id')
     .single();
 
@@ -260,6 +260,7 @@ export async function crearProyecto(data: {
       descripcion: data.descripcion || null,
       autores: data.autores || null,
       categoria_id: data.categoria_id,
+      activo: true
     }])
     .select('id')
     .single();

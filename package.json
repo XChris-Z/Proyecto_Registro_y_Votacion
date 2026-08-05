@@ -21,5 +21,8 @@
     "bcryptjs": "^3.0.3",
     "exceljs": "^4.4.0",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.8"
   }
 }
