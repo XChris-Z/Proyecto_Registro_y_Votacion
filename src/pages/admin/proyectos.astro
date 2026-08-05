@@ -14,14 +14,24 @@ const msg = Astro.url.searchParams.get('msg');
         <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Proyectos Candidatos</h1>
         <p style="color:var(--clr-text-muted);">Gestiona los proyectos habilitados para la votación institucional</p>
       </div>
-      <button class="btn btn--primary" style="border-radius:100px;padding:0.65rem 1.4rem;font-weight:700;box-shadow:0 4px 14px rgba(0, 89, 78, 0.25);" onclick="abrirModal()">
-        + Agregar proyecto
-      </button>
+      <div style="display:flex; gap:0.5rem;">
+        <form id="form-importar" action="/api/admin/proyectos/importar" method="POST" enctype="multipart/form-data" style="display:none;">
+          <input type="file" id="input-excel" name="excel" accept=".xlsx, .xls" onchange="document.getElementById('form-importar').submit();" />
+        </form>
+        <button class="btn btn--outline" style="border-radius:100px;padding:0.65rem 1.4rem;font-weight:700;" onclick="document.getElementById('input-excel').click()">
+          📥 Importar desde Excel
+        </button>
+        <button class="btn btn--primary" style="border-radius:100px;padding:0.65rem 1.4rem;font-weight:700;box-shadow:0 4px 14px rgba(0, 89, 78, 0.25);" onclick="abrirModal()">
+          + Agregar proyecto
+        </button>
+      </div>
     </div>
 
     {msg === 'created' && <div class="alert alert--success mb-3"><span>✅</span> Proyecto creado exitosamente</div>}
     {msg === 'updated' && <div class="alert alert--success mb-3"><span>✅</span> Proyecto actualizado</div>}
     {msg === 'deleted' && <div class="alert alert--success mb-3"><span>✅</span> Proyecto eliminado</div>}
+    {msg === 'imported' && <div class="alert alert--success mb-3"><span>✅</span> Proyectos importados exitosamente</div>}
+    {msg === 'error' && <div class="alert alert--danger mb-3"><span>❌</span> Error al realizar la operación</div>}
 
     {categorias.filter(c => c.activa === true).map(cat => {
       const catProyectos = proyectos.filter(p => p.categoria_id === cat.id);
