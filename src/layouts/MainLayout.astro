@@ -120,7 +120,7 @@ const highlightedSiteName = siteName.replace(/EXIS/g, '<span class="text-highlig
     <script is:inline>
       document.addEventListener('astro:page-load', () => {
         // Automatically add reveal classes to certain elements if they don't have it
-        const elementsToAnimate = document.querySelectorAll('.card, .vote-card, .live-stat-box');
+        const elementsToAnimate = document.querySelectorAll('.card, .live-stat-box');
         elementsToAnimate.forEach(el => {
           if (!el.classList.contains('reveal-on-scroll')) {
             el.classList.add('reveal-on-scroll');
