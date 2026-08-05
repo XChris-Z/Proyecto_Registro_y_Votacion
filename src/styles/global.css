@@ -849,7 +849,7 @@ tr:hover td {
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -999,28 +999,28 @@ tr:hover td {
 
 .reveal-on-scroll.is-revealed {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 .reveal-on-scroll.reveal-left {
   transform: translateX(-40px);
 }
 .reveal-on-scroll.reveal-left.is-revealed {
-  transform: translateX(0);
+  transform: none;
 }
 
 .reveal-on-scroll.reveal-right {
   transform: translateX(40px);
 }
 .reveal-on-scroll.reveal-right.is-revealed {
-  transform: translateX(0);
+  transform: none;
 }
 
 .reveal-on-scroll.reveal-scale {
   transform: scale(0.93);
 }
 .reveal-on-scroll.reveal-scale.is-revealed {
-  transform: scale(1);
+  transform: none;
 }
 
 /* Delays for staggered elements */
