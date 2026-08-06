@@ -62,7 +62,7 @@ const navItems = [
             <img src="/logo.png" alt="Logo Unitrópico" style="height:2.4rem;width:auto;flex-shrink:0;" />
             <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
               <span class="admin-sidebar__logo-text" style="font-weight:800;font-size:0.95rem;line-height:1.25;display:block;text-wrap:balance;" set:html={highlightedSiteName}></span>
-              <p class="admin-sidebar__logo-text" style="font-size:0.68rem;color:rgba(255,255,255,0.65);margin:0;margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.04em;font-weight:700;">Panel Admin</p>
+              <p class="admin-sidebar__logo-text" style="font-size:0.68rem;color:var(--clr-text-muted);margin:0;margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.04em;font-weight:700;">Panel Admin</p>
             </div>
           </a>
           
@@ -72,7 +72,7 @@ const navItems = [
             class="btn-desktop-toggle hide-mobile"
             title="Colapsar o expandir menú lateral"
             onclick="toggleSidebarDesktop()"
-            style="background:rgba(181,161,96,0.25);border:1.5px solid #B5A160;border-radius:8px;padding:0.45rem 0.65rem;color:#FFFFFF;cursor:pointer;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:all 0.2s ease;"
+            style="background:#F3F4F6;border:none;border-radius:8px;padding:0.45rem 0.65rem;color:var(--clr-text);cursor:pointer;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:all 0.2s ease;"
           >
             <span id="desktop-toggle-icon">◀</span>
           </button>
@@ -83,7 +83,7 @@ const navItems = [
             class="btn-mobile-hamburger hide-desktop"
             title="Menú del Administrador"
             onclick="toggleSidebarMobile()"
-            style="background:rgba(181,161,96,0.25);border:1.5px solid #B5A160;border-radius:8px;padding:0.45rem 0.85rem;color:#FFFFFF;font-weight:800;cursor:pointer;gap:0.45rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);"
+            style="background:#F3F4F6;border:none;border-radius:8px;padding:0.45rem 0.85rem;color:var(--clr-text);font-weight:800;cursor:pointer;gap:0.45rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);"
           >
             <span id="mobile-hamburger-icon" style="font-size:1.1rem;">☰</span>
             <span style="font-size:0.85rem;">Menú</span>
@@ -106,8 +106,12 @@ const navItems = [
             ))}
           </nav>
           <div class="admin-sidebar__footer" style="margin-top:auto;padding:1.5rem;">
+            <a href="/admin/proyectos" onclick="sessionStorage.setItem('openNewProject', 'true')" class="btn btn--full" style="background:#00A170;color:#FFF;border-radius:12px;margin-bottom:0.75rem;padding:0.75rem;font-weight:700;border:none;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 4px 12px rgba(0,161,112,0.25); transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(0,161,112,0.3)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 12px rgba(0,161,112,0.25)'">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Nuevo Proyecto
+            </a>
             <form method="POST" action="/api/admin/logout" id="logout-form" style="width:100%;">
-              <button type="submit" class="btn btn--logout btn--full" id="logout-btn" title="Cerrar sesión">
+              <button type="submit" class="btn btn--full" id="logout-btn" title="Cerrar sesión" style="background:#FFF0F0;color:#D83B3B;border-radius:12px;padding:0.75rem;font-weight:700;border:none;display:flex;align-items:center;justify-content:center;gap:0.5rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='#FFF0F0'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                   <polyline points="16 17 21 12 16 7"/>

@@ -1516,9 +1516,9 @@ tr:hover td {
 }
 
 .admin-sidebar {
-  background: #00594E !important;
-  color: #FFFFFF !important;
-  border-right: none !important;
+  background: #FFFFFF !important;
+  color: var(--clr-text) !important;
+  border-right: 1px solid rgba(0,0,0,0.06) !important;
   padding: 1.25rem 0;
   position: sticky;
   top: 0;
@@ -1545,7 +1545,7 @@ tr:hover td {
 }
 
 .admin-sidebar__logo-text {
-  color: #FFFFFF !important;
+  color: var(--clr-text) !important;
 }
 
 .admin-layout.sidebar-collapsed .admin-sidebar__logo-text,
@@ -1560,9 +1560,19 @@ tr:hover td {
 }
 
 .admin-layout.sidebar-collapsed .admin-nav__item {
-  justify-content: center;
-  padding: 0.85rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1.25rem;
+  margin: 0.25rem 1.25rem;
+  border-radius: 12px;
+  color: var(--clr-text-muted) !important;
+  transition: var(--transition);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
   border-left: none;
+  white-space: nowrap;
 }
 
 .admin-layout.sidebar-collapsed .admin-sidebar__logo {
@@ -1588,28 +1598,28 @@ tr:hover td {
   font-size: 1.15rem;
   flex-shrink: 0;
   transition: transform 0.2s ease;
-  color: #FFFFFF !important;
+  color: var(--clr-text-muted) !important;
 }
 
 .admin-nav__item:hover .admin-nav__icon {
   transform: scale(1.15);
+  color: var(--clr-primary) !important;
 }
 
 .admin-nav__item:hover {
-  color: #FFFFFF !important;
-  background: rgba(255, 255, 255, 0.14) !important;
+  color: var(--clr-primary) !important;
+  background: rgba(0, 89, 78, 0.04) !important;
 }
 
 .admin-nav__item.active {
-  color: #041815 !important;
-  background: #B5A160 !important;
-  border-left-color: #FFFFFF !important;
-  font-weight: 800;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  color: #FFFFFF !important;
+  background: #00594E !important;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 89, 78, 0.25);
 }
 
 .admin-nav__item.active .admin-nav__icon {
-  color: #041815 !important;
+  color: #FFFFFF !important;
 }
 
 .admin-main {
@@ -1619,7 +1629,7 @@ tr:hover td {
   min-height: 100vh;
   width: 100%;
   background: var(--clr-bg) !important;
-  border-left: 2px solid #B5A160 !important;
+  border-left: none !important;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -1645,9 +1655,9 @@ tr:hover td {
     width: 100%;
     padding: 0.85rem 1.25rem;
     border-right: none !important;
-    border-bottom: 2.5px solid var(--clr-accent) !important;
-    background: #00594E !important;
-    color: #FFFFFF !important;
+    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+    background: #FFFFFF !important;
+    color: var(--clr-text) !important;
     z-index: 100;
     box-shadow: 0 4px 20px rgba(0, 89, 78, 0.25);
   }
