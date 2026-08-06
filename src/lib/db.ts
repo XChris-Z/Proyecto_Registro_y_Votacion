@@ -753,6 +753,43 @@ export async function actualizarEstadoJornadaActual(
   }
 }
 
+export async function obtenerEstadoRegistro(): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('jornada_actual')
+      .select('estado')
+      .eq('id', 2)
+      .maybeSingle();
+
+    if (error || !data) return true; // Si no existe el registro de configuración (id: 2), por defecto está activo
+    return data.estado === 'ACTIVA';
+  } catch {
+    return true;
+  }
+}
+
+export async function actualizarEstadoRegistro(
+  activo: boolean
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const estado = activo ? 'ACTIVA' : 'CERRADA';
+    const { error } = await supabase
+      .from('jornada_actual')
+      .upsert({
+        id: 2,
+        nombre: 'Configuración de Sistema',
+        descripcion: 'Control de Registro Independiente',
+        fecha_inicio: new Date().toISOString(),
+        estado,
+      });
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
 export async function reiniciarJornada(
   reiniciarAsistentes: boolean = false
 ): Promise<{ success: boolean; error?: string }> {

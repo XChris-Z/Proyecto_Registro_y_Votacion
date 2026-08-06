@@ -1,17 +1,18 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import { obtenerJornadaActual, obtenerEstadisticasEnVivo } from '@lib/db';
+import { obtenerJornadaActual, obtenerEstadisticasEnVivo, obtenerEstadoRegistro } from '@lib/db';
 import { getLangFromCookie, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromCookie(Astro.cookies.get('lang')?.value);
 const t = useTranslations(lang);
 
 const error = Astro.url.searchParams.get('error');
-const [jornadaActual, stats] = await Promise.all([
+const [jornadaActual, stats, registroActivo] = await Promise.all([
   obtenerJornadaActual(),
-  obtenerEstadisticasEnVivo()
+  obtenerEstadisticasEnVivo(),
+  obtenerEstadoRegistro()
 ]);
-const estaCerrada = jornadaActual.estado === 'CERRADA';
+const estaCerrada = jornadaActual.estado === 'CERRADA' || !registroActivo;
 ---
 
 <MainLayout title="Registro de Asistencia">

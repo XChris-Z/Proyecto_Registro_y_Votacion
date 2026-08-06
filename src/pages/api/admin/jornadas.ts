@@ -7,7 +7,9 @@ import {
   guardarJornadaActual,
   obtenerJornadaActual,
   actualizarEstadoJornadaActual,
-  registrarLog
+  registrarLog,
+  actualizarEstadoRegistro,
+  obtenerEstadoRegistro
 } from '@lib/db';
 
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
@@ -93,6 +95,17 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     }
     await registrarLog(adminNombre, 'Eliminación de Histórico', `Se eliminó el registro histórico de jornada (ID: ${id}).`);
     return redirect('/admin/historial?exito=eliminado');
+  }
+
+  // 7. Habilitar o Deshabilitar el Registro
+  if (accion === 'toggle_registro') {
+    const estadoActual = await obtenerEstadoRegistro();
+    const res = await actualizarEstadoRegistro(!estadoActual);
+    if (!res.success) {
+      return redirect(`/admin/dashboard?error=${encodeURIComponent(res.error || 'Error al cambiar estado del registro')}`);
+    }
+    await registrarLog(adminNombre, 'Modificación de Registro', `Se ha ${!estadoActual ? 'habilitado' : 'deshabilitado'} el registro de participantes de forma independiente.`);
+    return redirect(`/admin/dashboard?exito=registro_toggled`);
   }
 
   return redirect('/admin/historial');
