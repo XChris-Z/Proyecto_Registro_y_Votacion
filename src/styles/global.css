@@ -1516,9 +1516,9 @@ tr:hover td {
 }
 
 .admin-sidebar {
-  background: #FFFFFF !important;
-  color: var(--clr-text) !important;
-  border-right: 1px solid rgba(0,0,0,0.06) !important;
+  background: #00594E !important;
+  color: #FFFFFF !important;
+  border-right: none !important;
   padding: 1.25rem 0;
   position: sticky;
   top: 0;
@@ -1545,7 +1545,7 @@ tr:hover td {
 }
 
 .admin-sidebar__logo-text {
-  color: var(--clr-text) !important;
+  color: #FFFFFF !important;
 }
 
 .admin-layout.sidebar-collapsed .admin-sidebar__logo-text,
@@ -1566,7 +1566,7 @@ tr:hover td {
   padding: 0.75rem 1.25rem;
   margin: 0.25rem 1.25rem;
   border-radius: 12px;
-  color: var(--clr-text-muted) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
   transition: var(--transition);
   font-size: 0.95rem;
   font-weight: 600;
@@ -1574,6 +1574,7 @@ tr:hover td {
   border-left: none;
   white-space: nowrap;
 }
+
 
 .admin-layout.sidebar-collapsed .admin-sidebar__logo {
   justify-content: center;
@@ -1584,13 +1585,15 @@ tr:hover td {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.25rem;
+  margin: 0.25rem 1.25rem;
+  border-radius: 12px;
   color: rgba(255, 255, 255, 0.85) !important;
   transition: var(--transition);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
-  border-left: 3px solid transparent;
+  border-left: none;
   white-space: nowrap;
 }
 
@@ -1598,28 +1601,28 @@ tr:hover td {
   font-size: 1.15rem;
   flex-shrink: 0;
   transition: transform 0.2s ease;
-  color: var(--clr-text-muted) !important;
+  color: #FFFFFF !important;
 }
 
 .admin-nav__item:hover .admin-nav__icon {
   transform: scale(1.15);
-  color: var(--clr-primary) !important;
+  color: #FFFFFF !important;
 }
 
 .admin-nav__item:hover {
-  color: var(--clr-primary) !important;
-  background: rgba(0, 89, 78, 0.04) !important;
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.14) !important;
 }
 
 .admin-nav__item.active {
-  color: #FFFFFF !important;
-  background: #00594E !important;
+  color: #041815 !important;
+  background: #B5A160 !important;
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(0, 89, 78, 0.25);
 }
 
 .admin-nav__item.active .admin-nav__icon {
-  color: #FFFFFF !important;
+  color: #041815 !important;
 }
 
 .admin-main {
@@ -1629,7 +1632,7 @@ tr:hover td {
   min-height: 100vh;
   width: 100%;
   background: var(--clr-bg) !important;
-  border-left: none !important;
+  border-left: 2px solid #B5A160 !important;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -1655,9 +1658,9 @@ tr:hover td {
     width: 100%;
     padding: 0.85rem 1.25rem;
     border-right: none !important;
-    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
-    background: #FFFFFF !important;
-    color: var(--clr-text) !important;
+    border-bottom: 2.5px solid var(--clr-accent) !important;
+    background: #00594E !important;
+    color: #FFFFFF !important;
     z-index: 100;
     box-shadow: 0 4px 20px rgba(0, 89, 78, 0.25);
   }
