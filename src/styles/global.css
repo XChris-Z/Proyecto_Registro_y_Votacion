@@ -1531,6 +1531,11 @@ tr:hover td {
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
   z-index: 60;
   box-shadow: none !important;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.admin-sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-sidebar__logo {
@@ -1562,9 +1567,10 @@ tr:hover td {
 .admin-layout.sidebar-collapsed .admin-nav__item {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.75rem 1.25rem;
-  margin: 0.25rem 1.25rem;
+  justify-content: center;
+  gap: 0;
+  padding: 0.85rem 0;
+  margin: 0.25rem 0.5rem;
   border-radius: 12px;
   color: rgba(255, 255, 255, 0.85) !important;
   transition: var(--transition);
