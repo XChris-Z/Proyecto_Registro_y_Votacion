@@ -727,6 +727,8 @@ option {
 /* ─── TABLAS ─────────────────────────────────────────────── */
 .table-wrapper {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
   border-radius: var(--radius-md);
   border: 1.5px solid var(--clr-border);
   background: var(--clr-surface);
@@ -745,6 +747,10 @@ thead {
 }
 
 th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #00594E;
   text-align: left;
   padding: 0.95rem 1.2rem;
   font-size: 0.76rem;
@@ -1513,6 +1519,7 @@ tr:hover td {
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  align-self: start;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
   z-index: 60;
   box-shadow: none !important;
