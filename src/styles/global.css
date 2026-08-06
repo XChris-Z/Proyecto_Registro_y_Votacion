@@ -760,6 +760,14 @@ th {
   color: #FFFFFF;
 }
 
+th:first-child {
+  border-top-left-radius: var(--radius-md);
+}
+
+th:last-child {
+  border-top-right-radius: var(--radius-md);
+}
+
 td {
   padding: 0.95rem 1.2rem;
   border-bottom: 1px solid var(--clr-border);

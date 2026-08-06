@@ -83,14 +83,14 @@ const categoryColors = [
                   <div style={`margin-top:1.25rem;padding:0.85rem;background:${color.bg};border-radius:10px;font-size:0.85rem;color:var(--clr-text);display:flex;align-items:center;gap:0.75rem;border:1px solid ${color.border}30;`}>
                     <span style="font-size:1.2rem;background:#fff;padding:0.4rem;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.05);">👥</span> 
                     <div style="display:flex;flex-direction:column;gap:0.15rem;">
-                      <span style={`font-weight:900;color:${color.text};font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;opacity:0.9;`}>Integrantes del Equipo</span>
-                      <span style="font-weight:700;font-size:0.95rem;">{p.autores || 'No asignados'}</span>
+                      <span style={`font-weight:700;color:${color.text};font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;opacity:0.8;`}>Integrantes del Equipo</span>
+                      <span style="font-weight:400;font-size:0.9rem;line-height:1.4;">{p.autores || 'No asignados'}</span>
                     </div>
                   </div>
                 </div>
-                <div style="display:flex;gap:0.5rem;justify-content:flex-end;border-top:1px dashed rgba(0,0,0,0.1);padding-top:1.25rem;margin-top:0.25rem;">
-                  <button class="btn btn--outline btn--sm btn-editar-proyecto" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" data-proyecto={encodeURIComponent(JSON.stringify(p))}>✏️ Editar Proyecto</button>
-                  <button class="btn btn--danger btn--sm" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" onclick={`eliminarProyecto(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')`}>🗑️ Eliminar</button>
+                <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;border-top:1px dashed rgba(0,0,0,0.1);padding-top:1.25rem;margin-top:0.25rem;">
+                  <button class="btn btn--outline btn--sm btn-editar-proyecto" style="flex:1;min-width:130px;justify-content:center;border-radius:100px;padding:0.45rem 0.5rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" data-proyecto={encodeURIComponent(JSON.stringify(p))}>✏️ Editar Proyecto</button>
+                  <button class="btn btn--danger btn--sm" style="flex:1;min-width:100px;justify-content:center;border-radius:100px;padding:0.45rem 0.5rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" onclick={`eliminarProyecto(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')`}>🗑️ Eliminar</button>
                 </div>
 
                 <!-- Burbuja de Detalles (Oculta por defecto) -->
