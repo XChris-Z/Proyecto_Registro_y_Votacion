@@ -8,7 +8,7 @@ const errorMsg = Astro.url.searchParams.get('error');
 ---
 
 <AdminLayout title="Criterios de Evaluación" activePage="criterios">
-  <div style="max-width:900px;">
+  <div style="width: 100%;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
       <div>
         <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Criterios de Evaluación</h1>
@@ -36,7 +36,7 @@ const errorMsg = Astro.url.searchParams.get('error');
             <tr>
               <td style="color:var(--clr-text-muted);font-size:0.85rem;font-weight:700;">#{crit.id}</td>
               <td style="font-weight:700;color:var(--clr-text);">{crit.nombre}</td>
-              <td style="color:var(--clr-text-muted);font-size:0.85rem;max-width:350px;">
+              <td style="color:var(--clr-text-muted);font-size:0.85rem;width: 100%;">
                 {crit.descripcion || <span style="color:var(--clr-text-dim);">—</span>}
               </td>
               <td style="font-weight:700;color:var(--clr-accent);">
@@ -64,7 +64,7 @@ const errorMsg = Astro.url.searchParams.get('error');
 
   <!-- Modal -->
   <div class="modal-overlay" id="modal-overlay" onclick="if(event.target === this) cerrarModal()">
-    <div class="modal card" style="max-width: 500px; width: 95%; border: 2px solid #B5A160; background: var(--clr-bg); padding: 2rem;">
+    <div class="modal card" style="width: 100%; width: 95%; border: 2px solid #B5A160; background: var(--clr-bg); padding: 2rem;">
       <h3 id="modal-title" style="margin-bottom:1.5rem; font-size: 1.5rem;">Nuevo Criterio</h3>
       <form id="crit-form" method="POST" action="/api/admin/criterios">
         <input type="hidden" name="action" id="campo-action" value="update" />

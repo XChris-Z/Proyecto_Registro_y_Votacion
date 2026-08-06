@@ -17,7 +17,7 @@ const categoryColors = [
 ---
 
 <AdminLayout title="Proyectos" activePage="proyectos">
-  <div style="max-width:1000px;">
+  <div style="width: 100%;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
       <div>
         <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Proyectos Candidatos</h1>
@@ -36,7 +36,7 @@ const categoryColors = [
       </div>
     </div>
 
-    <div style="margin-bottom: 2rem; position: relative; max-width: 500px;">
+    <div style="margin-bottom: 2rem; position: relative; width: 100%;">
       <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.6;">🔍</span>
       <input type="text" id="buscador-proyectos" placeholder="Buscar por nombre, descripción o integrantes..." class="form-input" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.5rem; border-radius: 100px; border: 1.5px solid rgba(0,0,0,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.03); font-size: 0.95rem; font-weight: 500; transition: border-color 0.2s;" />
     </div>
@@ -47,7 +47,8 @@ const categoryColors = [
     {msg === 'imported' && <div class="alert alert--success mb-3"><span>✅</span> Proyectos importados exitosamente</div>}
     {msg === 'error' && <div class="alert alert--danger mb-3"><span>❌</span> Error al realizar la operación</div>}
 
-    {categorias.filter(c => c.activa === true).map((cat, index) => {
+    <div style="max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem;">
+      {categorias.filter(c => c.activa === true).map((cat, index) => {
       const catProyectos = proyectos.filter(p => p.categoria_id === cat.id);
       const color = categoryColors[index % categoryColors.length];
       return (
@@ -125,6 +126,7 @@ const categoryColors = [
         <a href="/admin/categorias" style="margin-left:0.5rem;font-weight:600;">Ir a Categorías →</a>
       </div>
     )}
+    </div>
   </div>
 
   <style>
@@ -141,7 +143,7 @@ const categoryColors = [
 
   <!-- Modal Proyecto -->
   <div class="modal-overlay" id="modal-overlay">
-    <div class="modal" style="max-width:520px;">
+    <div class="modal" style="width: 100%;">
       <h3 id="modal-title" style="margin-bottom:1.5rem;">Agregar Proyecto</h3>
       <form id="proyecto-form" method="POST">
         <input type="hidden" name="_id" id="campo-id" />

@@ -7,7 +7,7 @@ const msg = Astro.url.searchParams.get('msg');
 ---
 
 <AdminLayout title="Categorías" activePage="categorias">
-  <div style="max-width:800px;">
+  <div style="width: 100%;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
       <div>
         <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.25rem;color:var(--clr-text);">Categorías Institucionales</h1>
@@ -36,7 +36,7 @@ const msg = Astro.url.searchParams.get('msg');
             <tr>
               <td style="color:var(--clr-text-muted);font-size:0.85rem;font-weight:700;">{cat.orden}</td>
               <td style="font-weight:700;color:var(--clr-text);">{cat.nombre}</td>
-              <td style="color:var(--clr-text-muted);font-size:0.85rem;max-width:250px;">
+              <td style="color:var(--clr-text-muted);font-size:0.85rem;width: 100%;">
                 {cat.descripcion || <span style="color:var(--clr-text-dim);">—</span>}
               </td>
               <td>
