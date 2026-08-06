@@ -91,7 +91,6 @@ const categoryColors = [
                   <button class="btn btn--outline btn--sm btn-editar-proyecto" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" data-proyecto={encodeURIComponent(JSON.stringify(p))}>✏️ Editar Proyecto</button>
                   <button class="btn btn--danger btn--sm" style="border-radius:100px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:0.35rem;" onclick={`eliminarProyecto(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')`}>🗑️ Eliminar</button>
                 </div>
-                </div>
 
                 <!-- Burbuja de Detalles (Oculta por defecto) -->
                 <div class="detalle-burbuja" id={`burbuja-${p.id}`} style="display:none; position:absolute; top:-2px; left:-2px; right:-2px; bottom:-2px; background:var(--clr-bg); border:2px solid var(--clr-primary); border-radius:14px; z-index:100; padding:1.25rem; flex-direction:column; box-shadow:0 15px 40px rgba(0,0,0,0.2); overflow-y:auto; animation: modalBubbleEnter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
