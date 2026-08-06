@@ -1577,8 +1577,10 @@ tr:hover td {
 
 
 .admin-layout.sidebar-collapsed .admin-sidebar__logo {
+  flex-direction: column;
   justify-content: center;
-  padding: 0 0.5rem 1.25rem;
+  gap: 1rem;
+  padding: 1.25rem 0.5rem;
 }
 
 .admin-nav__item {

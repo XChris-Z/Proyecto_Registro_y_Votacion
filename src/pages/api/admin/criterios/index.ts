@@ -23,7 +23,7 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   });
 
   if (success) {
-    await registrarLog('creacion_criterio', 'admin', `Se creó el criterio: ${nombre}`);
+    await registrarLog('admin', 'Creación de Criterio', `Se creó el criterio: ${nombre}`);
     return redirect('/admin/criterios?success=1');
   } else {
     return redirect(`/admin/criterios?error=${encodeURIComponent(error || 'Error al crear el criterio')}`);

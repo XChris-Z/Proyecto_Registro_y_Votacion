@@ -15,7 +15,7 @@ export const POST: APIRoute = async ({ request, params, redirect, cookies }) => 
   if (action === 'delete') {
     const { success, error } = await eliminarCriterioEvaluacion(criterioId);
     if (success) {
-      await registrarLog('eliminacion_criterio', 'admin', `Se eliminó el criterio #${id}`);
+      await registrarLog('admin', 'Eliminación de Criterio', `Se eliminó el criterio #${id}`);
       return redirect('/admin/criterios?success=1');
     } else {
       return redirect(`/admin/criterios?error=${encodeURIComponent(error || 'Error al eliminar')}`);
@@ -33,7 +33,7 @@ export const POST: APIRoute = async ({ request, params, redirect, cookies }) => 
     });
 
     if (success) {
-      await registrarLog('edicion_criterio', 'admin', `Se editó el criterio #${id}`);
+      await registrarLog('admin', 'Edición de Criterio', `Se editó el criterio #${id}`);
       return redirect('/admin/criterios?success=1');
     } else {
       return redirect(`/admin/criterios?error=${encodeURIComponent(error || 'Error al actualizar')}`);
