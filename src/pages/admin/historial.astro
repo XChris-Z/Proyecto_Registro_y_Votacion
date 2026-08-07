@@ -280,11 +280,14 @@ const exito = Astro.url.searchParams.get("exito");
                             const catProys = proys.filter((p: any) => p.categoria_id === cat.id);
                             const catResults = catProys.map((p: any) => {
                               const r = res.find((r: any) => r.proyecto_id === p.id);
+                              const isLegacy = r && r.puntaje_final === undefined;
                               return {
                                 nombre: p.nombre,
-                                score: r ? (r.puntaje_final !== undefined ? r.puntaje_final : r.total_votos || 0) : 0,
-                                publico: r ? (r.votos_publico !== undefined ? r.votos_publico : r.total_votos || 0) : 0,
-                                jurado: r ? (r.promedio_jurado !== undefined ? r.promedio_jurado : null) : null
+                                isLegacy,
+                                score: r ? (isLegacy ? r.total_votos || 0 : r.puntaje_final) : 0,
+                                raw_publico: r ? r.votos_publico : 0,
+                                pub_pts: r ? r.puntaje_publico_ponderado : 0,
+                                jur_pts: r ? r.puntaje_jurado_ponderado : 0
                               };
                             }).sort((a: any, b: any) => b.score - a.score);
                             
@@ -302,10 +305,16 @@ const exito = Astro.url.searchParams.get("exito");
                                         <div class="winner-info">
                                           <strong class="winner-name">{winner.nombre}</strong>
                                           <div class="winner-score-breakdown">
-                                            <span class="winner-score-main">Puntaje Final: {winner.score}</span>
-                                            <span class="winner-score-detail">
-                                              (Público: {winner.publico}{winner.jurado !== null ? ` | Jurado: ${winner.jurado}` : ''})
-                                            </span>
+                                            {winner.isLegacy ? (
+                                              <span class="winner-score-main">Total Votos: {winner.score}</span>
+                                            ) : (
+                                              <>
+                                                <span class="winner-score-main">Puntaje Final: {winner.score} / 5</span>
+                                                <span class="winner-score-detail">
+                                                  (Púb: {winner.pub_pts} pts | Jur: {winner.jur_pts} pts) • {winner.raw_publico} votos reales
+                                                </span>
+                                              </>
+                                            )}
                                           </div>
                                         </div>
                                       </div>

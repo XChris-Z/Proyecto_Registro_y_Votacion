@@ -575,29 +575,30 @@ export async function obtenerJornadaHistorialPorId(id: number): Promise<JornadaH
   return data as JornadaHistorial;
 }
 
-export async function crearJornadaHistorial(
-  nombre: string,
-  notas?: string
-): Promise<{ success: boolean; error?: string; id?: number }> {
-  try {
-    const asistentes = await obtenerAsistentes();
-    const resultados = await obtenerResultados();
-    const categorias = await obtenerCategorias();
-    const proyectos = await obtenerProyectos();
-
-    const total_votos = resultados.reduce((sum, r) => sum + r.total_votos, 0);
-
-    const snapshot = {
-      fecha: new Date().toISOString(),
-      asistentes: asistentes.length,
-      votos: total_votos,
-      categorias,
-      proyectos,
-      resultados,
-      listaAsistentes: asistentes
-    };
-
-    const { data, error } = await supabase
+  export async function crearJornadaHistorial(
+    nombre: string,
+    notas?: string
+  ): Promise<{ success: boolean; error?: string; id?: number }> {
+    try {
+      const asistentes = await obtenerAsistentes();
+      const resultados = await obtenerResultados();
+      const categorias = await obtenerCategorias();
+      const proyectos = await obtenerProyectos();
+  
+      // 'resultados' es un array de ResultadoFinal que usa 'votos_publico'
+      const total_votos = resultados.reduce((sum, r) => sum + (r.votos_publico || 0), 0);
+  
+      const snapshot = {
+        fecha: new Date().toISOString(),
+        asistentes: asistentes.length,
+        votos: total_votos,
+        categorias,
+        proyectos,
+        resultados,
+        listaAsistentes: asistentes
+      };
+  
+      const { data, error } = await supabase
       .from('jornadas_historial')
       .insert({
         nombre,
