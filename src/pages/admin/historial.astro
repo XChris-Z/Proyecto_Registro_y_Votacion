@@ -282,24 +282,34 @@ const exito = Astro.url.searchParams.get("exito");
                               const r = res.find((r: any) => r.proyecto_id === p.id);
                               return {
                                 nombre: p.nombre,
-                                votos: r ? r.total_votos : 0
+                                score: r ? (r.puntaje_final !== undefined ? r.puntaje_final : r.total_votos || 0) : 0,
+                                publico: r ? (r.votos_publico !== undefined ? r.votos_publico : r.total_votos || 0) : 0,
+                                jurado: r ? (r.promedio_jurado !== undefined ? r.promedio_jurado : null) : null
                               };
-                            }).sort((a: any, b: any) => b.votos - a.votos);
+                            }).sort((a: any, b: any) => b.score - a.score);
                             
-                            const winner = catResults[0];
+                            const top3 = catResults.slice(0, 3);
+                            const medals = ["🥇", "🥈", "🥉"];
 
                             return (
                               <div class="hc-cat-card">
                                 <h6 class="hc-cat-title">{cat.nombre}</h6>
-                                <div class="hc-cat-winner">
-                                  {winner ? (
-                                    <>
-                                      <span class="winner-icon">🏆</span>
-                                      <div class="winner-info">
-                                        <strong class="winner-name">{winner.nombre}</strong>
-                                        <span class="winner-votes">{winner.votos} votos</span>
+                                <div class="hc-cat-winners-list">
+                                  {top3.length > 0 ? (
+                                    top3.map((winner: any, index: number) => (
+                                      <div class="hc-cat-winner-item">
+                                        <span class="winner-icon">{medals[index] || "🏅"}</span>
+                                        <div class="winner-info">
+                                          <strong class="winner-name">{winner.nombre}</strong>
+                                          <div class="winner-score-breakdown">
+                                            <span class="winner-score-main">Puntaje Final: {winner.score}</span>
+                                            <span class="winner-score-detail">
+                                              (Público: {winner.publico}{winner.jurado !== null ? ` | Jurado: ${winner.jurado}` : ''})
+                                            </span>
+                                          </div>
+                                        </div>
                                       </div>
-                                    </>
+                                    ))
                                   ) : (
                                     <span class="no-winner">Sin proyectos</span>
                                   )}
@@ -907,15 +917,23 @@ const exito = Astro.url.searchParams.get("exito");
     border-bottom: 2px solid rgba(0, 89, 78, 0.1);
   }
 
-  .hc-cat-winner {
+  .hc-cat-winners-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .hc-cat-winner-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
 
   .winner-icon {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    min-width: 30px;
+    text-align: center;
   }
 
   .winner-info {
@@ -925,14 +943,24 @@ const exito = Astro.url.searchParams.get("exito");
 
   .winner-name {
     color: var(--clr-primary);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
   }
 
-  .winner-votes {
-    color: var(--clr-text-muted);
+  .winner-score-breakdown {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .winner-score-main {
+    color: var(--clr-text);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
+  }
+
+  .winner-score-detail {
+    color: var(--clr-text-muted);
+    font-size: 0.75rem;
   }
 
   .no-winner {
