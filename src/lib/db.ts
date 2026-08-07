@@ -584,6 +584,7 @@ export async function obtenerJornadaHistorialPorId(id: number): Promise<JornadaH
       const resultados = await obtenerResultadosFinales();
       const categorias = await obtenerCategorias();
       const proyectos = await obtenerProyectos();
+      const jurados = await obtenerJurados();
   
       // 'resultados' es un array de ResultadoFinal que usa 'votos_publico'
       const total_votos = resultados.reduce((sum, r) => sum + (r.votos_publico || 0), 0);
@@ -595,7 +596,8 @@ export async function obtenerJornadaHistorialPorId(id: number): Promise<JornadaH
         categorias,
         proyectos,
         resultados,
-        listaAsistentes: asistentes
+        listaAsistentes: asistentes,
+        jurados
       };
   
       const { data, error } = await supabase
