@@ -258,42 +258,59 @@ const exito = Astro.url.searchParams.get("exito");
                 <div class="hc-content">
                   <h4 style="color:var(--clr-accent);margin-bottom:1rem;border-bottom:1px solid rgba(181, 161, 96, 0.3);padding-bottom:0.5rem;">Información Detallada (Snapshot)</h4>
                   
-                  {j.snapshot_json ? (
-                    <div class="hc-snapshot-grid">
-                      <div class="hc-snap-box">
-                        <h5>Categorías ({j.snapshot_json.categorias?.length || 0})</h5>
-                        <ul class="hc-list">
-                          {j.snapshot_json.categorias?.slice(0, 5).map((c: any) => (
-                            <li>{c.nombre}</li>
-                          ))}
-                          {j.snapshot_json.categorias?.length > 5 && <li>... y más</li>}
-                        </ul>
-                      </div>
-                      
-                      <div class="hc-snap-box">
-                        <h5>Proyectos ({j.snapshot_json.proyectos?.length || 0})</h5>
-                        <ul class="hc-list">
-                          {j.snapshot_json.proyectos?.slice(0, 5).map((p: any) => (
-                            <li>{p.nombre}</li>
-                          ))}
-                          {j.snapshot_json.proyectos?.length > 5 && <li>... y más</li>}
-                        </ul>
-                      </div>
-                      
-                      <div class="hc-snap-box">
-                        <h5>Resultados Principales</h5>
-                        <ul class="hc-list">
-                          {j.snapshot_json.resultados?.slice(0, 5).map((r: any) => {
-                            const p = j.snapshot_json.proyectos?.find((pro: any) => pro.id === r.proyecto_id);
+                  {j.snapshot_json ? (() => {
+                    const cats = j.snapshot_json.categorias || [];
+                    const proys = j.snapshot_json.proyectos || [];
+                    const res = j.snapshot_json.resultados || [];
+                    const totalProyectos = proys.length;
+
+                    return (
+                      <div class="hc-snapshot-detailed">
+                        <div class="hc-snap-header">
+                          <h5 style="margin:0; font-size:1.1rem; color:var(--clr-primary); font-weight: 800;">
+                            Resumen de Resultados por Categoría
+                          </h5>
+                          <span class="hc-badge" style="background:rgba(0, 89, 78, 0.1); color:var(--clr-primary); border: 1px solid rgba(0, 89, 78, 0.2);">
+                            📦 {totalProyectos} Proyectos Participantes
+                          </span>
+                        </div>
+                        
+                        <div class="hc-categories-grid">
+                          {cats.map((cat: any) => {
+                            const catProys = proys.filter((p: any) => p.categoria_id === cat.id);
+                            const catResults = catProys.map((p: any) => {
+                              const r = res.find((r: any) => r.proyecto_id === p.id);
+                              return {
+                                nombre: p.nombre,
+                                votos: r ? r.total_votos : 0
+                              };
+                            }).sort((a: any, b: any) => b.votos - a.votos);
+                            
+                            const winner = catResults[0];
+
                             return (
-                              <li>{p?.nombre || `Proyecto #${r.proyecto_id}`} - <strong>{r.total_votos} votos</strong></li>
+                              <div class="hc-cat-card">
+                                <h6 class="hc-cat-title">{cat.nombre}</h6>
+                                <div class="hc-cat-winner">
+                                  {winner ? (
+                                    <>
+                                      <span class="winner-icon">🏆</span>
+                                      <div class="winner-info">
+                                        <strong class="winner-name">{winner.nombre}</strong>
+                                        <span class="winner-votes">{winner.votos} votos</span>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <span class="no-winner">Sin proyectos</span>
+                                  )}
+                                </div>
+                              </div>
                             );
                           })}
-                          {j.snapshot_json.resultados?.length > 5 && <li>... y más</li>}
-                        </ul>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
+                    );
+                  })() : (
                     <p style="color:var(--clr-text-muted);font-style:italic;">No hay snapshot detallado para esta jornada.</p>
                   )}
                 </div>
@@ -843,42 +860,84 @@ const exito = Astro.url.searchParams.get("exito");
     animation: fadeIn 0.3s ease-out;
   }
 
-  .hc-snapshot-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  .hc-snapshot-detailed {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
   }
 
-  .hc-snap-box {
-    background: rgba(0, 0, 0, 0.15);
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  .hc-snap-box h5 {
-    font-size: 0.95rem;
-    color: var(--clr-text);
-    margin-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.4rem;
-  }
-
-  .hc-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--clr-text-muted);
-  }
-
-  .hc-list li {
-    margin-bottom: 0.4rem;
+  .hc-snap-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--clr-surface);
+    border: 1px solid rgba(0, 89, 78, 0.15);
+    border-radius: var(--radius-md);
   }
 
-  .hc-list strong {
+  .hc-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .hc-cat-card {
+    background: var(--clr-surface);
+    border: 1px solid rgba(0, 89, 78, 0.1);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hc-cat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 89, 78, 0.08);
+    border-color: rgba(0, 89, 78, 0.25);
+  }
+
+  .hc-cat-title {
+    font-size: 1.05rem;
     color: var(--clr-text);
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(0, 89, 78, 0.1);
+  }
+
+  .hc-cat-winner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .winner-icon {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+  .winner-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .winner-name {
+    color: var(--clr-primary);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .winner-votes {
+    color: var(--clr-text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .no-winner {
+    color: var(--clr-text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
   }
 </style>
