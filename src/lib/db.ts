@@ -581,7 +581,7 @@ export async function obtenerJornadaHistorialPorId(id: number): Promise<JornadaH
   ): Promise<{ success: boolean; error?: string; id?: number }> {
     try {
       const asistentes = await obtenerAsistentes();
-      const resultados = await obtenerResultados();
+      const resultados = await obtenerResultadosFinales();
       const categorias = await obtenerCategorias();
       const proyectos = await obtenerProyectos();
   
