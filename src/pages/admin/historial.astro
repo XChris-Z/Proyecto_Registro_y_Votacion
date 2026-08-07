@@ -190,66 +190,43 @@ const exito = Astro.url.searchParams.get("exito");
             </p>
           </div>
         ) : (
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Evento / Jornada</th>
-                  <th>Fecha de Cierre (Hora Bogotá)</th>
-                  <th>Participantes</th>
-                  <th>Total Votos</th>
-                  <th>Exportar</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jornadas.map((j) => (
-                  <tr>
-                    <td>
-                      <strong style="color:var(--clr-text);font-size:1rem;">
-                        {j.nombre}
-                      </strong>
+          <div style="display:flex;flex-direction:column;gap:1.5rem;">
+            {jornadas.map((j) => (
+              <details class="historial-card-details">
+                <summary class="historial-card-summary">
+                  <div class="hc-header">
+                    <div class="hc-title-col">
+                      <strong class="hc-title">{j.nombre}</strong>
                       {j.notas && (
-                        <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.2rem;">
-                          {j.notas}
-                        </p>
+                        <p class="hc-notas">{j.notas}</p>
                       )}
-                    </td>
-                    <td style="color:var(--clr-text-muted);font-size:0.88rem;">
-                      {new Date(j.fecha_cierre).toLocaleString("es-CO", {
-                        timeZone: "America/Bogota",
-                        dateStyle: "long",
-                        timeStyle: "short",
-                      })}{" "}
-                      (Bogotá)
-                    </td>
-                    <td>
-                      <span
-                        class="badge"
-                        style="background:var(--clr-surface);color:var(--clr-text);"
-                      >
-                        👥 {j.total_asistentes}
+                      <p class="hc-fecha">
+                        {new Date(j.fecha_cierre).toLocaleString("es-CO", {
+                          timeZone: "America/Bogota",
+                          dateStyle: "long",
+                          timeStyle: "short",
+                        })}{" "}
+                        (Bogotá)
+                      </p>
+                    </div>
+                    <div class="hc-stats-col">
+                      <span class="hc-badge">
+                        👥 {j.total_asistentes} Registrados
                       </span>
-                    </td>
-                    <td>
-                      <span
-                        class="badge"
-                        style="background:rgba(181, 161, 96, 0.2);color:var(--clr-accent);"
-                      >
-                        🗳️ {j.total_votos}
+                      <span class="hc-badge hc-badge-accent">
+                        🗳️ {j.total_votos} Votos
                       </span>
-                    </td>
-                    <td>
+                    </div>
+                    <div class="hc-actions">
                       <a
                         href={`/api/admin/exportar-excel?id=${j.id}`}
                         target="_blank"
                         class="btn btn--outline btn--sm"
                         style="border-color:var(--clr-accent);color:var(--clr-accent);border-radius:100px;padding:0.35rem 0.95rem;font-weight:700;"
+                        onclick="event.stopPropagation();"
                       >
                         📑 Excel (.xlsx)
                       </a>
-                    </td>
-                    <td style="display:flex;gap:0.5rem;align-items:center;">
                       <button
                         type="button"
                         class="btn btn--outline btn--sm btn-editar-historial"
@@ -258,6 +235,7 @@ const exito = Astro.url.searchParams.get("exito");
                         data-nombre={j.nombre}
                         data-notas={j.notas || ""}
                         title="Editar nombre/notas"
+                        onclick="event.stopPropagation();"
                       >
                         ✏️
                       </button>
@@ -268,14 +246,59 @@ const exito = Astro.url.searchParams.get("exito");
                         data-id={j.id}
                         data-nombre={j.nombre}
                         title="Eliminar del historial"
+                        onclick="event.stopPropagation();"
                       >
                         🗑️
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <span class="hc-indicator">▼</span>
+                    </div>
+                  </div>
+                </summary>
+                
+                <div class="hc-content">
+                  <h4 style="color:var(--clr-accent);margin-bottom:1rem;border-bottom:1px solid rgba(181, 161, 96, 0.3);padding-bottom:0.5rem;">Información Detallada (Snapshot)</h4>
+                  
+                  {j.snapshot_json ? (
+                    <div class="hc-snapshot-grid">
+                      <div class="hc-snap-box">
+                        <h5>Categorías ({j.snapshot_json.categorias?.length || 0})</h5>
+                        <ul class="hc-list">
+                          {j.snapshot_json.categorias?.slice(0, 5).map((c: any) => (
+                            <li>{c.nombre}</li>
+                          ))}
+                          {j.snapshot_json.categorias?.length > 5 && <li>... y más</li>}
+                        </ul>
+                      </div>
+                      
+                      <div class="hc-snap-box">
+                        <h5>Proyectos ({j.snapshot_json.proyectos?.length || 0})</h5>
+                        <ul class="hc-list">
+                          {j.snapshot_json.proyectos?.slice(0, 5).map((p: any) => (
+                            <li>{p.nombre}</li>
+                          ))}
+                          {j.snapshot_json.proyectos?.length > 5 && <li>... y más</li>}
+                        </ul>
+                      </div>
+                      
+                      <div class="hc-snap-box">
+                        <h5>Resultados Principales</h5>
+                        <ul class="hc-list">
+                          {j.snapshot_json.resultados?.slice(0, 5).map((r: any) => {
+                            const p = j.snapshot_json.proyectos?.find((pro: any) => pro.id === r.proyecto_id);
+                            return (
+                              <li>{p?.nombre || `Proyecto #${r.proyecto_id}`} - <strong>{r.total_votos} votos</strong></li>
+                            );
+                          })}
+                          {j.snapshot_json.resultados?.length > 5 && <li>... y más</li>}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : (
+                    <p style="color:var(--clr-text-muted);font-style:italic;">No hay snapshot detallado para esta jornada.</p>
+                  )}
+                </div>
+              </details>
+            ))}
           </div>
         )
       }
@@ -381,6 +404,7 @@ const exito = Astro.url.searchParams.get("exito");
         method="POST"
         action="/api/admin/jornadas"
         style="display:flex;justify-content:flex-end;gap:0.75rem;"
+        onsubmit="const btn = this.querySelector('button[type=submit]'); btn.disabled = true; btn.innerHTML = 'Archivando...'; return true;"
       >
         <input type="hidden" name="accion" value="cerrar_y_archivar" />
         <button type="button" class="btn btn--outline btn-cerrar-modal" style="border-radius:100px;font-weight:700;"
@@ -710,5 +734,151 @@ const exito = Astro.url.searchParams.get("exito");
       transform: scale(1);
       opacity: 1;
     }
+  }
+
+  /* Estilos para Tarjetas del Historial */
+  .historial-card-details {
+    background: var(--clr-surface);
+    border: 1px solid rgba(181, 161, 96, 0.2);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .historial-card-details[open] {
+    border-color: var(--clr-accent);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  }
+
+  .historial-card-summary {
+    list-style: none;
+    padding: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+  }
+  
+  .historial-card-summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .historial-card-summary:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .hc-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hc-title-col {
+    flex: 1 1 250px;
+  }
+
+  .hc-title {
+    font-size: 1.25rem;
+    color: var(--clr-text);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .hc-notas {
+    font-size: 0.85rem;
+    color: var(--clr-text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .hc-fecha {
+    font-size: 0.8rem;
+    color: var(--clr-accent);
+    opacity: 0.9;
+  }
+
+  .hc-stats-col {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hc-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--clr-text);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .hc-badge-accent {
+    background: rgba(181, 161, 96, 0.15);
+    color: var(--clr-accent);
+    border: 1px solid rgba(181, 161, 96, 0.3);
+  }
+
+  .hc-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .hc-indicator {
+    margin-left: 0.5rem;
+    color: var(--clr-text-muted);
+    transition: transform 0.3s ease;
+  }
+
+  .historial-card-details[open] .hc-indicator {
+    transform: rotate(-180deg);
+  }
+
+  .hc-content {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .hc-snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .hc-snap-box {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .hc-snap-box h5 {
+    font-size: 0.95rem;
+    color: var(--clr-text);
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.4rem;
+  }
+
+  .hc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--clr-text-muted);
+  }
+
+  .hc-list li {
+    margin-bottom: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .hc-list strong {
+    color: var(--clr-text);
   }
 </style>

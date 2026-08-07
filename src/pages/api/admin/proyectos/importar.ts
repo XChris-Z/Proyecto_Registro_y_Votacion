@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { crearProyecto, registrarLog, obtenerCategorias, crearCategoria } from '@lib/db';
+import { Buffer } from 'node:buffer';
 import exceljs from 'exceljs';
 
 export const POST: APIRoute = async ({ request, redirect, cookies }) => {
@@ -17,7 +18,7 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
     const buffer = Buffer.from(arrayBuffer);
 
     const workbook = new exceljs.Workbook();
-    await workbook.xlsx.load(buffer);
+    await workbook.xlsx.load(buffer as any);
 
     const worksheet = workbook.worksheets[0];
     if (!worksheet) {

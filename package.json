@@ -23,6 +23,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "dotenv": "^17.4.2",
     "tsx": "^4.23.8"
   }
 }

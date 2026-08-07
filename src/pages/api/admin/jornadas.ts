@@ -33,6 +33,11 @@ export const POST: APIRoute = async ({ request, redirect, cookies }) => {
   // 2. Cerrar Jornada y Archivar en el Historial (Inhabilita Registro y Votación)
   if (accion === 'cerrar_y_archivar') {
     const actual = await obtenerJornadaActual();
+    
+    if (actual.estado === 'CERRADA') {
+      return redirect('/admin/historial?error=' + encodeURIComponent('La jornada ya se encuentra cerrada y archivada.'));
+    }
+
     const res = await crearJornadaHistorial(actual.nombre, actual.descripcion);
     if (!res.success) {
       return redirect(`/admin/historial?error=${encodeURIComponent(res.error || 'Error al archivar jornada')}`);
