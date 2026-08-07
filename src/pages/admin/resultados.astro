@@ -32,8 +32,8 @@ const resultadosPorCat = categorias.map(cat => {
 
     <div style="display:grid;gap:2.5rem;">
       {resultadosPorCat.map((cat, i) => (
-        <div class="category-section" style="border:1.5px solid var(--clr-border);border-radius:var(--radius-lg);overflow:hidden;background:var(--clr-surface);">
-          <div class="category-header" style="background:#00594E;border-bottom:2px solid var(--clr-accent);padding:1.4rem 1.75rem;">
+        <details class="category-section" open style="border:1.5px solid var(--clr-border);border-radius:var(--radius-lg);overflow:hidden;background:var(--clr-surface);">
+          <summary class="category-header" style="background:#00594E;border-bottom:2px solid var(--clr-accent);padding:1.4rem 1.75rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none;">
             <div style="display:flex;align-items:center;gap:0.75rem;">
               <span style="font-size:1.6rem;">{i === 0 ? '💡' : i === 1 ? '🌿' : '🌍'}</span>
               <div>
@@ -45,10 +45,15 @@ const resultadosPorCat = categorias.map(cat => {
               <span class="badge" style="background:#B5A160;color:#041815;font-weight:800;padding:0.45rem 0.95rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
                 {cat.totalVotosCat} votos emitidos
               </span>
+              <span class="expand-icon" style="color:var(--clr-accent);font-size:1.5rem;transition:transform 0.3s ease;">▼</span>
             </div>
+          </summary>
+
+          <div style="padding:1.5rem 1.75rem 0.5rem 1.75rem;">
+            <input type="text" class="search-input" data-category={cat.id} placeholder="🔍 Buscar proyecto en esta categoría..." style="width:100%;padding:0.8rem 1.2rem;border-radius:var(--radius-md);border:1px solid var(--clr-border);background:var(--clr-bg);color:var(--clr-text);font-family:inherit;font-size:0.95rem;margin-bottom:0.5rem;outline:none;" />
           </div>
 
-          <div style="padding:1.75rem;">
+          <div class="projects-container" data-category={cat.id} style="padding:0.75rem 1.75rem 1.75rem 1.75rem;">
             {cat.resultados.length === 0 && (
               <p style="color:var(--clr-text-dim);font-size:0.92rem;text-align:center;padding:2rem 0;font-weight:500;">
                 Sin votos registrados aún en esta categoría
@@ -58,7 +63,7 @@ const resultadosPorCat = categorias.map(cat => {
             {cat.resultados.map((r, idx) => {
               const isWinner = idx === 0 && r.puntaje_final > 0;
               return (
-                <div class={isWinner ? 'winner-card' : 'regular-card'} style="margin-bottom:1.4rem;">
+                <div class={`project-item ${isWinner ? 'winner-card' : 'regular-card'}`} data-name={r.proyecto_nombre.toLowerCase()} style="margin-bottom:1.4rem;">
                   {isWinner && (
                     <div class="winner-header">
                       <span class="winner-badge">🏆 GANADOR DE LA CATEGORÍA</span>
@@ -97,13 +102,19 @@ const resultadosPorCat = categorias.map(cat => {
               );
             })}
           </div>
-        </div>
+        </details>
       ))}
     </div>
   </div>
 </AdminLayout>
 
 <style>
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+  details[open] summary .expand-icon {
+    transform: rotate(180deg);
+  }
   .winner-card {
     background: linear-gradient(135deg, rgba(181, 161, 96, 0.16) 0%, rgba(0, 89, 78, 0.12) 100%);
     border: 2px solid #B5A160;
@@ -134,3 +145,26 @@ const resultadosPorCat = categorias.map(cat => {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
 </style>
+
+<script>
+  // Script para manejar la barra de búsqueda
+  document.querySelectorAll('.search-input').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+      const catId = (e.target as HTMLInputElement).getAttribute('data-category');
+      const container = document.querySelector(`.projects-container[data-category="${catId}"]`);
+      
+      if (container) {
+        const projects = container.querySelectorAll('.project-item');
+        projects.forEach(p => {
+          const name = p.getAttribute('data-name') || '';
+          if (name.includes(searchTerm)) {
+            (p as HTMLElement).style.display = 'block';
+          } else {
+            (p as HTMLElement).style.display = 'none';
+          }
+        });
+      }
+    });
+  });
+</script>

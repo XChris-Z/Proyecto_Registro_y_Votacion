@@ -105,14 +105,15 @@ const proyectosPorCategoria = categorias.map(cat => ({
       <!-- Categorías y proyectos -->
       <div style="display:grid;gap:2rem;" id="categorias-container">
         {proyectosPorCategoria.map((cat, catIdx) => (
-          <div
+          <details
             class={`category-section ${cat.votado ? 'category-section--done' : ''}`}
             id={`cat-${cat.id}`}
             data-categoria-id={cat.id}
             data-votado={cat.votado ? 'true' : 'false'}
+            open
             style="border-radius:20px;border:1.5px solid var(--clr-border);background:var(--clr-surface);box-shadow:var(--shadow-md);overflow:hidden;transition:all 0.3s ease;"
           >
-            <div class="category-header" style="padding:1.4rem 1.8rem;background:linear-gradient(90deg, rgba(0, 89, 78, 0.06) 0%, rgba(181, 161, 96, 0.05) 100%);border-bottom:1px solid var(--clr-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+            <summary class="category-header" style="padding:1.4rem 1.8rem;background:linear-gradient(90deg, rgba(0, 89, 78, 0.06) 0%, rgba(181, 161, 96, 0.05) 100%);border-bottom:1px solid var(--clr-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;cursor:pointer;list-style:none;">
               <div>
                 <div style="display:flex;align-items:center;gap:1rem;">
                   <span style={`
@@ -132,15 +133,20 @@ const proyectosPorCategoria = categorias.map(cat => ({
                   </div>
                 </div>
               </div>
-              <div>
+              <div style="display:flex;align-items:center;gap:1rem;">
                 {cat.votado
                   ? <span class="badge badge--green" style="padding:0.45rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;box-shadow:0 2px 8px rgba(16,185,129,0.2);">✓ Votado</span>
                   : <span class="badge badge--purple" style="padding:0.45rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;">Pendiente</span>
                 }
+                <span class="expand-icon" style="color:var(--clr-primary);font-size:1.4rem;transition:transform 0.3s ease;">▼</span>
               </div>
+            </summary>
+
+            <div style="padding:1.5rem 1.8rem 0 1.8rem;">
+              <input type="text" class="search-input" data-category={cat.id} placeholder="🔍 Buscar proyecto (nombre, autores...)" style="width:100%;padding:0.9rem 1.2rem;border-radius:var(--radius-md);border:1.5px solid var(--clr-border);background:var(--clr-bg);color:var(--clr-text);font-family:inherit;font-size:0.95rem;outline:none;transition:border-color 0.2s;" />
             </div>
 
-            <div class="category-body" style="padding:1.6rem 1.8rem;display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1.25rem;">
+            <div class="category-body projects-container" data-category={cat.id} style="padding:1.2rem 1.8rem 1.6rem 1.8rem;display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1.25rem;">
               {cat.proyectos.length === 0 && (
                 <p style="color:var(--clr-text-dim);font-size:0.9rem;grid-column:1/-1;padding:1.5rem 0;text-align:center;">
                   No hay proyectos registrados aún en esta categoría.
@@ -148,7 +154,8 @@ const proyectosPorCategoria = categorias.map(cat => ({
               )}
               {cat.proyectos.map(proyecto => (
                 <div
-                  class={`vote-card ${cat.votado && cat.votoProyectoId === proyecto.id ? 'vote-card--voted' : ''} ${cat.votado && cat.votoProyectoId !== proyecto.id ? 'vote-card--locked' : ''}`}
+                  class={`vote-card project-item ${cat.votado && cat.votoProyectoId === proyecto.id ? 'vote-card--voted' : ''} ${cat.votado && cat.votoProyectoId !== proyecto.id ? 'vote-card--locked' : ''}`}
+                  data-name={(proyecto.nombre + " " + (proyecto.autores || "")).toLowerCase()}
                   data-proyecto-id={proyecto.id}
                   data-categoria-id={cat.id}
                   data-nombre={proyecto.nombre}
@@ -191,7 +198,7 @@ const proyectosPorCategoria = categorias.map(cat => ({
                 </button>
               </div>
             )}
-          </div>
+          </details>
         ))}
       </div>
 
@@ -382,9 +389,39 @@ const proyectosPorCategoria = categorias.map(cat => ({
     if (e.target === e.currentTarget) cerrarModal();
   });
 
+  // Script para manejar la barra de búsqueda
+  document.querySelectorAll('.search-input').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+      const catId = (e.target as HTMLInputElement).getAttribute('data-category');
+      const container = document.querySelector(`.projects-container[data-category="${catId}"]`);
+      
+      if (container) {
+        const projects = container.querySelectorAll('.project-item');
+        projects.forEach(p => {
+          const name = p.getAttribute('data-name') || '';
+          if (name.includes(searchTerm)) {
+            (p as HTMLElement).style.display = 'block';
+          } else {
+            (p as HTMLElement).style.display = 'none';
+          }
+        });
+      }
+    });
+  });
+
   // Make functions global
   (window as any).selectProyecto = selectProyecto;
   (window as any).confirmarVoto = confirmarVoto;
   (window as any).cerrarModal = cerrarModal;
   (window as any).enviarVoto = enviarVoto;
 </script>
+
+<style>
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+  details[open] summary .expand-icon {
+    transform: rotate(180deg);
+  }
+</style>
