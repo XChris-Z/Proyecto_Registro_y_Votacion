@@ -56,6 +56,24 @@ CREATE TABLE IF NOT EXISTS administradores (
 );
 
 -- ============================================================
+-- FUNCIÓN PARA REINICIAR SECUENCIAS (NUEVA JORNADA)
+-- ============================================================
+-- Esta función limpia los votos y asistentes (opcionalmente) 
+-- y reinicia sus IDs (autoincrementables) a 1.
+CREATE OR REPLACE FUNCTION limpiar_jornada(p_reiniciar_asistentes BOOLEAN)
+RETURNS void AS $$
+BEGIN
+  -- Siempre eliminamos y reiniciamos votos
+  TRUNCATE TABLE votos RESTART IDENTITY CASCADE;
+
+  -- Si se solicita, eliminamos y reiniciamos asistentes
+  IF p_reiniciar_asistentes THEN
+    TRUNCATE TABLE asistentes RESTART IDENTITY CASCADE;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ============================================================
 -- DATOS INICIALES
 -- ============================================================
 

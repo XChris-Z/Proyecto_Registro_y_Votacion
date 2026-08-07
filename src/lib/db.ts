@@ -797,7 +797,17 @@ export async function reiniciarJornada(
   reiniciarAsistentes: boolean = false
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // 1. Eliminar todos los votos para iniciar nueva jornada limpia
+    // Intentar usar la función RPC que reinicia las secuencias (TRUNCATE RESTART IDENTITY)
+    const { error: rpcError } = await supabase.rpc('limpiar_jornada', {
+      p_reiniciar_asistentes: reiniciarAsistentes
+    });
+
+    if (!rpcError) {
+      return { success: true };
+    }
+
+    // FALLBACK: Si la función RPC no existe en Supabase (ej. el admin aún no la ha creado),
+    // hacer el borrado normal sin reiniciar secuencias para que la app no se rompa.
     const { error: errVotos } = await supabase
       .from('votos')
       .delete()
@@ -805,7 +815,6 @@ export async function reiniciarJornada(
 
     if (errVotos) return { success: false, error: errVotos.message };
 
-    // 2. Opcionalmente limpiar asistentes si quieren nuevo censo
     if (reiniciarAsistentes) {
       const { error: errAsist } = await supabase
         .from('asistentes')
