@@ -222,7 +222,7 @@ const exito = Astro.url.searchParams.get("exito");
                         href={`/api/admin/exportar-excel?id=${j.id}`}
                         target="_blank"
                         class="btn btn--outline btn--sm"
-                        style="border-color:var(--clr-accent);color:var(--clr-accent);border-radius:100px;padding:0.35rem 0.95rem;font-weight:700;"
+                        style="border-color:var(--clr-primary);color:var(--clr-primary);border-radius:100px;padding:0.35rem 0.95rem;font-weight:700;"
                         onclick="event.stopPropagation();"
                       >
                         📑 Excel (.xlsx)
@@ -256,7 +256,7 @@ const exito = Astro.url.searchParams.get("exito");
                 </summary>
                 
                 <div class="hc-content">
-                  <h4 style="color:var(--clr-accent);margin-bottom:1rem;border-bottom:1px solid rgba(181, 161, 96, 0.3);padding-bottom:0.5rem;">Información Detallada (Snapshot)</h4>
+                  <h4 style="color:var(--clr-primary);margin-bottom:1rem;border-bottom:1px solid rgba(0, 89, 78, 0.2);padding-bottom:0.5rem;">Información Detallada (Snapshot)</h4>
                   
                   {j.snapshot_json ? (() => {
                     const cats = j.snapshot_json.categorias || [];
@@ -756,7 +756,7 @@ const exito = Astro.url.searchParams.get("exito");
   /* Estilos para Tarjetas del Historial */
   .historial-card-details {
     background: var(--clr-surface);
-    border: 1px solid rgba(181, 161, 96, 0.2);
+    border: 1px solid rgba(0, 89, 78, 0.2);
     border-radius: var(--radius-lg);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -764,8 +764,8 @@ const exito = Astro.url.searchParams.get("exito");
   }
   
   .historial-card-details[open] {
-    border-color: var(--clr-accent);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    border-color: var(--clr-primary);
+    box-shadow: 0 8px 25px rgba(0, 89, 78, 0.15);
   }
 
   .historial-card-summary {
@@ -810,30 +810,30 @@ const exito = Astro.url.searchParams.get("exito");
   }
 
   .hc-fecha {
-    font-size: 0.8rem;
-    color: var(--clr-accent);
-    opacity: 0.9;
+    font-size: 0.85rem;
+    color: var(--clr-primary);
+    opacity: 0.8;
   }
 
   .hc-stats-col {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .hc-badge {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--clr-text);
-    padding: 0.4rem 1rem;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.4rem 0.8rem;
     border-radius: 100px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--clr-text);
   }
 
   .hc-badge-accent {
-    background: rgba(181, 161, 96, 0.15);
-    color: var(--clr-accent);
-    border: 1px solid rgba(181, 161, 96, 0.3);
+    background: rgba(0, 89, 78, 0.1);
+    color: var(--clr-primary);
   }
 
   .hc-actions {
